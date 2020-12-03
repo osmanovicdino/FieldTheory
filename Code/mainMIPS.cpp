@@ -93,7 +93,7 @@ double norm = (double)((double)N / tot);
 // outfunc(a.qintegral(),"int");
 
 
-for(int i = 0; i < 1999; i++) {
+for(int i = 0; i < 19999; i++) {
 pausel();
 
 a.updatedatstore();
