@@ -1,0 +1,202 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[      8011,        194]
+NotebookOptionsPosition[      6807,        166]
+NotebookOutlinePosition[      7204,        182]
+CellTagsIndexPosition[      7161,        179]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[BoxData[
+ RowBox[{"SetDirectory", "[", 
+  "\"\</home/dino/Desktop/IsingPolymer/PolycombCode/\>\"", "]"}]], "Input",
+ CellChangeTimes->{{3.797349939922305*^9, 3.797349949793083*^9}},
+ CellLabel->"In[1]:=",ExpressionUUID->"27fa39f0-2553-455a-a51d-f13843748aed"],
+
+Cell[BoxData["\<\"/home/dino/Desktop/IsingPolymer/PolycombCode\"\>"], "Output",
+ CellChangeTimes->{3.815307315672792*^9, 3.815338745665462*^9},
+ CellLabel->"Out[1]=",ExpressionUUID->"e31d64f4-7e86-48a6-9913-7bb66256f470"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"Dynamic", "@", 
+  RowBox[{"Refresh", "[", 
+   RowBox[{
+    RowBox[{"ListPlot", "[", 
+     RowBox[{
+      RowBox[{"Transpose", "[", 
+       RowBox[{"Import", "[", "\"\<den.csv\>\"", "]"}], "]"}], ",", 
+      RowBox[{"PlotRange", "\[Rule]", "All"}], ",", 
+      RowBox[{"Joined", "\[Rule]", "True"}]}], "]"}], ",", 
+    RowBox[{"UpdateInterval", "\[Rule]", "1"}], ",", 
+    RowBox[{"TrackedSymbols", "\[RuleDelayed]", 
+     RowBox[{"{", "}"}]}]}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"Dynamic", "@", 
+  RowBox[{"Refresh", "[", 
+   RowBox[{
+    RowBox[{"ListPlot", "[", 
+     RowBox[{
+      RowBox[{"Total", "@", 
+       RowBox[{"Transpose", "[", 
+        RowBox[{"Import", "[", "\"\<den.csv\>\"", "]"}], "]"}]}], ",", 
+      RowBox[{"PlotRange", "\[Rule]", "All"}], ",", 
+      RowBox[{"Joined", "\[Rule]", "True"}]}], "]"}], ",", 
+    RowBox[{"UpdateInterval", "\[Rule]", "1"}], ",", 
+    RowBox[{"TrackedSymbols", "\[RuleDelayed]", 
+     RowBox[{"{", "}"}]}]}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"Dynamic", "@", 
+  RowBox[{"Refresh", "[", 
+   RowBox[{
+    RowBox[{"ListPlot", "[", 
+     RowBox[{
+      RowBox[{"Transpose", "[", 
+       RowBox[{"Import", "[", "\"\<field.csv\>\"", "]"}], "]"}], ",", 
+      RowBox[{"PlotRange", "\[Rule]", "All"}], ",", 
+      RowBox[{"Joined", "\[Rule]", "True"}]}], "]"}], ",", 
+    RowBox[{"UpdateInterval", "\[Rule]", "1"}], ",", 
+    RowBox[{"TrackedSymbols", "\[RuleDelayed]", 
+     RowBox[{"{", "}"}]}]}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"Dynamic", "@", 
+  RowBox[{"Refresh", "[", 
+   RowBox[{
+    RowBox[{"ListPlot", "[", 
+     RowBox[{
+      RowBox[{"Transpose", "[", 
+       RowBox[{"Import", "[", "\"\<convolocal.csv\>\"", "]"}], "]"}], ",", 
+      RowBox[{"PlotRange", "\[Rule]", "All"}], ",", 
+      RowBox[{"Joined", "\[Rule]", "True"}]}], "]"}], ",", 
+    RowBox[{"UpdateInterval", "\[Rule]", "1"}], ",", 
+    RowBox[{"TrackedSymbols", "\[RuleDelayed]", 
+     RowBox[{"{", "}"}]}]}], "]"}]}]}], "Input",
+ CellChangeTimes->{{3.7947833262507887`*^9, 3.7947833267786283`*^9}, {
+   3.795104342587009*^9, 3.7951043429886827`*^9}, {3.795104519067819*^9, 
+   3.7951045244909153`*^9}, {3.795104599579506*^9, 3.7951046078036003`*^9}, {
+   3.795185504003562*^9, 3.7951855045136337`*^9}, {3.795193221508533*^9, 
+   3.795193224933236*^9}, {3.7952031446265163`*^9, 3.795203153330206*^9}, {
+   3.797349931312265*^9, 3.797349932879402*^9}, {3.797351007448884*^9, 
+   3.797351012424864*^9}, {3.797355087921077*^9, 3.7973551144969187`*^9}, {
+   3.79736320988097*^9, 3.797363216546439*^9}, 3.799231844706409*^9, {
+   3.807027072554277*^9, 3.8070270764583263`*^9}, {3.807027168684659*^9, 
+   3.807027177210013*^9}, {3.807028107015201*^9, 3.8070281162795963`*^9}, {
+   3.807028150023369*^9, 3.8070281502305098`*^9}, {3.8070292151991787`*^9, 
+   3.807029222063074*^9}, {3.807030583584551*^9, 3.807030596944705*^9}, {
+   3.807030988609406*^9, 3.807031019065197*^9}, {3.8070342458172197`*^9, 
+   3.807034256841002*^9}, 3.807034308489057*^9, {3.8070345421352997`*^9, 
+   3.807034542391109*^9}, {3.815307294186404*^9, 3.8153073036734667`*^9}, {
+   3.815307730085902*^9, 3.815307744101698*^9}, {3.815340362472019*^9, 
+   3.815340370055921*^9}},
+ CellLabel->"In[5]:=",ExpressionUUID->"41960e06-aa83-4441-9335-6bf741b16fba"],
+
+Cell[BoxData[
+ DynamicBox[ToBoxes[
+   Refresh[
+    ListPlot[
+     Transpose[
+      Import["den.csv"]], PlotRange -> All, Joined -> True], UpdateInterval -> 
+    1, TrackedSymbols :> {}], StandardForm],
+  ImageSizeCache->{360., {113., 117.21152756280802`}}]], "Output",
+ CellChangeTimes->{{3.815307304217352*^9, 3.8153073165435057`*^9}, 
+   3.8153077444024076`*^9, 3.815338845991118*^9, 3.815340401129999*^9},
+ CellLabel->"Out[5]=",ExpressionUUID->"10bf4d17-e1fe-483a-9198-fc9040cf4290"],
+
+Cell[BoxData[
+ DynamicBox[ToBoxes[
+   Refresh[
+    ListPlot[
+     Total[
+      Transpose[
+       Import["den.csv"]]], PlotRange -> All, Joined -> True], UpdateInterval -> 
+    1, TrackedSymbols :> {}], StandardForm],
+  ImageSizeCache->{360., {111., 115.32162365265685`}}]], "Output",
+ CellChangeTimes->{{3.815307304217352*^9, 3.8153073165435057`*^9}, 
+   3.8153077444024076`*^9, 3.815338845991118*^9, 3.815340401171139*^9},
+ CellLabel->"Out[6]=",ExpressionUUID->"c8cb3e1a-1206-4f74-9084-aa32860bb4cb"],
+
+Cell[BoxData[
+ DynamicBox[ToBoxes[
+   Refresh[
+    ListPlot[
+     Transpose[
+      Import["field.csv"]], PlotRange -> All, Joined -> True], UpdateInterval -> 
+    1, TrackedSymbols :> {}], StandardForm],
+  ImageSizeCache->{360., {107., 112.4900545914654}}]], "Output",
+ CellChangeTimes->{{3.815307304217352*^9, 3.8153073165435057`*^9}, 
+   3.8153077444024076`*^9, 3.815338845991118*^9, 3.8153404012236643`*^9},
+ CellLabel->"Out[7]=",ExpressionUUID->"a2d300cd-c90e-4b1a-a0c8-6a6474c48f75"],
+
+Cell[BoxData[
+ DynamicBox[ToBoxes[
+   Refresh[
+    ListPlot[
+     Transpose[
+      Import["convolocal.csv"]], PlotRange -> All, Joined -> True], 
+    UpdateInterval -> 1, TrackedSymbols :> {}], StandardForm],
+  ImageSizeCache->{360., {112., 116.02951591795471`}}]], "Output",
+ CellChangeTimes->{{3.815307304217352*^9, 3.8153073165435057`*^9}, 
+   3.8153077444024076`*^9, 3.815338845991118*^9, 3.815340401266275*^9},
+ CellLabel->"Out[8]=",ExpressionUUID->"6deb0205-dfd0-4829-b56d-a473af7bc3c5"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"100", "*", "0.02"}]], "Input",
+ CellChangeTimes->{{3.81534704025003*^9, 3.8153470470006723`*^9}},
+ CellLabel->"In[56]:=",ExpressionUUID->"3ffdca50-3947-48bd-ae18-2e02a3a3b72a"],
+
+Cell[BoxData["2.`"], "Output",
+ CellChangeTimes->{{3.815347041687035*^9, 3.81534704725966*^9}},
+ CellLabel->"Out[56]=",ExpressionUUID->"29839fde-413a-4fc3-8236-e5ac9ee62785"]
+}, Open  ]]
+},
+WindowSize->{606., 658.5},
+WindowMargins->{{164.25, Automatic}, {Automatic, 18}},
+FrontEndVersion->"12.1 for Linux x86 (64-bit) (June 19, 2020)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"518cc198-4f63-4c84-b0f5-b3d12b6346b1"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 264, 4, 29, "Input",ExpressionUUID->"27fa39f0-2553-455a-a51d-f13843748aed"],
+Cell[847, 28, 221, 2, 33, "Output",ExpressionUUID->"e31d64f4-7e86-48a6-9913-7bb66256f470"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[1105, 35, 3292, 67, 339, "Input",ExpressionUUID->"41960e06-aa83-4441-9335-6bf741b16fba"],
+Cell[4400, 104, 486, 10, 247, "Output",ExpressionUUID->"10bf4d17-e1fe-483a-9198-fc9040cf4290"],
+Cell[4889, 116, 501, 11, 243, "Output",ExpressionUUID->"c8cb3e1a-1206-4f74-9084-aa32860bb4cb"],
+Cell[5393, 129, 488, 10, 236, "Output",ExpressionUUID->"a2d300cd-c90e-4b1a-a0c8-6a6474c48f75"],
+Cell[5884, 141, 493, 10, 245, "Output",ExpressionUUID->"6deb0205-dfd0-4829-b56d-a473af7bc3c5"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[6414, 156, 200, 3, 29, "Input",ExpressionUUID->"3ffdca50-3947-48bd-ae18-2e02a3a3b72a"],
+Cell[6617, 161, 174, 2, 56, "Output",ExpressionUUID->"29839fde-413a-4fc3-8236-e5ac9ee62785"]
+}, Open  ]]
+}
+]
+*)
+

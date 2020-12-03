@@ -1,0 +1,349 @@
+#include <stdlib.h>
+#include <iostream>
+#include <fstream>
+#include <stdio.h>
+#include <stdarg.h>
+#include <vector>
+#include <algorithm>
+#include <stdexcept>
+#include <limits>
+#include <cmath>
+#include <complex>
+#include <sstream>
+#include <string>
+#include <iomanip>
+#include <sys/ioctl.h> 
+#include <fcntl.h>
+#include <time.h>
+#include <sys/time.h>
+#include <sys/stat.h>
+#include <random>
+#if defined(_OPENMP)
+#include <omp.h>
+#else
+typedef int omp_int_t;
+inline omp_int_t omp_get_thread_num() { return 0;}
+inline omp_int_t omp_get_max_threads() { return 1;}
+inline omp_int_t omp_get_num_threads() { return 1; }
+#endif
+
+#include "basic.h"
+#include "vector1.h"
+#include "matrix2.h"
+#include "matrix2.cpp"
+#include "potential.h"
+//#include "intmatrix.h"
+#include "MD.h"
+#include "Langevin.h"
+
+
+// #include "BrownianGel.cpp"
+// #include "BrownianGel2.cpp"
+// #include "LangevinGel.cpp"
+// #include "LangevinGelFixed.cpp"
+
+#include "IsingPol.h"
+
+
+
+using namespace std;
+
+
+
+
+int main(int argc, char** argv) {
+srand (time(NULL));
+
+
+IsingPolymer a(100,2);
+
+// for(int i = 0 ; i < 100 ; i++) {
+// 	field[i]=0.01*i;
+// }
+// vector1<double> den = a.radialsolver(field);
+
+// 	for(int j = 0  ; j < 2 ; j++) {
+// 		field(i,j)=sqrt((i+1)*(j+1));
+// 	}
+// }
+
+
+// cout << a.radialsolver(fieldv) << endl;
+// cout << a.radialsolver2(fieldv) << endl;
+
+matrix<double> V2(2,2);
+V2(0,0)=0.0;
+V2(1,0)=1.0;
+V2(0,1)=1.0;
+V2(1,1)=0.0;
+double u0=0.0;
+double v0=0.0;
+
+a.setu0(u0);
+//a.setv0(0.0);
+a.setv0(v0);
+a.setV(V2);
+
+a.setb(0.2);
+// a.setR(20.0);
+// a.setstot(8000.);
+
+// vector1<double> fieldv(100,0.0);
+// double norm1 = 0.0;
+// vector1<double> den = a.radialsolver(fieldv,norm1);
+
+// vector1<double> fac = den&fieldv;
+// cout << norm1 << endl;
+// cout << a.integrate(fac) << endl;
+matrix<double> field(100,2);
+// double unmixed = a.freeenergy(field);
+// for(int i = 0 ; i < 100 ; i++) {
+// field(i,0)=1./(1. + exp((50. - i)/2.));
+// }
+// for(int i = 0 ; i < 100 ; i++) {
+// field(i,1)=-log(1. - exp(-field(i,0)));
+// }
+//cout << a.freeenergy(field) <<endl;
+
+//cout << unmixed << endl;
+
+// int runtime = 10000;
+// a.setv0(0.0);
+// a.run(field,runtime,0.001);
+// cout << field << endl;
+
+// int ju = 40;
+// double vfac = ju*0.02*10.0;
+// a.setv0(vfac);
+// stringstream ss;
+// ss<<ju;
+// string endf=ss.str();
+// endf+=".csv";
+
+// string fi1 = "/home/dino/External/Code/PolycombCode/sim-20-04-02-23:12:18/field_mixed"+endf;
+// string de1 = "/home/dino/External/Code/PolycombCode/sim-20-04-02-23:12:18/den_mixed"+endf;
+// string fe1 = "/home/dino/External/Code/PolycombCode/sim-20-04-02-23:12:18/freeenergy_mixed"+endf;
+
+// string fi2 = "/home/dino/External/Code/PolycombCode/sim-20-04-02-23:12:18/field_demixed"+endf;
+// string de2 = "/home/dino/External/Code/PolycombCode/sim-20-04-02-23:12:18/den_demixed"+endf;
+// string fe2 = "/home/dino/External/Code/PolycombCode/sim-20-04-02-23:12:18/freeenergy_demixed"+endf;
+
+// string fi3 = "/home/dino/External/Code/PolycombCode/sim-20-04-02-23:12:18/field_homo"+endf;
+// string de3 = "/home/dino/External/Code/PolycombCode/sim-20-04-02-23:12:18/den_homo"+endf;
+// string fe3 = "/home/dino/External/Code/PolycombCode/sim-20-04-02-23:12:18/freeenergy_homo"+endf;
+
+// double T;
+// bool err1, err2, err3;
+
+// matrix<double> field_mixed = importcsv(fi1,T,err1);
+// matrix<double> field_demixed = importcsv(fi2,T,err2);
+// matrix<double> field_homo = importcsv(fi3,T,err3);
+
+// cout << a.freeenergy(field_mixed) << endl;
+// cout << a.freeenergy(field_demixed) << endl;
+// cout << a.freeenergy(field_homo) << endl;
+// a.setv0(5.4);
+// for(int i = 0 ; i < 100 ; i++) {
+// field(i,0)=dat[i]+log(2.);
+// }
+// for(int i = 0 ; i < 100 ; i++) {
+// field(i,1)=-log(exp(-dat[i]) - exp(-field(i,0)));
+// }
+// double temp = 0.0;
+// matrix<double> den = a.densityfromfield(field,temp);
+// cout << a.freeenergy(field) << endl;
+// outfunc(den,"den");
+
+// for(int i = 0 ; i < 100 ; i++) {
+// field(i,0)=5./(1. + exp((90. - i)/1.));
+// }
+// for(int i = 0 ; i < 100 ; i++) {
+// field(i,1)=-log(exp(-dat[i]) - exp(-field(i,0)));
+// }
+
+// den = a.densityfromfield(field,temp);
+// cout << a.freeenergy(field) << endl;
+// outfunc(den,"den");
+// for(int i = 0 ; i < 100 ; i++) {
+// field(i,0)=5.;
+// }
+// for(int i = 0 ; i < 100 ; i++) {
+// field(i,1)=-log(exp(-dat[i]) - exp(-field(i,0)));
+// }
+// den = a.densityfromfield(field,temp);
+// cout << a.freeenergy(field) << endl;
+// outfunc(den,"den");
+// pausel();
+
+//double dat[100]={-0.000058, -0.000058, -0.000058, -0.000058, -0.000058, -0.000058, -0.000058, -0.000058, -0.000057, -0.000057, -0.000057, -0.000056, -0.000056, -0.000056, -0.000055, -0.000055, -0.000054, -0.000053, -0.000053, -0.000052, -0.000051, -0.00005, -0.000049, -0.000048, -0.000047, -0.000046, -0.000044, -0.000043, -0.000042, -0.00004, -0.000038, -0.000037, -0.000035, -0.000033, -0.000031, -0.000029, -0.000026, -0.000024, -0.000022, -0.000019, -0.000017, -0.000015, -0.000012, -0.00001, -8.e-6, -6.e-6, -4.e-6, -2.e-6, -1.e-6, -1.e-6, 0., -1.e-6, -2.e-6, -4.e-6, -8.e-6, -0.000012, -0.000019, -0.000027, -0.000037, -0.000049, -0.000064, -0.000083, -0.000105, -0.00013, -0.000161, -0.000196, -0.000237, -0.000285, -0.000339, -0.000401, -0.000472, -0.000552, -0.000642, -0.000743, -0.000856, -0.000982, -0.00112, -0.001273, -0.00144, -0.001622, -0.001818, -0.002029, -0.002255, -0.002493, -0.002744, -0.003004, -0.003273, -0.003546, -0.003822, -0.004095, -0.004362, -0.004618, -0.004858, -0.005078, -0.005274, -0.00544, -0.005573, -0.005671, -0.00573, -0.00575};
+double dat[100]={0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+//double dat[100]={-0.5428471805599453, -0.5428471805599453, -0.5428471805599453, -0.5428471805599453, -0.5428471805599453, -0.5428471805599453, -0.5428471805599453, -0.5428471805599453, -0.5428471805599453, -0.5428471805599453, -0.5428471805599453, -0.5428471805599453, -0.5428471805599453, -0.5428471805599453, -0.5428471805599453, -0.5428471805599453, -0.5428471805599453, -0.5428471805599453, -0.5428471805599453, -0.5428471805599453, -0.5428471805599453, -0.5428471805599453, -0.5428471805599453, -0.5428471805599453, -0.5428471805599453, -0.5428471805599453, -0.5428471805599453, -0.5428471805599453, -0.5428471805599453, -0.5428471805599453, -0.5428471805599453, -0.5428471805599453, -0.5428471805599453, -0.5428471805599453, -0.5428471805599453, -0.5428471805599453, -0.5428461805599453, -0.5428461805599453, -0.5428461805599453, -0.5428461805599453, -0.5428461805599453, -0.5428461805599453, -0.5428451805599454, -0.5428451805599454, -0.5428451805599454, -0.5428451805599454, -0.5428451805599454, -0.5428451805599454, -0.5428451805599454, -0.5428461805599453, -0.5428461805599453, -0.5428461805599453, -0.5428471805599453, -0.5428471805599453, -0.5428471805599453, -0.5428481805599453, -0.5428481805599453, -0.5428471805599453, -0.5428471805599453, -0.5428461805599453, -0.5428451805599454, -0.5428421805599454, -0.5428401805599453, -0.5428361805599453, -0.5428321805599453, -0.5428271805599453, -0.5428221805599454, -0.5428171805599453, -0.5428141805599453, -0.5428121805599453, -0.5428121805599453, -0.5428171805599453, -0.5428271805599453, -0.5428441805599453, -0.5428681805599452, -0.5429011805599454, -0.5429411805599452, -0.5429861805599453, -0.5430311805599454, -0.5430701805599454, -0.5430881805599453, -0.5430721805599453, -0.5429981805599453, -0.5428441805599453, -0.5425831805599454, -0.5421941805599453, -0.5416721805599454, -0.5410441805599453, -0.5403991805599453, -0.5399321805599454, -0.5400171805599453, -0.5413081805599453, -0.5448711805599453, -0.5523081805599452, -0.5657271805599453, -0.5872111805599454, -0.6172408805599453, -0.6519749805599453, -0.6814217805599454, -0.6931471805599453};
+int ju = 51;
+// for(int i = 0 ; i < 100 ; i++) {
+// field(i,0)=dat[i]+log(2.);
+// }
+// for(int i = 0 ; i < 100 ; i++) {
+// field(i,1)=-log(exp(-dat[i]) - exp(-field(i,0)));
+// }
+a.setu0(0.0);
+a.setv0(7.0);
+
+// for(int i = 0 ; i < 100 ; i++) {
+// field(i,0)=dat[i]+log(2.);
+// }
+// for(int i = 0 ; i < 100 ; i++) {
+// field(i,1)=-log(exp(-dat[i]) - exp(-field(i,0)));
+// }
+// cout << a.freeenergy(field) << endl;
+
+// // for(int i = 0 ; i < 100 ; i++) {
+// // field(i,0)=-0.542+5./(1. + exp((90. - i)/1/));
+// // }
+// // for(int i = 0 ; i < 100 ; i++) {
+// // field(i,1)=-log(exp(-dat[i]) - exp(-field(i,0)));
+// // }
+
+// for(double po = 0. ; po < 90. ; po+=1.0) {
+// for(int i = 0 ; i < 100 ; i++) {
+// 	double poi =po;
+// field(i,0)=0.01+5./(1. + exp((poi - i)/0.1));
+// }
+// for(int i = 0 ; i < 100 ; i++) {
+// field(i,1)=-log(exp(-dat[i]) - exp(-field(i,0)));
+// }
+// cout << a.freeenergy(field) << ",";
+// }
+// cout << endl;
+// cout << endl;
+
+// double fg =0.0;
+
+// matrix<double> den = a.densityfromfield(field,fg);
+
+// outfunc(field,"field");
+// outfunc(den,"den");
+
+
+// for(double v = 0.0 ; v < 6.0 ; v+=0.1) {
+// for(int i = 0 ; i < 100 ; i++) {
+// field(i,0)=dat[i]+v+log(2.);
+// }
+// for(int i = 0 ; i < 100 ; i++) {
+// field(i,1)=-log(exp(-dat[i]) - exp(-field(i,0)));
+// }
+
+// cout << a.freeenergy(field) <<", ";
+// }
+
+// cout << endl;
+// pausel();
+
+double dt =0.01;
+
+// cout << field << endl;
+// pausel();
+int runtime = 100000;
+
+// a.run(field,runtime,0.001);
+
+// cout << field << endl;
+
+for(double vfac =5.1 ; vfac < 10.0 ; vfac += 0.1) {
+
+
+cout << ju << " " << vfac << endl;
+a.setv0(vfac);
+
+
+
+for(int i = 0 ; i < 100 ; i++) {
+field(i,0)=dat[i]+log(2.);
+}
+for(int i = 0 ; i < 100 ; i++) {
+field(i,1)=-log(exp(-dat[i]) - exp(-field(i,0)));
+}
+a.run(field,runtime,dt);
+
+stringstream ss;
+ss<<ju;
+string endf=ss.str();
+
+string fi1 = "field_mixed"+endf;
+string de1 = "den_mixed"+endf;
+string fe1 = "freeenergy_mixed"+endf;
+
+double fe=0.0;
+matrix<double> den = a.densityfromfield(field,fe);
+fe=a.freeenergy(den,field,fe);
+matrix<double> fi(1,1);
+fi(0,0) = fe;
+
+outfunc(field,fi1);
+outfunc(den,de1);
+outfunc(fi,fe1);
+
+// as(ju,0) = a.freeenergy(field);
+
+
+for(int i = 0 ; i < 100 ; i++) {
+field(i,0)=0.01+5./(1. + exp((90. - i)/1.));
+}
+for(int i = 0 ; i < 100 ; i++) {
+field(i,1)=-log(exp(-dat[i]) - exp(-field(i,0)));
+}
+a.run(field,runtime,dt);
+
+string fi2 = "field_demixed"+endf;
+string de2 = "den_demixed"+endf;
+string fe2 = "freeenergy_demixed"+endf;
+
+fe=0.0;
+den = a.densityfromfield(field,fe);
+fe=a.freeenergy(den,field,fe);
+
+fi(0,0) = fe;
+
+outfunc(field,fi2);
+outfunc(den,de2);
+outfunc(fi,fe2);
+
+for(int i = 0 ; i < 100 ; i++) {
+field(i,0)=5.;
+}
+for(int i = 0 ; i < 100 ; i++) {
+field(i,1)=-log(exp(-dat[i]) - exp(-field(i,0)));
+}
+a.run(field,runtime,dt);
+string fi3 = "field_homo"+endf;
+string de3 = "den_homo"+endf;
+string fe3 = "freeenergy_homo"+endf;
+// as(ju,2) = a.freeenergy(field);
+
+
+fe=0.0;
+den = a.densityfromfield(field,fe);	
+fe=a.freeenergy(den,field,fe);
+
+fi(0,0) = fe;
+
+outfunc(field,fi3);
+outfunc(den,de3);
+outfunc(fi,fe3);
+
+ju++;
+}
+
+
+//cout << as << endl;
+// a.run(field,100000,0.001);
+
+// double nn = 0.0;
+// matrix<double> b = a.densityfromfield(field,nn);
+
+// outfunc(b,"den");
+
+//cout << den << endl;
+
+
+return 0;
+}
