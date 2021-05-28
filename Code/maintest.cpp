@@ -45,9 +45,6 @@ inline omp_int_t omp_get_num_threads() { return 1; }
 
 using namespace std;
 
-double mult(const double &a, const double &b){
-    return a*b;
-}
 
 int main(int argc, char **argv)
 {
@@ -91,153 +88,141 @@ int main(int argc, char **argv)
     cout << a2.calculated_reactions[0][0] << endl;
     */
 
-   matrix<double> epsilons(3,3);
-
-   epsilons(0,0) = 0.3;
-   epsilons(0,1) = -1.1;
-   epsilons(0,2) =  1.1;
-
-   epsilons(1, 0) = 0.2;
-   epsilons(1, 1) = -0.7;
-   epsilons(1, 2) = 0.7;
-
-   epsilons(2, 0) = 0.1;
-   epsilons(2, 1) = 0.0;
-   epsilons(2, 2) = 0.0;
+        double p0 = atof(argv[1]);
+        double A0 = atof(argv[2]);
 
 
 
-   for(int k = 0  ; k < 3 ; k++ ) {
 
-       double eps1 =  epsilons(k,1);
-       double eps2 =  epsilons(k,2);
 
-   CH_builder p;
-   p.number_of_fields = 4;
-   p.N1 = 1024;
-   p.N2 = 1024;
+        double eps1 = -0.8;
+        double eps2 = 0.8;
 
-   CH a(p);
+        CH_builder p;
+        p.number_of_fields = 4;
+        p.N1 = 1024;
+        p.N2 = 1024;
 
-   double rate1 = 1.0;
-   double rate2 = 1.0;
-   InvasionAntiInvasionLinear c1(rate1, rate2);
-   InvasionAntiInvasionLinear c2(-rate1, -rate2);
-   InvasionAntiInvasionLinear c3(rate1, rate2);
-   NoWeight c4;
+        CH a(p);
 
-   Field_Wrapper my_chemsitry(p);
-   my_chemsitry.add_method(c1, 0);
-   my_chemsitry.add_method(c2, 1);
-   my_chemsitry.add_method(c3, 2);
-   my_chemsitry.add_method(c4, 3);
+        double rate1 = 1.0;
+        double rate2 = 1.0;
+        InvasionAntiInvasionLinear c1(rate1, rate2);
+        InvasionAntiInvasionLinear c2(-rate1, -rate2);
+        InvasionAntiInvasionLinear c3(rate1, rate2);
+        NoWeight c4;
 
-   Field_Wrapper my_weights(p);
+        Field_Wrapper my_chemsitry(p);
+        my_chemsitry.add_method(c1, 0);
+        my_chemsitry.add_method(c2, 1);
+        my_chemsitry.add_method(c3, 2);
+        my_chemsitry.add_method(c4, 3);
 
-   double c00 = 0.2;
-   double c11 = 0.8;
-   double nu = 0.871687587;
+        Field_Wrapper my_weights(p);
 
-   CahnHilliardWithCouplingWeightSQR d1(c00, c11, nu, eps1, eps2, 2, 3);
-   DiffusiveWeight d2(1.0);
-   DiffDiffusiveWeightSQR d3(eps1, 0);
-   DiffDiffusiveWeightSQR d4(eps2, 0);
+        double c00 = 0.2;
+        double c11 = 0.8;
+        double nu = 1.;
 
-   my_weights.add_method(d1, 0);
-   my_weights.add_method(d2, 1);
-   my_weights.add_method(d3, 2);
-   my_weights.add_method(d4, 3);
+        CahnHilliardWithCouplingWeightSQR d1(c00, c11, nu, eps1, eps2, 2, 3);
+        DiffusiveWeight d2(1.0);
+        DiffDiffusiveWeightSQR d3(eps1, 0);
+        DiffDiffusiveWeightSQR d4(eps2, 0);
 
-   a.set_chems(my_chemsitry);
-   a.set_weights(my_weights);
+        my_weights.add_method(d1, 0);
+        my_weights.add_method(d2, 1);
+        my_weights.add_method(d3, 2);
+        my_weights.add_method(d4, 3);
 
-   cout << "weights added" << endl;
+        a.set_chems(my_chemsitry);
+        a.set_weights(my_weights);
 
-   Rule_Wrapper my_rules(p);
-   cout << "rule wrapper created" << endl;
+        cout << "weights added" << endl;
 
-   double dt = 0.05;
-   double dx = 0.05;
-   double D = 1.;
-   double temp1 = SQR(pi / (dx * p.N1));
-   double eps = epsilons(k,0);
+        Rule_Wrapper my_rules(p);
+        cout << "rule wrapper created" << endl;
 
-   DiffusionWithSurfaceTension e1(p, dt, D, temp1, eps);
-   NormalDiffusion e2(p, dt, D, temp1);
-   DiffusionWithInteraction e3(p, dt, D, temp1);
-   DiffusionWithInteraction e4(p, dt, D, temp1);
+        double dt = 0.05;
+        double dx = 0.05;
+        double D = 1.;
+        double temp1 = SQR(pi / (dx * p.N1));
+        double eps = 0.3;
 
-   cout << "created diffusion" << endl;
+        DiffusionWithSurfaceTension e1(p, dt, D, temp1, eps);
+        NormalDiffusion e2(p, dt, D, temp1);
+        DiffusionWithInteraction e3(p, dt, D, temp1);
+        DiffusionWithInteraction e4(p, dt, D, temp1);
 
-   my_rules.add_method(e1, 0);
-   cout << "method1" << endl;
-   my_rules.add_method(e2, 1);
-   cout << "method2" << endl;
-   my_rules.add_method(e3, 2);
-   cout << "method3" << endl;
-   my_rules.add_method(e4, 3);
-   cout << "method4" << endl;
+        cout << "created diffusion" << endl;
 
-   cout << "added methods" << endl;
+        my_rules.add_method(e1, 0);
+        cout << "method1" << endl;
+        my_rules.add_method(e2, 1);
+        cout << "method2" << endl;
+        my_rules.add_method(e3, 2);
+        cout << "method3" << endl;
+        my_rules.add_method(e4, 3);
+        cout << "method4" << endl;
 
-   a.set_rules(my_rules);
+        cout << "added methods" << endl;
 
-   cout << "done" << endl;
+        a.set_rules(my_rules);
 
-   double T;
-   bool err1, err2, err3, err4;
+        cout << "done" << endl;
 
-   // matrix<double> field1 = importcsv("ci.csv", T, err1);
-   // matrix<double> field2 = importcsv("Ii.csv", T, err2);
-   // matrix<double> field3 = importcsv("ρi.csv", T, err3);
-   // matrix<double> field4 = importcsv("Ai.csv", T, err4);
+        double T;
+        bool err1, err2, err3, err4;
 
-   matrix<double> field1(p.N1, p.N2);
-   matrix<double> field2(p.N1, p.N2);
-   matrix<double> field3(p.N1, p.N2);
-   matrix<double> field4(p.N1, p.N2);
+        // matrix<double> field1 = importcsv("ci.csv", T, err1);
+        // matrix<double> field2 = importcsv("Ii.csv", T, err2);
+        // matrix<double> field3 = importcsv("ρi.csv", T, err3);
+        // matrix<double> field4 = importcsv("Ai.csv", T, err4);
 
-   for (int i = 0; i < p.N1; i++)
-   {
-       for (int j = 0; j < p.N2; j++)
-       {
-           field1(i, j) = 0.5 + (0.2 * ((double)rand() / (double)RAND_MAX) - 0.1);
-           field2(i, j) = 0.5 + (0.2 * ((double)rand() / (double)RAND_MAX) - 0.1);
-           field3(i, j) = 0.5 + (0.2 * ((double)rand() / (double)RAND_MAX) - 0.1);
-           field4(i, j) = 0.5 + (0.2 * ((double)rand() / (double)RAND_MAX) - 0.1);
-       }
-    }
+        matrix<double> field1(p.N1, p.N2);
+        matrix<double> field2(p.N1, p.N2);
+        matrix<double> field3(p.N1, p.N2);
+        matrix<double> field4(p.N1, p.N2);
 
-    a.set_field(field1, 0);
-    a.set_field(field2, 1);
-    a.set_field(field3, 2);
-    a.set_field(field4, 3);
-
-    // auto start = std::chrono::high_resolution_clock::now();
-    for(int i = 0  ; i < 10001 ; i++) {
-        
-        
-        if(i%1000==0)  {
-            stringstream strep1;
-            stringstream strep2;
-            stringstream strep3;
-
-            strep1 << eps;
-            strep2 << eps1;
-            strep3 << eps2;
-
-            string s1 =  "eps=" + strep1.str() + "_eps1=" + strep2.str() + "_eps2=" + strep3.str();
-            stringstream ss;
-            ss << i;
-            string s2 = "_i=" + ss.str();
-            a.print_all_results(s1+s2);
+        for (int i = 0; i < p.N1; i++)
+        {
+            for (int j = 0; j < p.N2; j++)
+            {
+                field1(i, j) = 0.5 + (0.2 * ((double)rand() / (double)RAND_MAX) - 0.1);
+                field2(i, j) = (p0/A0) + (0.2 * ((double)rand() / (double)RAND_MAX) - 0.1);
+                field3(i, j) = p0 + (0.2 * ((double)rand() / (double)RAND_MAX) - 0.1);
+                field4(i, j) = A0 + (0.2 * ((double)rand() / (double)RAND_MAX) - 0.1);
+            }
         }
-        cout << i << endl;
-        a.Update();
-        
-    
-    }
-   }
+
+        a.set_field(field1, 0);
+        a.set_field(field2, 1);
+        a.set_field(field3, 2);
+        a.set_field(field4, 3);
+
+        // auto start = std::chrono::high_resolution_clock::now();
+        for (int i = 0; i < 2001; i++)
+        {
+
+            if (i % 1000 == 0)
+            {
+                stringstream strep1;
+                stringstream strep2;
+                stringstream strep3;
+
+                strep1 << eps;
+                strep2 << eps1;
+                strep3 << eps2;
+
+                string s1 = "eps=" + strep1.str() + "_eps1=" + strep2.str() + "_eps2=" + strep3.str();
+                stringstream ss;
+                ss << i;
+                string s2 = "_i=" + ss.str();
+                a.print_all_results(s1 + s2);
+            }
+            cout << i << endl;
+            a.Update();
+        }
+   
     
 
     // auto stop = std::chrono::high_resolution_clock::now();
