@@ -42,8 +42,8 @@ else
 fi
 dirwemake="p0=${p0}_A0=${A0}"
 mkdir /u/scratch/d/dinoo/FieldTheory/${dirwemake}
-cp ~/Chemistry/Code/main.cpp /u/scratch/d/dinoo/FieldTheory/${dirwemake}
-g++ ~/Chemistry/Code/maintest.cpp -lm -lfftw3 -L/usr/local/lib/lfftw3.a -std=c++11 -o /u/scratch/d/dinoo/FieldTheory/${dirwemake}/angron
+cp ~/FieldTheory/Code/maintest.cpp /u/scratch/d/dinoo/FieldTheory/${dirwemake}
+g++ ~/FieldTheory/Code/maintest.cpp -lm -lfftw3 -L/usr/local/lib/lfftw3.a -std=c++11 -o /u/scratch/d/dinoo/FieldTheory/${dirwemake}/angron
 cd /u/scratch/d/dinoo/FieldTheory/${dirwemake}
 ./angron $p0 $A0 > log
 # echo job info on joblog:
