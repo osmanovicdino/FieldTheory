@@ -31,7 +31,7 @@ public:
 class DiffDiffusiveWeight : public Weight {
 private:
     int which;
-    int chi;
+    double chi;
 public:
     DiffDiffusiveWeight(double chii, int whichh) : which(whichh), chi(chii) {}
     void operator()(double **a, double **fields, int j, const CH_builder &p)
@@ -52,7 +52,7 @@ public:
 class DiffDiffusiveWeightSQR : public Weight {
 private:
     int which;
-    int chi;
+    double chi;
 public:
     DiffDiffusiveWeightSQR(double chii, int whichh) : which(whichh), chi(chii) {}
     void operator()(double **a, double **fields, int j, const CH_builder &p)
@@ -66,6 +66,31 @@ public:
     DiffDiffusiveWeightSQR *clone() const
     {
         return new DiffDiffusiveWeightSQR(*this);
+    }
+    void print() { cout << "the Diffusive weight class\n"; }
+};
+
+class DiffDiffusiveWeightSQRandLinear : public Weight
+{
+private:
+    int which;
+    double chi;
+    double chi2;
+
+public:
+    DiffDiffusiveWeightSQRandLinear(double chii, double chii2, int whichh) : which(whichh), chi(chii),chi2(chii2) {}
+    void operator()(double **a, double **fields, int j, const CH_builder &p)
+    {
+        int end = p.get_total();
+        for (int i = 0; i < end; i++)
+        {
+            a[j][i] = chi * SQR(fields[which][i]) * fields[j][i] + chi2 * fields[which][i];
+            
+        }
+    }
+    DiffDiffusiveWeightSQRandLinear *clone() const
+    {
+        return new DiffDiffusiveWeightSQRandLinear(*this);
     }
     void print() { cout << "the Diffusive weight class\n"; }
 };
@@ -201,6 +226,55 @@ public:
     void print() { cout << "the Cahn Hilliard weight class\n"; }
 };
 
+class CahnHilliardWithCouplingWeightSQRandLinear : public Weight
+{
+
+private:
+    double c0;
+    double c1;
+    double nu;
+    double ei1;
+    double ei2;
+    double ei2l;
+    double cons1;
+    double cons2;
+    double cons3;
+    double cons4;
+    int which1;
+    int which2;
+
+public:
+    CahnHilliardWithCouplingWeightSQRandLinear(double c00, double c11, double nuu, double ei11, double ei22, double ei2ll, int which11, int which22)
+    {
+        c0 = c00;
+        c1 = c11;
+        nu = nuu;
+        ei1 = ei11;
+        ei2 = ei22;
+        ei2l =  ei2ll;
+        which1 = which11;
+        which2 = which22;
+
+        cons1 = 4 * nu;
+        cons2 = (-6 * c0 * nu - 6 * c1 * nu);
+        cons3 = (2 * c0 * c0 * nu + 8 * c0 * c1 * nu + 2 * c1 * c1 * nu);
+        cons4 = -2 * c0 * c0 * c1 * nu - 2 * c0 * c1 * c1 * nu;
+    }
+
+    void operator()(double **a, double **fields, int j, const CH_builder &p)
+    {
+        int end = p.get_total();
+        for (int i = 0; i < end; i++)
+        {
+            a[j][i] = ei1 * SQR(fields[which1][i]) * (fields[j][i]) + ei2 * SQR(fields[which2][i]) * (fields[j][i]) + ei2l * fields[which2][i] + cons1 * CUB(fields[0][i]) + cons2 * SQR(fields[0][i]) + cons3 * (fields[0][i]) + cons4;
+        }
+    }
+    CahnHilliardWithCouplingWeightSQRandLinear *clone() const
+    {
+        return new CahnHilliardWithCouplingWeightSQRandLinear(*this);
+    }
+    void print() { cout << "the Cahn Hilliard weight class\n"; }
+};
 
 class FourierWeightForward : public Weight {
 private:

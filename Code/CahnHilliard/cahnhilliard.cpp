@@ -139,10 +139,10 @@ void CH::Update() {
     // pausel();
 
     // cout << endl;
-    // cout << 6 << endl;
+    //  cout << 6 << endl;
     reverse_transform.Calculate_Results(rules.calculated_reactions);
 
-    // cout << 7 << endl;
+    //  cout << 7 << endl;
     //cout << reverse_transform.calculated_reactions[0][0] << endl;
 
     set_field(reverse_transform.calculated_reactions);
