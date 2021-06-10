@@ -183,7 +183,7 @@ int main(int argc, char **argv)
     // matrix<double> field4 = importcsv("Ai.csv", T, err4);
     double T;
     bool err;
-    matrix<double> field1 = importcsv("./InitialConditions/data174.csv", T, err);
+    matrix<double> field1 = importcsv("/u/home/d/dinoo/FieldTheory/Code/InitialConditions/data174.csv", T, err);
     matrix<double> field2(p.N1, p.N2);
     matrix<double> field3(p.N1, p.N2);
 
