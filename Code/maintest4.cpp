@@ -88,6 +88,11 @@ int main(int argc, char **argv)
     */
 
     // double p0 = atof(argv[1]);
+    // double rate1 = atof(argv[2]);
+
+
+    double p0 = 0.4;
+    double rate1 = 1.0;
     // double A0 = atof(argv[2]);
 
     // double eps1 = -0.8;
@@ -100,7 +105,7 @@ int main(int argc, char **argv)
 
     CH a(p);
 
-    double rate1 = 0.15;
+    //double rate1 = 0.15;
     // InvasionSelfRelease c1(rate1, rate2, 0, 1, 2);
     // InvasionSelfRelease c2(-rate1, -rate2, 0, 1, 2);
     // InvasionSelfRelease c3(rate1, rate2, 0, 1, 2);
@@ -145,13 +150,16 @@ int main(int argc, char **argv)
 
     double dt = 0.05;
     double dx = 0.05;
-    double D = 0.1;
+    double D = 1.0;
     double temp1 = SQR(pi / (dx * p.N1));
     double eps = 0.3;
 
+    double D2 = atof(argv[1]);
+    
+
     DiffusionWithSurfaceTension e1(p, dt, D, temp1, eps);
     DiffusionWithInteraction e2(p, dt, D, temp1);
-    NormalDiffusion e3(p, dt, D, temp1);
+    NormalDiffusion e3(p, dt, D2, temp1);
     
 
     cout << "created diffusion" << endl;
@@ -186,17 +194,25 @@ int main(int argc, char **argv)
     // double bc = 0.166;
     // double p0 = 0.596;
 
-
+    double meanofinv = 0.0;
     for (int i = 0; i < p.N1; i++)
     {
         for (int j = 0; j < p.N2; j++)
         {
             //field1(i, j) = bc + (0.1 * ((double)rand() / (double)RAND_MAX) - 0.1);
             field2(i, j) = 0.0;
-            field3(i, j) = p0 + (0.2 * ((double)rand() / (double)RAND_MAX) - 0.1);
+            field3(i, j) = 1.E-6 + maxval-(field1(i,j));
+            meanofinv += field3(i,j);
             //field4(i, j) = A0 + (0.2 * ((double)rand() / (double)RAND_MAX) - 0.1);
         }
     }
+
+    meanofinv/=SQR((double)(p.N1));
+
+    //cout << meanofinv << endl;
+
+    field3 *= (p0/meanofinv);
+
 
     a.set_field(field1, 0);
     a.set_field(field2, 1);
@@ -204,8 +220,11 @@ int main(int argc, char **argv)
 
     cout << "set fields" << endl;
 
-    int runtime = 10000;
+    int runtime = 100000;
     int every = 100;
+
+    cout << "diffusion: " << D2 << endl;
+
 
     int tf = ceil((double)runtime / (double)every);
     int number_of_digits = 0;
