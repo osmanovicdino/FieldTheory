@@ -173,19 +173,25 @@ int main(int argc, char **argv)
     // matrix<double> field2 = importcsv("Ii.csv", T, err2);
     // matrix<double> field3 = importcsv("ρi.csv", T, err3);
     // matrix<double> field4 = importcsv("Ai.csv", T, err4);
-
-    matrix<double> field1(p.N1, p.N2);
+    double T;
+    bool err;
+    matrix<double> field1 = importcsv("./InitialConditions/data174.csv", T, err);
     matrix<double> field2(p.N1, p.N2);
     matrix<double> field3(p.N1, p.N2);
 
-    double bc = 0.166;
-    double p0 = 0.596;
+
+    double maxval;
+    field1.maxima(maxval);
+    cout << maxval << endl;
+    // double bc = 0.166;
+    // double p0 = 0.596;
+
 
     for (int i = 0; i < p.N1; i++)
     {
         for (int j = 0; j < p.N2; j++)
         {
-            field1(i, j) = bc + (0.1 * ((double)rand() / (double)RAND_MAX) - 0.1);
+            //field1(i, j) = bc + (0.1 * ((double)rand() / (double)RAND_MAX) - 0.1);
             field2(i, j) = 0.0;
             field3(i, j) = p0 + (0.2 * ((double)rand() / (double)RAND_MAX) - 0.1);
             //field4(i, j) = A0 + (0.2 * ((double)rand() / (double)RAND_MAX) - 0.1);
