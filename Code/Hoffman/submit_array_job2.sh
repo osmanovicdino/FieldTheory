@@ -44,7 +44,7 @@ mkdir /u/scratch/d/dinoo/${mydir}/${dirwemake}
 cp ~/FieldTheory/Code/maintest4.cpp /u/scratch/d/dinoo/${mydir}/${dirwemake}
 g++ ~/FieldTheory/Code/maintest4.cpp -lm -lfftw3 -L/usr/local/lib/lfftw3.a -std=c++11 -o /u/scratch/d/dinoo/${mydir}/${dirwemake}/angron
 cd /u/scratch/d/dinoo/${mydir}/${dirwemake}
-./angron $p0 > log
+./angron $D0 > log
 # echo job info on joblog:
 echo "Job $JOB_ID ended on:   " `hostname -s`
 echo "Job $JOB_ID ended on:   " `date `
