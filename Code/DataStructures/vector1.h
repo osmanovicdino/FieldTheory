@@ -83,7 +83,7 @@ public:
         }
     //vector1& operator*=(matrix<T>&);
 	vector1& operator/=(T); // divide by a double
-        bool& operator==(const vector1&);
+        bool operator==(const vector1&);
 
 
         template <class Y>
@@ -209,11 +209,11 @@ public:
 	friend long double rtrap(const vector1<Y>&,double);
 
         
-        template<class Y, class H>
-        friend H qromb2(Y &func, H a, H b, int decdigs = 10);
+        // template<class Y, class H>
+        // friend H qromb2(Y &func, H a, H b, int decdigs = 10);
         
-        template <class Y, class H>
-        friend H qromb(Y &func, H a, H b, const H eps =  1.0e-10);
+        // template <class Y, class H>
+        // friend H qromb(Y &func, H a, H b, const H eps =  1.0e-10);
 
         // return the vector with each element logarithmed
         template <class Y>

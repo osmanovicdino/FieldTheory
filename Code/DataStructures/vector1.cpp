@@ -209,7 +209,7 @@ return *this;
 }
 
 template<class T>
-bool& vector1<T>::operator==(const vector1<T> &x) {
+bool vector1<T>::operator==(const vector1<T> &x) {
     if( size != x.size) return false;
     else {
         for(int i = 0 ; i < size ; i++) {

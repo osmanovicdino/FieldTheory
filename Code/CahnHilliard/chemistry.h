@@ -25,6 +25,34 @@ public:
     void print() { cout << "no chemistry\n"; }
 };
 
+class InvasionLinear : public Weight {
+private:
+    double rate1;
+    int which1;
+    int which2;
+
+public:
+    InvasionLinear(double r1, int which11, int which22) : rate1(r1), which1(which11), which2(which22) {}
+
+    void operator()(double **a, double **fields, int j, const CH_builder &p)
+    {
+        // as there is crosstalk here it is required for you to be careful
+        int end = p.get_total();
+
+        for (int i = 0; i < end; i++)
+        {
+            a[j][i] = -rate1 * fields[which1][i] * fields[which2][i];
+        }
+    }
+
+    void print() { cout << "Invasion Linear\n rate1: " << rate1 << endl; }
+
+    InvasionLinear *clone() const
+    {
+        return new InvasionLinear(*this);
+    }
+};
+
 class InvasionAntiInvasionLinear : public Weight {
     // A simple invader minus catalytic releaser chemistry 
     //WARNING: WE DO NO  CHECK FOR OUT OF BOUND ERRORS DUE TO PERFORMANCE DECREASES
