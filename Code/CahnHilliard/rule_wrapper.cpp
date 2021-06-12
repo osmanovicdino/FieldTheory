@@ -137,5 +137,21 @@ void Rule_Wrapper::Calculate_Results(double **fields, double **weis, double **re
     }
 }
 
+void Rule_Wrapper::Check_fields()
+{
+    for (int i = 0; i < params.number_of_fields; i++)
+    {
+        int tot = params.N1 * params.N2;
+        for (int j = 0; j < tot; j++)
+        {
+            if (calculated_reactions[i][j] != calculated_reactions[i][j])
+            {
+                cout << "NaN found" << endl;
+                cout << i << " " << j << endl;
+                pausel();
+            }
+        }
+    }
+}
 
 #endif /* RULE_WRAPPER_CPP */

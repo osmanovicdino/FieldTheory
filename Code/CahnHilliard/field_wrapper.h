@@ -23,6 +23,10 @@ struct Field_Wrapper
     void add_method(Weight&, int); //adds a method of manipulating field i
 
     void Calculate_Results(double **fields);
+
+    void Check_fields();
+    void GetMaximas();
+    void GetMinimas();
 };
 
 
@@ -42,6 +46,8 @@ struct Rule_Wrapper {
     void add_method(updateRules &, int); //adds a method of manipulating field i
 
     void Calculate_Results(double **fields, double **weis, double **reacs);
+
+    void Check_fields();
 };
 
 #include "field_wrapper.cpp"

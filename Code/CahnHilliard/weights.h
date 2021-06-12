@@ -216,7 +216,7 @@ public:
         int end = p.get_total();
         for (int i = 0; i < end; i++)
         {
-            a[j][i] = ei1 * SQR(fields[which1][i]) * (fields[j][i]) + ei2 * SQR(fields[which2][i]) * (fields[j][i]) + cons1 * CUB(fields[0][i]) + cons2 * SQR(fields[0][i]) + cons3 * (fields[0][i]) + cons4;
+            a[j][i] = ei1 * SQR(fields[which1][i]) * (fields[j][i]) + ei2 * SQR(fields[which2][i]) * (fields[j][i]) + cons1 * CUB(fields[j][i]) + cons2 * SQR(fields[j][i]) + cons3 * (fields[j][i]) + cons4;
         }
     }
     CahnHilliardWithCouplingWeightSQR *clone() const

@@ -126,7 +126,7 @@ int main(int argc, char **argv)
     double c11 = 0.8;
     double nu = 0.871687587;
 
-    double eps1 = 2.00;
+    double eps1 = 1.00;
     double eps2 = 0.0;
 
     CahnHilliardWithCouplingWeightSQR d1(c00, c11, nu, eps1, eps2, 1, 0);
@@ -135,6 +135,7 @@ int main(int argc, char **argv)
 
         // DiffusiveWeight d2(1.0);
         // DiffDiffusiveWeightSQR d3(eps1, 0);
+
 
     my_weights.add_method(d1, 0);
     my_weights.add_method(d2, 1);
@@ -157,8 +158,9 @@ int main(int argc, char **argv)
     double D2 = atof(argv[1]);
     
 
+    double Dx = 4*nu;
     DiffusionWithSurfaceTension e1(p, dt, D, temp1, eps);
-    DiffusionWithInteraction e2(p, dt, D, temp1);
+    DiffusionWithInteraction e2(p, dt, Dx, temp1);
     NormalDiffusion e3(p, dt, D2, temp1);
     
 
@@ -183,7 +185,8 @@ int main(int argc, char **argv)
     // matrix<double> field4 = importcsv("Ai.csv", T, err4);
     double T;
     bool err;
-    matrix<double> field1 = importcsv("/u/home/d/dinoo/FieldTheory/Code/InitialConditions/data174.csv", T, err);
+    //matrix<double> field1 = importcsv("/u/home/d/dinoo/FieldTheory/InitialConditions/data174.csv", T, err);
+    matrix<double> field1 = importcsv("./InitialConditions/data174.csv", T, err);
     matrix<double> field2(p.N1, p.N2);
     matrix<double> field3(p.N1, p.N2);
 
@@ -220,8 +223,8 @@ int main(int argc, char **argv)
 
     cout << "set fields" << endl;
 
-    int runtime = 100000;
-    int every = 100;
+    int runtime = 10000;
+    int every = 10;
 
     cout << "diffusion: " << D2 << endl;
 

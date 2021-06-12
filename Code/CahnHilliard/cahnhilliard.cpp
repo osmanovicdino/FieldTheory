@@ -93,23 +93,35 @@ void CH::Update() {
 
     weigs.Calculate_Results(fields);
 
-    // cout << 1 << endl;
+    // cout << "weigs done" << endl;
+    // weigs.GetMaximas();
+    // weigs.GetMinimas();
 
     chems.Calculate_Results(fields);
 
-    // cout << 2 << endl;
+    // cout << "chems done" << endl;
+    // chems.GetMaximas();
+    // chems.GetMinimas();
 
     transformed1.Calculate_Results(fields);
 
-
+    // cout << "FFT1 done" << endl;
+    // transformed1.GetMaximas();
+    // transformed1.GetMinimas();
     // cout << 3 << endl;
 
     transformed2.Calculate_Results(weigs.calculated_reactions);
-
+    
+    // cout << "FFT2 done" << endl;
+    // transformed2.GetMaximas();
+    // transformed2.GetMinimas();
     // cout << 4 << endl;
 
     transformed3.Calculate_Results(chems.calculated_reactions);
 
+    // cout << "FFT3 done" << endl;
+    // transformed3.GetMaximas();
+    // transformed3.GetMinimas();
     // cout << 5 << endl;
 
     // cout << transformed1.calculated_reactions[0][0] << endl;
@@ -123,6 +135,9 @@ void CH::Update() {
     // cout << endl;
     rules.Calculate_Results(transformed1.calculated_reactions,transformed2.calculated_reactions,transformed3.calculated_reactions);
 
+
+    // cout << "Rules done" << endl;
+    //rules.GetMaximas();
     // cout << transformed1.calculated_reactions[0][0] << endl;
     // cout << rules.calculated_reactions[0][0] << endl;
 
@@ -142,6 +157,10 @@ void CH::Update() {
     //  cout << 6 << endl;
     reverse_transform.Calculate_Results(rules.calculated_reactions);
 
+    // cout << "Reverse Transform done" << endl;
+    // reverse_transform.GetMaximas();
+    // reverse_transform.GetMinimas();
+    // cout << endl;
     //  cout << 7 << endl;
     //cout << reverse_transform.calculated_reactions[0][0] << endl;
 

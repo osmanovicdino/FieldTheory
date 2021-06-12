@@ -5,7 +5,7 @@
 #$ -o joblog.$JOB_ID
 #$ -j y
 ## Edit the line below as needed:
-#$ -l h_rt=24:00:00,h_data=2G
+#$ -l h_rt=6:00:00,h_data=2G
 ## Modify the parallel environment
 ## and the number of cores as needed:
 # Email address to notify
