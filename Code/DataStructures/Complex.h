@@ -18,11 +18,28 @@ struct COMPLEX
         imag = 0.0;
     }
 
+    COMPLEX(const COMPLEX &a) {
+        real = a.real;
+        imag = a.imag;
+    }
+
+
     friend ostream &operator<<(ostream &s, const COMPLEX &a)
     {
-        s << "(" << a.real << "," << a.imag << "i)";
+        s << "(" << a.real << "," << a.imag << "I)";
         return s;
     }
+
+    inline double& operator[](const int &a) { //mapping to the standard array format
+        bool b(a);
+        if(b) {
+            return imag;
+        }
+        else {
+            return real;
+        }
+    }
+
     double getreal() {
         return this->real;
     }
@@ -62,5 +79,7 @@ struct COMPLEX
         return *this;
     }
 };
+
+#include "Complex.cpp"
 
 #endif /* COMPLEX_H */

@@ -1,0 +1,8 @@
+#/bin/bash
+./a 'chem20.csv' &
+./a 'chem24.csv' &
+./a 'chem27.csv' &
+./a 'chem30.csv' &
+./a 'chem31.csv' &
+./a 'chem32.csv' &
+./a 'chem33.csv' &

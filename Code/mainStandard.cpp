@@ -23,6 +23,7 @@
 #include <signal.h>
 #include <unistd.h>
 #include <chrono>
+#include <type_traits>
 //#include <stdafx>
 //#include <thrust/host_vector.h>
 //#include <thrust/device_vector.h>
@@ -47,189 +48,169 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-    /*
-    CH_builder p;
-    p.number_of_fields = 4;
-    p.N1 = 1024;
-    p.N2 = 1024;
-    Field_Wrapper a(p);
-    Field_Wrapper a2(p);
+    srand(time(NULL));
 
-    double T;
-    bool err1, err2, err3, err4;
-    matrix<double> field1 = importcsv("ci.csv", T, err1);
-    matrix<double> field2 = importcsv("Ii.csv", T, err2);
-    matrix<double> field3 = importcsv("ρi.csv", T, err3);
-    matrix<double> field4 = importcsv("Ai.csv", T, err4);
+    double c0;
+    double c1;
+    double eps;
+    double dens;
+    
+    
 
-    CH b(p);
-
-    b.set_field(field1, 0);
-    b.set_field(field2, 1);
-    b.set_field(field3, 2);
-    b.set_field(field4, 3);
-
-    for (int i = 0; i < p.number_of_fields; i++)
+    if (argc == 5)
     {
-        FourierWeightForward fw;
-        a.add_method(fw, i);
-        FourierWeightBackward fw2;
-        a2.add_method(fw2, i);
+        c0 = atof(argv[1]);
+        c1 = atof(argv[2]);
+        eps = atof(argv[3]);
+        dens = atof(argv[4]);
+    }
+    else {
+        error("incorrect number of arguments");
     }
 
-
-    cout << b.fields[0][0] << endl;
-    a.Calculate_Results(b.fields);
-
-    cout << a.calculated_reactions[0][0] << endl;
-    a2.Calculate_Results(a.calculated_reactions);
-
-    cout << a2.calculated_reactions[0][0] << endl;
-    */
-
-    // double p0 = atof(argv[1]);
-    // double rate1 = atof(argv[2]);
-
-
-    double p0 = 0.4;
-    double rate1 = 1.0;
-    // double A0 = atof(argv[2]);
-
-    // double eps1 = -0.8;
-    // double eps2 = 0.8;
+    typedef complex<double> myc;
+    typedef InvasionLinearReversibleB<myc> ILB;
+    typedef InvasionLinearReversibleA<myc> ILA;
+    typedef Field_Wrapper<myc,myc> FWCC; 
+    typedef CoupledPhaseSeparatingSystem<myc> CPSS;
+    typedef Rule_Wrapper<myc, myc, myc, myc> RWC;
 
     CH_builder p;
-    p.number_of_fields = 3;
+    int nof = 1;
+    p.number_of_fields = nof;
     p.N1 = 1024;
     p.N2 = 1024;
 
-    CH<double> a(p);
+    CH<myc> a(p);
 
-    //double rate1 = 0.15;
-    // InvasionSelfRelease c1(rate1, rate2, 0, 1, 2);
-    // InvasionSelfRelease c2(-rate1, -rate2, 0, 1, 2);
-    // InvasionSelfRelease c3(rate1, rate2, 0, 1, 2);
-    //NoWeight c4;
+    double ratef1 = 0.0;
+    double rateb1 = 0.0;
 
-    InvasionLinear<double> c1(rate1, 0, 2);
-    InvasionLinear<double> c2(-rate1, 0, 2);
-    InvasionLinear<double> c3(rate1, 0, 2);
+    // ILB c0(ratef1, 0.0 * ratef1 /*no growth from below as this is the lowest field*/, 0.0 * rateb1 /*no decay down*/, rateb1, 0, 0, 1, 5);
+    // ILB c1(ratef1, ratef1, rateb1, rateb1, 1, 0, 2, 5);
+    // ILB c2(ratef1, ratef1, rateb1, rateb1, 2, 1, 3, 5);
+    // ILB c3(ratef1, ratef1, rateb1, rateb1, 3, 2, 4, 5);
+    // ILB c4(0.0 * ratef1 /*no loss to above*/, ratef1, rateb1, 0.0 * rateb1 /*no decay above*/, 4, 3, 4, 5);
 
-    Field_Wrapper<double,double> my_chemsitry(p);
-    my_chemsitry.add_method(c1, 0);
-    my_chemsitry.add_method(c2, 1);
-    my_chemsitry.add_method(c3, 2);
+    FWCC my_chemsitry(p);
 
-    Field_Wrapper<double,double> my_weights(p);
+    NoWeight<myc,myc> c6; // the solvent;
 
-    double c00 = 0.2;
-    double c11 = 0.8;
-    double nu = 0.871687587;
-
-    double eps1 = atof(argv[2]);
-    double eps2 = 0.0;
-
-    CahnHilliardWithCouplingWeightSQR d1(c00, c11, nu, eps1, eps2, 1, 0);
-    DiffDiffusiveWeightSQR d2(eps1, 0);
-    DiffusiveWeight d3(1.0);
-
-        // DiffusiveWeight d2(1.0);
-        // DiffDiffusiveWeightSQR d3(eps1, 0);
+    my_chemsitry.add_method(c6, 0);
 
 
-    my_weights.add_method(d1, 0);
-    my_weights.add_method(d2, 1);
-    my_weights.add_method(d3, 2);
+    cout << "added chemistries" << endl;
+
+    // myc ** calculated_reactions = new myc *[p.number_of_fields];
+
+    // for(int k =0 ; k < p.number_of_fields ; k++) {
+    // calculated_reactions[k] = (myc *)fftw_malloc(p.N1 * p.N2 * sizeof(myc));
+    // for (int j = 0; j < p.N1 * p.N2; j++)
+    // {
+    //     calculated_reactions[k][j] = 1.0;
+    // }
+    // }
+    // my_chemsitry.Calculate_Results(calculated_reactions);
+
+    // cout << "up to here" << endl;
+
+    FWCC my_weights(p);
+
+    double nu = 1.0;
+    CahnHilliardWeight<myc> w0(c0,c1, nu);
+
+    my_weights.add_method(w0, 0);
+
+
+    cout << "weights added" << endl;
 
     a.set_chems(my_chemsitry);
     a.set_weights(my_weights);
 
-    cout << "weights added" << endl;
 
-    Rule_Wrapper<double,double,double,double> my_rules(p);
-    cout << "rule wrapper created" << endl;
 
-    double dt = 0.05;
-    double dx = 0.05;
-    double D = 1.0;
-    double temp1 = SQR(pi / (dx * p.N1));
-    double eps = 0.3;
 
-    double D2 = atof(argv[1]);
+    double dt = 0.5;
+    //double dx = 0.05;
+
+    //double temp1 = (1. / (dx * p.N1)) ;
+
+    double surf = eps;
+    double L = 100.0;
+    double temp1 = SQR(2.*pii/L);
+
+    //cout << (1. / (dx * p.N1)) << endl;
+    cout << temp1 << endl;
+
+    double diffusion_constant =  1.;
+
+
+    //double surface_width = 2.0;
+
+    RWC my_rules(p);
+    
+    //MultiPhaseBundleComplex Bund(w0, p, dt, Di, temp1, surface_width, surf);
+
+    DiffusionWithSurfaceTension<myc> C(p,dt,diffusion_constant,temp1,surf);
+    // MultiPhase r1(p, 6, dt, Di, temp1, surface_width, ChiMatrix);
+    // MultiPhase r2(p);
+    // MultiPhase r3(p);
+    // MultiPhase r4(p);
+    // MultiPhase r5(p);
+    // MultiPhase r6(p); //all empty
+
+    // cout << "created diffusion" << endl;
+
+    //for(int k = 0  ; k < nof ; k++)
+    my_rules.add_method(C, 0); //as this is a collective one, only need to define the first rule;
     
 
-    double Dx = 4*nu;
-    DiffusionWithSurfaceTension e1(p, dt, D, temp1, eps);
-    DiffusionWithInteraction e2(p, dt, Dx, temp1);
-    NormalDiffusion e3(p, dt, D2, temp1);
-    
 
-    cout << "created diffusion" << endl;
 
-    my_rules.add_method(e1, 0);
-    cout << "method1" << endl;
-    my_rules.add_method(e2, 1);
-    cout << "method2" << endl;
-    my_rules.add_method(e3, 2);
-    cout << "method3" << endl;
+    cout << "all rules added" << endl;
+    // cout << "all methods added" << endl;
 
-    cout << "added methods" << endl;
 
     a.set_rules(my_rules);
 
-    cout << "done" << endl;
+    // cout << "Setting rules" << endl;
 
-    // matrix<double> field1 = importcsv("ci.csv", T, err1);
-    // matrix<double> field2 = importcsv("Ii.csv", T, err2);
-    // matrix<double> field3 = importcsv("ρi.csv", T, err3);
-    // matrix<double> field4 = importcsv("Ai.csv", T, err4);
-    double T;
-    bool err;
-    //matrix<double> field1 = importcsv("/u/home/d/dinoo/FieldTheory/Code/InitialConditions/data174.csv", T, err);
-    //matrix<double> field1 = importcsv("./InitialConditions/data174.csv", T, err);
-    
-    matrix<double> field1 = importcsv("/home/dino/Documents/IsingPolymer/PolycombCode/Code/InitialConditions/data174.csv",T,err);
-    matrix<double> field2(p.N1, p.N2);
-    matrix<double> field3(p.N1, p.N2);
+    cout << "old rules set" << endl;
 
 
-    double maxval;
-    field1.maxima(maxval);
-    cout << maxval << endl;
-    // double bc = 0.166;
-    // double p0 = 0.596;
 
-    double meanofinv = 0.0;
+    // for(int k = 0  ; k < nof ; k++)
+    //     a.rules.chems[k]->print();
+
+    // for (int k = 0; k < nof; k++)
+    //     a.newrules.chems[k]->print();
+
+    // cout << "added methods" << endl;
+
+    matrix<myc> field1(p.N1, p.N2);
+
+
     for (int i = 0; i < p.N1; i++)
     {
         for (int j = 0; j < p.N2; j++)
         {
-            //field1(i, j) = bc + (0.1 * ((double)rand() / (double)RAND_MAX) - 0.1);
-            field2(i, j) = 0.0;
-            field3(i, j) = 1.E-6 + maxval-(field1(i,j));
-            meanofinv += field3(i,j);
-            //field4(i, j) = A0 + (0.2 * ((double)rand() / (double)RAND_MAX) - 0.1);
+            double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
+            field1(i, j) = dens + 0.1 * r1;
         }
     }
 
-    meanofinv/=SQR((double)(p.N1));
-
-    //cout << meanofinv << endl;
-
-    field3 *= (p0/meanofinv);
-
+    // double val;
+    // (field1+(5.*field2)+field3).maxima(val);
+    // if(val>1.) error("initial packing fracs not correct");
 
     a.set_field(field1, 0);
-    a.set_field(field2, 1);
-    a.set_field(field3, 2);
 
-    cout << "set fields" << endl;
 
-    int runtime = 10000;
-    int every = 10;
+    cout << "all fields set" << endl;
 
-    cout << "diffusion: " << D2 << endl;
-
+    // auto start = std::chrono::high_resolution_clock::now();
+    int runtime = 100000;
+    int every = 1000;
 
     int tf = ceil((double)runtime / (double)every);
     int number_of_digits = 0;
@@ -250,12 +231,12 @@ int main(int argc, char **argv)
             stringstream strep3;
             stringstream strep4;
 
-            strep1 << eps;
-            strep2 << eps1;
-            strep3 << eps2;
-            strep4 << D2;
+            strep1 << dens;
+            strep4 << c0;
+            strep2 << c1;
+            strep3 <<  surf;
 
-            string s1 = "eps=" + strep1.str() + "_eps1=" + strep2.str() + "_eps2=" + strep3.str() + "_D2=" + strep4.str();
+            string s1 = "denp=" + strep1.str() + "c0=" + strep4.str() + "_c1=" + strep2.str() + "_surf=" + strep3.str();
             stringstream ss;
             ss << setw(number_of_digits) << setfill('0') << i / every;
             string s2 = "_i=" + ss.str();
@@ -265,6 +246,8 @@ int main(int argc, char **argv)
         cout << i << endl;
         a.Update();
     }
+
+
 
     // auto stop = std::chrono::high_resolution_clock::now();
 

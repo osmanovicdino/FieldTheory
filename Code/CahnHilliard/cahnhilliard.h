@@ -7,6 +7,7 @@
 #include "fftw3.h"
 #include "weights.h"
 #include "chemistry.h"
+#include "GenerateNoise.h"
 #include "updateRules.h"
 #include "field_wrapper.h"
 
@@ -66,46 +67,74 @@ void DoTheInverseFouriers();
 };
 */
 
-struct CH {
+template <class T>
+struct CH { //standard CH, everything real, cosine boundary conditions
 
 CH_builder myp;
 
 
-double **fields; //tehse are my fields
+T **fields; //tehse are my fields
 
-Field_Wrapper chems;
-Field_Wrapper weigs;
-Field_Wrapper transformed1;
-Field_Wrapper transformed2;
-Field_Wrapper transformed3;
+Field_Wrapper<T, T> chems;
+Field_Wrapper<T, T> weigs;
+Field_Wrapper<T, T> transformed1;
+Field_Wrapper<T, T> transformed2;
+Field_Wrapper<T, T> transformed3;
 
-
-Rule_Wrapper rules;
-Field_Wrapper reverse_transform;
+Rule_Wrapper<T,T,T,T> rules;
+Field_Wrapper<T,T> reverse_transform;
 
 CH(const CH_builder &p);
 
 ~CH();
 
-void set_field(const matrix<double>&,int);
+void set_field(const matrix<T>&,int);
 
-void set_field(double**);
+void set_field(T**);
 
-void set_chems(const Field_Wrapper &a) { chems = a;}
+void set_chems(const Field_Wrapper<T, T> &a) { chems = a; }
 
-void set_weights(const Field_Wrapper &a) {weigs = a;}
+void set_weights(const Field_Wrapper<T, T> &a) { weigs = a; }
 
-void set_rules(const Rule_Wrapper &a) {rules = a;}
+void set_rules(const Rule_Wrapper<T,T,T,T> &a) { rules = a; }
 
 void print_all_results(string s1);
 
-void Update();
+virtual void Update();
 
+};
 
+struct CHN : public CH<complex<double> > { //define new cahn hilliard method for those things which have order parameter dependent mobility 
+    //double **fields;
 
+    CHN(const CH_builder &p) : CH(p) {}
+    Rule_Wrapper<complex<double>, complex<double>, complex<double>, complex<double> > newrules;
 
+    void set_new_rules(const Rule_Wrapper<complex<double>, complex<double>, complex<double>, complex<double> > &a) { newrules = a; }
 
+    void Update();
+};
 
+template <class Q>
+struct CHWithNoise : public CH<complex<double>>
+{ // define new cahn hilliard method for those things which have order parameter dependent mobility
+    // double **fields;
+    Q &func;
+    GenNoise<complex<double> > mynoise;
+    double *str;
+
+    CHWithNoise(const CH_builder &p, Q &funcc2, double *strs) : CH(p), mynoise(GenNoise<complex<double> >(p)), func(funcc2) {
+
+        str = new double [p.number_of_fields];
+        for(int i = 0  ; i < p.number_of_fields ; i++) {
+            str[i] = strs[i];
+        }
+
+    }
+
+    //void set_new_rules(const Rule_Wrapper<complex<double>, complex<double>, complex<double>, complex<double>> &a) { newrules = a; }
+
+    void Update();
 };
 
 #include "cahnhilliard.cpp"

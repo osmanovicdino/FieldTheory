@@ -28,7 +28,7 @@ using namespace std;
 
 
 
-const long double pii = 3.1415926535897932384626433832795028841971693993751;
+const double pii = 3.1415926535897932384626433832795028841971693993751;
 const long double pi = 3.1415926535897932384626433832795028841971693993751;
 const long double ee=2.7182818284590452353;
 const double eee=2.7182818284590452353;
@@ -152,6 +152,15 @@ inline long double arccos(long double x) {
     if (x > 1) return 0.;
     if ( x < -1) return pi;
     else return acos(x);
+}
+
+inline double KroneckerDelta(const int &i, const int &j) {
+    if(i==j) {
+        return 1.;
+    }
+    else{
+        return 0.;
+    }
 }
 
 template <class T, class Q, class F>

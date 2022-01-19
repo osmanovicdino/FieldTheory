@@ -1437,11 +1437,19 @@ matrix<T> importcsv(string filename, T temp, bool &error) {
     }
     
     int nr = a.size();
-    int nz = a[0].size();
+    vector1<int> msizes(nr);
+    for(int j = 0  ; j < nr ; j++)
+    msizes[j] = a[j].size();
+
+    int nz = maxval(msizes);
     
     matrix<T> qq(nr,nz);
     for(int i = 0 ; i < nr ; i++) {
         for(int j = 0 ; j < nz ; j++) {
+            if(j > a[i].size()-1) {
+                qq(i,j) = 0.0;
+            }
+            else 
             qq(i,j)=a[i][j];
         }
     }

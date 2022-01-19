@@ -1,78 +1,84 @@
-#ifndef FIELD_WRAPPER_CPP
+ #ifndef FIELD_WRAPPER_CPP
 #define FIELD_WRAPPER_CPP
 
 
-Field_Wrapper::Field_Wrapper()
+
+//the template class here must be of the correct form for fftw_malloc to work on it
+template <class T, class Q>
+Field_Wrapper<T, Q>::Field_Wrapper()
 {
     params.number_of_fields = 1;
     params.N1 = 128;
     params.N2 = 128;
-    calculated_reactions = new double *[params.number_of_fields];
+    calculated_reactions = new T *[params.number_of_fields];
 
-    calculated_reactions[0] = (double *)fftw_malloc(params.N1 * params.N2 * sizeof(double));
+    calculated_reactions[0] = (T *)fftw_malloc(params.N1 * params.N2 * sizeof(T));
     for (int j = 0; j < params.N1 * params.N2; j++)
     {
-        calculated_reactions[0][j] = 0.0;
+        T b;
+        calculated_reactions[0][j] = b; //uninitialized, you need to initiliaze the field in order to set the values
     }
 
-    chems = new Weight*[params.number_of_fields];
+    chems = new Weight<T,Q>*[params.number_of_fields];
 
-    NoWeight *chem1 = new NoWeight;
+    NoWeight<T,Q> *chem1 = new NoWeight<T,Q>;
     chems[0] = chem1;
 }
 
-
-Field_Wrapper::Field_Wrapper(const CH_builder &a)
+template <class T, class Q>
+Field_Wrapper<T, Q>::Field_Wrapper(const CH_builder &a)
 {
     params.number_of_fields = a.number_of_fields;
     params.N1 = a.N1;
     params.N2 = a.N2;
-    calculated_reactions = new double *[params.number_of_fields];
+    calculated_reactions = new T *[params.number_of_fields];
 
     for (int i = 0; i < params.number_of_fields; i++)
     {
-        calculated_reactions[i] = (double *)fftw_malloc(params.N1 * params.N2 * sizeof(double));
+        calculated_reactions[i] = (T *)fftw_malloc(params.N1 * params.N2 * sizeof(T));
         for (int j = 0; j < params.N1 * params.N2; j++)
         {
-            calculated_reactions[i][j] = 0.0;
+            T b;
+            calculated_reactions[i][j] = b;
         }
     }
 
-    chems = new Weight *[params.number_of_fields];
+    chems = new Weight<T, Q> *[params.number_of_fields];
     for (int i = 0; i < params.number_of_fields; i++)
     {
-        NoWeight *chem1 = new NoWeight;
+        NoWeight<T, Q> *chem1 = new NoWeight<T, Q>;
         chems[i] = chem1;
     }
 }
 
 
-Field_Wrapper::Field_Wrapper(const Field_Wrapper &a)
+template <class T, class Q>
+Field_Wrapper<T, Q>::Field_Wrapper(const Field_Wrapper<T,Q> &a)
 {
     params.number_of_fields = a.params.number_of_fields;
     params.N1 = a.params.N1;
     params.N2 = a.params.N2;
-    calculated_reactions = new double *[params.number_of_fields];
+    calculated_reactions = new T *[params.number_of_fields];
 
     for (int i = 0; i < params.number_of_fields; i++)
     {
-        calculated_reactions[i] = (double *)fftw_malloc(params.N1 * params.N2 * sizeof(double));
+        calculated_reactions[i] = (T *)fftw_malloc(params.N1 * params.N2 * sizeof(T));
         for (int j = 0; j < params.N1 * params.N2; j++)
         {
             calculated_reactions[i][j] = a.calculated_reactions[i][j];
         }
     }
 
-    chems = new Weight *[params.number_of_fields];
+    chems = new Weight<T, Q> *[params.number_of_fields];
     for (int i = 0; i < params.number_of_fields; i++)
     {
-        Weight *chem1 = a.chems[i]->clone();
+        Weight<T, Q> *chem1 = a.chems[i]->clone();
         chems[i] = chem1;
     }
 }
 
-
-Field_Wrapper &Field_Wrapper::operator=(const Field_Wrapper &a)
+template <class T, class Q>
+Field_Wrapper<T, Q> &Field_Wrapper<T,Q>::operator=(const Field_Wrapper<T,Q> &a)
 {
     for (int i = 0; i < params.number_of_fields; i++)
     {
@@ -86,29 +92,29 @@ Field_Wrapper &Field_Wrapper::operator=(const Field_Wrapper &a)
     params.N1 = a.params.N1;
     params.N2 = a.params.N2;
 
-    calculated_reactions = new double *[params.number_of_fields];
+    calculated_reactions = new T *[params.number_of_fields];
     for (int i = 0; i < params.number_of_fields; i++)
     {
-        calculated_reactions[i] = (double *)fftw_malloc(params.N1 * params.N2 * sizeof(double));
+        calculated_reactions[i] = (T *)fftw_malloc(params.N1 * params.N2 * sizeof(T));
         for (int j = 0; j < params.N1 * params.N2; j++)
         {
             calculated_reactions[i][j] = a.calculated_reactions[i][j];
         }
     }
 
-    chems = new Weight *[params.number_of_fields];
+    chems = new Weight<T, Q> *[params.number_of_fields];
 
     for (int i = 0; i < params.number_of_fields; i++)
     {
-        Weight *chem1 = a.chems[i]->clone();
+        Weight<T, Q> *chem1 = a.chems[i]->clone();
         chems[i] = chem1;
     }
 
     return *this;
 }
 
-
-Field_Wrapper::~Field_Wrapper()
+template <class T, class Q>
+Field_Wrapper<T, Q>::~Field_Wrapper()
 {
    // cout << "field wrapper free" << endl;
     
@@ -121,27 +127,38 @@ Field_Wrapper::~Field_Wrapper()
     delete calculated_reactions;
 }
 
-
-void Field_Wrapper::add_method(Weight &a, int j)
+template <class T, class Q>
+void Field_Wrapper<T, Q>::add_method(Weight<T, Q> &a, int j)
 {
     //Chemistry *chem1 = a.clone();
     chems[j] = a.clone();
 }
 
 
-void Field_Wrapper::Calculate_Results(double **fields)
+template <class T, class Q>
+void Field_Wrapper<T, Q>::Calculate_Results(Q **fields)
 {
 
-    #pragma omp parallel for
+    //#pragma omp parallel for
     for (int i = 0; i < params.number_of_fields; i++)
     {
+
         chems[i]->operator()(calculated_reactions, fields, i, params);
     }
 }
 
+template <class T, class Q>
+void Field_Wrapper<T,Q>::Add_Noise(GenNoise<T> &a) {
+    for (int i = 0; i < params.number_of_fields; i++)
+    {
+        int end = params.get_total();
+        for (int j = 0; j < end; j++)
+            calculated_reactions[i][j] += a.random_field[i][j];
+    }
+}
 
-
-void Field_Wrapper::Check_fields()
+template <class T, class Q>
+void Field_Wrapper<T, Q>::Check_fields()
 {
     for (int i = 0; i < params.number_of_fields; i++)
     {
@@ -152,15 +169,18 @@ void Field_Wrapper::Check_fields()
             {
                 cout << "NaN found" << endl;
                 cout << i << " " << j << endl;
-                pausel();
+                exit(1);
             }
         }
     }
 }
 
-void Field_Wrapper::GetMaximas() {
+
+
+template <class T, class Q>
+void Field_Wrapper<T, Q>::GetMaximas() {
     for(int i = 0  ; i < params.number_of_fields ; i++) {
-        double a = calculated_reactions[i][0];
+        T a = calculated_reactions[i][0];
         int tot =  params.get_total();
         for (int j = 1; j < tot; j++)
         {
@@ -175,11 +195,55 @@ void Field_Wrapper::GetMaximas() {
  
 }
 
-void Field_Wrapper::GetMinimas()
+template <class T>
+void GetMaximas(T **calculated_reactions, const CH_builder &params)
 {
     for (int i = 0; i < params.number_of_fields; i++)
     {
-        double a = calculated_reactions[i][0];
+        T a = calculated_reactions[i][0];
+        int tot = params.get_total();
+        for (int j = 1; j < tot; j++)
+        {
+            if (calculated_reactions[i][j] > a)
+            {
+                a = calculated_reactions[i][j];
+            }
+        }
+        cout << a << " ";
+    }
+    cout << endl;
+}
+
+template <class T, class Q>
+void Field_Wrapper<T,Q>::GetMaximasIndex()
+{
+    for (int i = 0; i < params.number_of_fields; i++)
+    {
+        T a = calculated_reactions[i][0];
+        int ind = 0;
+        int tot = params.get_total();
+        for (int j = 1; j < tot; j++)
+        {
+            if (calculated_reactions[i][j] > a)
+            {
+                a = calculated_reactions[i][j];
+                ind = j;
+            }
+        }
+        int myi = floor((ind/params.N2));
+        int myj = ind % params.N2;
+
+        cout << myi <<" " << myj << "\t";
+    }
+    cout << endl;
+}
+
+template <class T, class Q>
+void Field_Wrapper<T, Q>::GetMinimas()
+{
+    for (int i = 0; i < params.number_of_fields; i++)
+    {
+        T a = calculated_reactions[i][0];
         int tot = params.get_total();
         for (int j = 1; j < tot; j++)
         {
@@ -189,6 +253,30 @@ void Field_Wrapper::GetMinimas()
             }
         }
         cout << a << " ";
+    }
+    cout << endl;
+}
+
+template <class T, class Q>
+void Field_Wrapper<T,Q>::GetMinimasIndex()
+{
+    for (int i = 0; i < params.number_of_fields; i++)
+    {
+        T a = calculated_reactions[i][0];
+        int ind = 0;
+        int tot = params.get_total();
+        for (int j = 1; j < tot; j++)
+        {
+            if (calculated_reactions[i][j] < a)
+            {
+                a = calculated_reactions[i][j];
+                ind = j;
+            }
+        }
+        int myi = floor((ind / params.N2));
+        int myj = ind % params.N2;
+
+        cout << myi << " " << myj << "\t";
     }
     cout << endl;
 }

@@ -46,8 +46,62 @@ inline omp_int_t omp_get_num_threads() { return 1; }
 using namespace std;
 
 
+matrix<double> make_sphere_inside(double avd, int N1, int N2) {
+    matrix<double> mat(N1,N2);
+
+
+    double radialsize = sqrt(N1*N2/(2*pi ) );
+    double centrex = (double)(N1) / 2.;
+    double centrey = (double)(N2) / 2.;
+    double l = 2.0;
+    for(int i = 0  ; i < N1 ; i++) {
+        for(int j = 0 ; j < N2 ; j++) {
+            // if(SQR(i-centrex) + SQR(j-centrey) < SQR(radialsize) ) {
+            //     mat(i,j) =  2*avd;
+
+            // }
+            // else{
+            //     mat(i,j) =  1E-10;
+            // }
+            double r = (double)rand()/(double)RAND_MAX;
+            double r2 = 1.0 + 0.1*(2*r-1);
+            mat(i,j) = 2.*avd*(tanh(- (sqrt(SQR(i - centrex) + SQR(j - centrey)) -radialsize) /l ) + 1) * r2;
+        }
+    }
+    return mat;
+}
+
+matrix<double> make_sphere_outside(double avd, int N1, int N2)
+{
+    matrix<double> mat(N1, N2);
+
+    double radialsize = sqrt(N1 * N2 / (2 * pi));
+    double centrex = (double)(N1) / 2.;
+    double centrey = (double)(N2) / 2.;
+    double l = 2.0;
+    for (int i = 0; i < N1; i++)
+    {
+        for (int j = 0; j < N2; j++)
+        {
+            // if (SQR(i - centrex) + SQR(j - centrey) < SQR(radialsize))
+            // {
+            //     mat(i, j) = 1E-10;
+            // }
+            // else
+            // {
+            //     mat(i, j) = 2 * avd;
+            // }
+            
+            mat(i,j) = 2. * avd *(tanh((sqrt(SQR(i - centrex) + SQR(j - centrey)) - radialsize) / l) + 1);
+        }
+    }
+
+    return mat;
+}
+
 int main(int argc, char **argv)
 {
+    
     /*
     CH_builder p;
     p.number_of_fields = 4;
@@ -91,43 +145,46 @@ int main(int argc, char **argv)
         double p0 = atof(argv[1]);
         double A0 = atof(argv[2]);
 
+        typedef complex<double> myc;
+        typedef InvasionLinearReversibleB<myc> ILB;
+        typedef InvasionLinearReversibleA<myc> ILA;
+        typedef Field_Wrapper<myc, myc> FWCC;
+        typedef CoupledPhaseSeparatingSystem<myc> CPSS;
+        typedef Rule_Wrapper<myc, myc, myc, myc> RWC;
 
-
-
-
-        double eps1 = -0.8;
-        double eps2 = 0.8;
+        double eps1 = -0.0;
+        double eps2 = 0.0;
 
         CH_builder p;
         p.number_of_fields = 4;
         p.N1 = 1024;
         p.N2 = 1024;
 
-        CH a(p);
+        CH<double> a(p);
 
         double rate1 = 1.0;
         double rate2 = 1.0;
-        InvasionAntiInvasionLinear c1(rate1, rate2);
-        InvasionAntiInvasionLinear c2(-rate1, -rate2);
-        InvasionAntiInvasionLinear c3(rate1, rate2);
-        NoWeight c4;
+        InvasionAntiInvasionLinear<double> c1(rate1, rate2);
+        InvasionAntiInvasionLinear<double> c2(-rate1, -rate2);
+        InvasionAntiInvasionLinear<double> c3(rate1, rate2);
+        NoWeight<double,double> c4;
 
-        Field_Wrapper my_chemsitry(p);
+        Field_Wrapper<double,double> my_chemsitry(p);
         my_chemsitry.add_method(c1, 0);
         my_chemsitry.add_method(c2, 1);
         my_chemsitry.add_method(c3, 2);
         my_chemsitry.add_method(c4, 3);
 
-        Field_Wrapper my_weights(p);
+        Field_Wrapper<double,double> my_weights(p);
 
-        double c00 = 0.2;
+        double c00 = 0.05;
         double c11 = 0.8;
         double nu = 1.;
 
-        CahnHilliardWithCouplingWeightSQR d1(c00, c11, nu, eps1, eps2, 2, 3);
-        DiffusiveWeight d2(1.0);
-        DiffDiffusiveWeightSQR d3(eps1, 0);
-        DiffDiffusiveWeightSQR d4(eps2, 0);
+        CahnHilliardWithCouplingWeightSQR<double> d1(c00, c11, nu, eps1, eps2, 2, 3);
+        DiffusiveWeight<double> d2(1.0);
+        DiffDiffusiveWeightSQR<double> d3(eps1, 0);
+        DiffDiffusiveWeightSQR<double> d4(eps2, 0);
 
         my_weights.add_method(d1, 0);
         my_weights.add_method(d2, 1);
@@ -139,19 +196,19 @@ int main(int argc, char **argv)
 
         cout << "weights added" << endl;
 
-        Rule_Wrapper my_rules(p);
+        Rule_Wrapper<double,double,double,double> my_rules(p);
         cout << "rule wrapper created" << endl;
 
-        double dt = 0.05;
+        double dt = 0.005;
         double dx = 0.05;
         double D = 1.;
         double temp1 = SQR(pi / (dx * p.N1));
-        double eps = 0.3;
+        double eps = 0.1;
 
-        DiffusionWithSurfaceTension e1(p, dt, D, temp1, eps);
-        NormalDiffusion e2(p, dt, D, temp1);
-        DiffusionWithInteraction e3(p, dt, D, temp1);
-        DiffusionWithInteraction e4(p, dt, D, temp1);
+        DiffusionWithSurfaceTension<double> e1(p, dt, D, temp1, eps);
+        NormalDiffusion<double> e2(p, dt, D, temp1);
+        DiffusionWithInteraction<double> e3(p, dt, D, temp1);
+        DiffusionWithInteraction<double> e4(p, dt, D, temp1);
 
         cout << "created diffusion" << endl;
 
@@ -182,28 +239,39 @@ int main(int argc, char **argv)
         matrix<double> field2(p.N1, p.N2);
         matrix<double> field3(p.N1, p.N2);
         matrix<double> field4(p.N1, p.N2);
+        double bc = 0.3;
 
-        for (int i = 0; i < p.N1; i++)
-        {
-            for (int j = 0; j < p.N2; j++)
-            {
-                field1(i, j) = 0.5 + (0.2 * ((double)rand() / (double)RAND_MAX) - 0.1);
-                field2(i, j) = (p0/A0) + (0.2 * ((double)rand() / (double)RAND_MAX) - 0.1);
-                field3(i, j) = p0 + (0.2 * ((double)rand() / (double)RAND_MAX) - 0.1);
-                field4(i, j) = A0 + (0.2 * ((double)rand() / (double)RAND_MAX) - 0.1);
-            }
-        }
+        // for (int i = 0; i < p.N1; i++)
+        // {
+        //     for (int j = 0; j < p.N2; j++)
+        //     {
+        //         field1(i, j) = bc + (0.2 * ((double)rand() / (double)RAND_MAX) - 0.1);
+        //         field2(i, j) = (bc*p0/A0) + (0.2 * ((double)rand() / (double)RAND_MAX) - 0.1);
+        //         field3(i, j) = p0 + (0.2 * ((double)rand() / (double)RAND_MAX) - 0.1);
+        //         field4(i, j) = A0 + (0.2 * ((double)rand() / (double)RAND_MAX) - 0.1);
+        //     }
+        // }
+        field1 = make_sphere_inside(bc, 1024, 1024);
+        // field1 = make_sphere_inside(0, 1024, 1024);
+        field3 = make_sphere_inside(0.5*p0+bc, 1024, 1024);
+        field4 = make_sphere_outside(A0, 1024, 1024);
+
+        // outfunc(field1, "temp1");
+        // outfunc(field2, "temp2");
+        // outfunc(field3, "temp3");
+        // outfunc(field4, "temp4");
+        // pausel();
 
         a.set_field(field1, 0);
         a.set_field(field2, 1);
         a.set_field(field3, 2);
         a.set_field(field4, 3);
-
+    int every = 1000;
         // auto start = std::chrono::high_resolution_clock::now();
-        for (int i = 0; i < 2001; i++)
+        for (int i = 0; i < 10001; i++)
         {
 
-            if (i % 1000 == 0)
+            if (i % every == 0)
             {
                 stringstream strep1;
                 stringstream strep2;
@@ -215,7 +283,7 @@ int main(int argc, char **argv)
 
                 string s1 = "eps=" + strep1.str() + "_eps1=" + strep2.str() + "_eps2=" + strep3.str();
                 stringstream ss;
-                ss << i;
+                ss << i/every;
                 string s2 = "_i=" + ss.str();
                 a.print_all_results(s1 + s2);
             }

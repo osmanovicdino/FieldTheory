@@ -132,8 +132,17 @@ public:
           
         template <class Y>
         friend void cyclic(const vector1<Y>&, const vector1<Y>&, const vector1<Y>&, const Y&, const Y&, const vector1<Y>&, vector1<Y>&); // solves tridiagonal where there are elements in the corners
-      
+
+        template <class Y>
+        friend void ludcmp(matrix<Y> &, vector1<int> &, Y &); //LU Decompse matrix
         
+        template <class Y>
+        friend void lubksb(matrix<Y> &, vector1<int> &, vector1<Y> &);
+
+        // QR decompose a matrix
+        template <class Y>
+        friend void qrdcmp(matrix<Y> &, vector1<Y> &, vector1<Y> &, bool &);
+
         template <class Y>
         friend double scalar(const vector1<Y>&, const vector1<Y>&); //scalar product
 
