@@ -2,7 +2,7 @@
 import os
 import sys
 import csv
-import numpy as np
+import numpy
 import matplotlib.pyplot as plt
 import matplotlib
 matplotlib.use('Agg')
@@ -39,7 +39,10 @@ matplotlib.use('Agg')
 
 
 def graph(filename):
-    mat = np.loadtxt(open(filename, "rb"), delimiter=",", skiprows=1)
+    #mat = np.loadtxt(open(filename, "rb"), delimiter=",", skiprows=1)
+    reader = csv.reader(open(filename, "r"), delimiter=",")
+    x = list(reader)
+    mat = numpy.array(x).astype("float")
     fig = plt.figure()
     outputfilename = os.path.splitext(filename)[0]+'.png'
     plt.imshow(mat)
