@@ -42,7 +42,7 @@ cp ~/FieldTheory/Code/mainParseWithNoise.cpp /u/scratch/d/dinoo/FieldTheory/${di
 cp ~/FieldTheory/Code/InitialConditions/${wt} /u/scratch/d/dinoo/FieldTheory/${dirwemake}/res.csv
 g++ ~/FieldTheory/Code/mainParseWithNoise.cpp -lm -lfftw3 -L/usr/local/lib/lfftw3.a -std=c++17 -o /u/scratch/d/dinoo/FieldTheory/${dirwemake}/angron
 cd /u/scratch/d/dinoo/FieldTheory/${dirwemake}
-#./angron $p0 $A0 > log
+./angron 'res.csv' > log
 # echo job info on joblog:
 echo "Job $JOB_ID ended on:   " `hostname -s`
 echo "Job $JOB_ID ended on:   " `date `
