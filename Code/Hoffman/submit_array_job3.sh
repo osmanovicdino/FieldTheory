@@ -23,7 +23,7 @@ echo " "
 . /u/local/Modules/default/init/modules.sh
 ## Edit the line below as needed:
 module load gcc/10.2.0
-module load fftw3/3.3.8-gcc
+module load fftw3/3.3.9
 
 ## substitute the command to run your code
 ## in the two lines below:
