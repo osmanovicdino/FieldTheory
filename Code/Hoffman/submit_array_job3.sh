@@ -10,8 +10,6 @@
 ## and the number of cores as needed:
 # Email address to notify
 #$ -M $USER@mail
-# Notify when
-#$ -m bea
 #$ -t 1-100:1
 
 # echo job info on joblog:
@@ -23,7 +21,7 @@ echo " "
 . /u/local/Modules/default/init/modules.sh
 ## Edit the line below as needed:
 module load gcc/10.2.0
-module load fftw3/3.3.9
+module load fftw/3.3.9
 
 ## substitute the command to run your code
 ## in the two lines below:
