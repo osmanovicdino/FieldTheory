@@ -12,5 +12,6 @@ cmdargs = list(map(str,sys.argv))
 
 filename =  cmdargs[1]
 
+print(filename)
 
 graph(filename)
