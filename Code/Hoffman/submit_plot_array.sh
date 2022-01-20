@@ -20,7 +20,7 @@ echo " "
 ## Edit the line below as needed:
 # module load gcc/10.2.0
 # module load fftw/3.3.9
-module load python/3.6.8
+module load python/3.9.6
 module load ffmpeg
 
 ## substitute the command to run your code
@@ -30,6 +30,7 @@ module load ffmpeg
 
 dirwemake="chemistry${SGE_TASK_ID}"
 cd /u/scratch/d/dinoo/FieldTheory/${dirwemake}
+export OMP_NUM_THREADS=1
 for file in *.csv; do python3 ~/FieldTheory/Code/Plotting/PlotDirectory.py "$file"; done
 ffmpeg -pattern_type glob -i '*.png' -s 1920x1080 -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2" test.mp4
 # echo job info on joblog:
