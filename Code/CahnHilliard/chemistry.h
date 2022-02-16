@@ -40,13 +40,21 @@ void operator()(T **a, T **fields, int j, const CH_builder &p)
 {
     // as there is crosstalk here it is required for you to be careful
     int end = p.get_total();
-
+    //cout << "j choice: " << j << endl;
+    
     for (int i = 0; i < end; i++)
     {
         double tot = 1.0;
         for(int k = 0  ; k < n ; k++) {
+            if(pows[k]==0) {
+
+            }
+            else{
             tot *= Power(fields[k][i].real(),pows[k]);
+            }
         }
+
+
         a[j][i] = rate1 * tot;
     }
 }
@@ -279,21 +287,25 @@ public:
         int Ng = p.get_total();
         b = new T *[p.number_of_fields];
 
- 
+        int end = p.get_total();
+        for (int k = 0; k < end; k++)
+            a[j][k] = 0;
+
 
         for(int i = 0 ; i < no_chem ; i++)
         b[i] = (T *)fftw_malloc(Ng * sizeof(T));
 
         for(int i = 0 ; i < no_chem ; i++) {
-
+            
 
             (multichem[i])->operator()(b,fields,i,p);
             //cout << "chem done" << endl;
-            int end = p.get_total();
+            
 
             for(int k = 0 ; k < end; k++)
             a[j][k] += b[i][k];
         }
+
 
         for (int i = 0; i < no_chem; i++)
         {

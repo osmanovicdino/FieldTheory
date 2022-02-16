@@ -139,12 +139,13 @@ template <class T, class Q>
 void Field_Wrapper<T, Q>::Calculate_Results(Q **fields)
 {
 
-    //#pragma omp parallel for
     for (int i = 0; i < params.number_of_fields; i++)
-    {
-
+        {
         chems[i]->operator()(calculated_reactions, fields, i, params);
-    }
+        }
+
+
+
 }
 
 template <class T, class Q>

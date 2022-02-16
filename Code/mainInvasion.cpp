@@ -214,7 +214,7 @@ int main(int argc, char **argv)
 
     cout << "set fields" << endl;
 
-    int runtime = 10000;
+    int runtime = 1000;
     int every = 10;
 
     cout << "diffusion: " << D2 << endl;

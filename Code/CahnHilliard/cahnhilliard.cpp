@@ -327,7 +327,10 @@ void CHWithNoise<Q>::Update() {
     // weigs.GetMinimas();
 
     chems.Calculate_Results(fields);
-
+    // cout << "chemical dynamics: ";
+    // for (int i = 0; i < myp.number_of_fields; i++)
+    //     cout << chems.calculated_reactions[i][0] << ",";
+    // cout << endl;
     // cout << "chems done" << endl;
     // chems.GetMaximas();
     // chems.GetMinimas();
@@ -340,6 +343,7 @@ void CHWithNoise<Q>::Update() {
     // cout << 3 << endl;
 
     transformed2.Calculate_Results(weigs.calculated_reactions);
+
 
     // cout << "FFT2 done" << endl;
     // transformed2.GetMaximas();
@@ -386,17 +390,26 @@ void CHWithNoise<Q>::Update() {
 
 
 
-    cout << "beginning renorm" << endl;
+    //cout << "beginning renorm" << endl;
     for(int i = 0  ; i < myp.number_of_fields ; i++)
     for(int j = 0 ; j < myp.get_total() ; j++ )
         reverse_transform.calculated_reactions[i][j] = {reverse_transform.calculated_reactions[i][j].real(),0.};
-    cout << "renorm" << endl;
+    //cout << "renorm" << endl;
     // outfunc(fields[5], filename1, myp);
     // outfunc(weigs.calculated_reactions[5], filename2, myp);
     // outfunc(transformed1.calculated_reactions[5], filename3, myp);
     // outfunc(transformed2.calculated_reactions[5], filename4, myp);
     // outfunc(rules.calculated_reactions[5], filename5, myp);
     // outfunc(reverse_transform.calculated_reactions[5], filename6, myp);
+    // cout << "fields: ";
+    // for (int i = 0; i < myp.number_of_fields; i++)
+    //     cout << fields[i][0] << ",";
+    // cout << endl;
+    // cout << "updated: ";
+    // for(int i = 0  ; i < myp.number_of_fields ; i++)
+    // cout << reverse_transform.calculated_reactions[i][0] <<",";
+    // cout << endl;
+    // pausel();
 
     cout << "Reverse Transform done" << endl;
     reverse_transform.GetMaximas();

@@ -53,6 +53,60 @@ public:
 };
 
 template <class T>
+class DiffDiffusiveWeightGenericN : public Weight<T, T>
+{
+private:
+    vector1<int> whichs;
+    vector1<double> chis;
+
+public:
+    DiffDiffusiveWeightGenericN(vector1<double> chii, vector1<int> whichh) : whichs(whichh), chis(chii) {}
+    void operator()(T **a, T **fields, int j, const CH_builder &p)
+    {
+        int end = p.get_total();
+        for (int i = 0; i < end; i++)
+        {
+            T as = 0.0;
+            for (int k = 0; k < whichs.getsize(); k++)
+                as += chis[k] * (fields[whichs[k]][i]);
+            a[j][i] = as;
+        }
+    }
+    DiffDiffusiveWeightGenericN *clone() const
+    {
+        return new DiffDiffusiveWeightGenericN(*this);
+    }
+    void print() { cout << "the Diffusive weight class\n"; }
+};
+
+template <class T>
+class DiffDiffusiveWeightGenericNSQR : public Weight<T, T>
+{
+private:
+    vector1<int> whichs;
+    vector1<double> chis;
+
+public:
+    DiffDiffusiveWeightGenericNSQR(vector1<double> chii, vector1<int> whichh) : whichs(whichh), chis(chii) {}
+    void operator()(T **a, T **fields, int j, const CH_builder &p)
+    {
+        int end = p.get_total();
+        for (int i = 0; i < end; i++)
+        {
+            T as = 0.0;
+            for (int k = 0; k < whichs.getsize(); k++)
+                as += chis[k] * SQR(fields[whichs[k]][i]);
+            a[j][i] = as;
+        }
+    }
+    DiffDiffusiveWeightGenericNSQR *clone() const
+    {
+        return new DiffDiffusiveWeightGenericNSQR(*this);
+    }
+    void print() { cout << "the Diffusive weight class\n"; }
+};
+
+template <class T>
 class DiffDiffusiveWeightDouble : public Weight<T, T>
 {
 private:
@@ -218,6 +272,119 @@ public:
     void print() { cout << "the Cahn Hilliard weight class\n"; }
 };
 
+template <class T>
+class CahnHilliardWithCouplingWeightGenericN : public Weight<T, T>
+{
+
+private:
+    double c0;
+    double c1;
+    double nu;
+    double cons1;
+    double cons2;
+    double cons3;
+    double cons4;
+    vector1<double> coups;
+    vector1<int> whichs;
+
+
+public:
+    CahnHilliardWithCouplingWeightGenericN(double c00, double c11, double nuu, vector1<double> epss, vector1<int> whichss) : coups(epss), whichs(whichss)
+    {
+        c0 = c00;
+        c1 = c11;
+        nu = nuu;
+
+        cons1 = 4 * nu;
+        cons2 = (-6 * c0 * nu - 6 * c1 * nu);
+        cons3 = (2 * c0 * c0 * nu + 8 * c0 * c1 * nu + 2 * c1 * c1 * nu);
+        cons4 = -2 * c0 * c0 * c1 * nu - 2 * c0 * c1 * c1 * nu;
+    }
+
+    void operator()(T **a, T **fields, int j, const CH_builder &p)
+    {
+        int end = p.get_total();
+        for (int i = 0; i < end; i++)
+        {
+            T as = 0.0;
+            for(int k = 0  ; k < whichs.getsize() ; k++)
+                as += coups[k] * (fields[whichs[k]][i]);
+            // if(i == 0 || i == 1000) {
+            //     cout << as << endl;
+            //     cout << coups << endl;
+            //     cout << whichs << endl;
+            //     for(int k = 0  ; k < whichs.getsize() ; k++) 
+            //     cout << (fields[whichs[k]][i]) << ",";
+            //     cout << endl;
+            //     pausel();
+            // }
+            
+            
+            a[j][i] = as + cons1 * CUB(fields[0][i]) + cons2 * SQR(fields[0][i]) + cons3 * (fields[0][i]) + cons4;
+        }
+    }
+    CahnHilliardWithCouplingWeightGenericN *clone() const
+    {
+        return new CahnHilliardWithCouplingWeightGenericN(*this);
+    }
+    void print() { cout << "the Cahn Hilliard weight class\n"; }
+};
+
+template <class T>
+class CahnHilliardWithCouplingWeightGenericNSQR : public Weight<T, T>
+{
+
+private:
+    double c0;
+    double c1;
+    double nu;
+    double cons1;
+    double cons2;
+    double cons3;
+    double cons4;
+    vector1<double> coups;
+    vector1<int> whichs;
+
+public:
+    CahnHilliardWithCouplingWeightGenericNSQR(double c00, double c11, double nuu, vector1<double> epss, vector1<int> whichss) : coups(epss), whichs(whichss)
+    {
+        c0 = c00;
+        c1 = c11;
+        nu = nuu;
+
+        cons1 = 4 * nu;
+        cons2 = (-6 * c0 * nu - 6 * c1 * nu);
+        cons3 = (2 * c0 * c0 * nu + 8 * c0 * c1 * nu + 2 * c1 * c1 * nu);
+        cons4 = -2 * c0 * c0 * c1 * nu - 2 * c0 * c1 * c1 * nu;
+    }
+
+    void operator()(T **a, T **fields, int j, const CH_builder &p)
+    {
+        int end = p.get_total();
+        for (int i = 0; i < end; i++)
+        {
+            T as = 0.0;
+            for (int k = 0; k < whichs.getsize(); k++)
+                as += coups[k] * SQR(fields[whichs[k]][i]);
+            // if(i == 0 || i == 1000) {
+            //     cout << as << endl;
+            //     cout << coups << endl;
+            //     cout << whichs << endl;
+            //     for(int k = 0  ; k < whichs.getsize() ; k++)
+            //     cout << (fields[whichs[k]][i]) << ",";
+            //     cout << endl;
+            //     pausel();
+            // }
+
+            a[j][i] = as + cons1 * CUB(fields[0][i]) + cons2 * SQR(fields[0][i]) + cons3 * (fields[0][i]) + cons4;
+        }
+    }
+    CahnHilliardWithCouplingWeightGenericNSQR *clone() const
+    {
+        return new CahnHilliardWithCouplingWeightGenericNSQR(*this);
+    }
+    void print() { cout << "the Cahn Hilliard weight class\n"; }
+};
 
 template<class T>
 class CahnHilliardWithCouplingWeightSQR : public Weight<T,T>
