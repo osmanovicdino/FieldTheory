@@ -106,7 +106,7 @@ int main(int argc, char **argv)
 
 
     for(int i = 0  ; i < (n)*(n-1)/2 ; i++) {
-        epsi[i] = -mat1(2,i);
+        epsi[i] = mat1(2,i);
     }
 
     
@@ -383,7 +383,7 @@ int main(int argc, char **argv)
     // //cout << (1. / (dx * p.N1)) << endl;
     // cout << temp1 << endl;
 
-    double diffusion_constant =  0.001;
+    double diffusion_constant =  1.;
 
 
     // //double surface_width = 2.0;
@@ -525,8 +525,8 @@ int main(int argc, char **argv)
 
     cout << init << endl;
     // auto start = std::chrono::high_resolution_clock::now();
-    int runtime = 1001;
-    int every = 10;
+    int runtime = 10001;
+    int every = 100;
 
     int tf = ceil((double)runtime / (double)every);
     int number_of_digits = 0;
