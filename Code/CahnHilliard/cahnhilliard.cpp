@@ -327,6 +327,8 @@ void CHWithNoise<Q>::Update() {
     // weigs.GetMinimas();
 
     chems.Calculate_Results(fields);
+
+    
     // cout << "chemical dynamics: ";
     // for (int i = 0; i < myp.number_of_fields; i++)
     //     cout << chems.calculated_reactions[i][0] << ",";

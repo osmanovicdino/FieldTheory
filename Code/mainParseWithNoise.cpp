@@ -281,7 +281,7 @@ int main(int argc, char **argv)
     //double temp1 = (1. / (dx * p.N1)) ;
 
     double surf = eps;
-    double L = 10.0;
+    double L = 50.0;
     double temp1 = SQR(2.*pii/L);
 
     // //cout << (1. / (dx * p.N1)) << endl;
