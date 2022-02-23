@@ -54,7 +54,7 @@ int main(int argc, char **argv)
 
     double c0 = 0.2;
     double c1 = 0.8;
-    double eps = 0.2;
+    double eps = 0.4;
 
 
 
@@ -87,9 +87,9 @@ int main(int argc, char **argv)
     double T;
     bool err1;
     matrix<double> mat1 = importcsv(importstring,T,err1);
-    epsilon12 = -mat1(0,4);
-    epsilon13 = -mat1(0,5);
-    epsilon14 = -mat1(0,6);
+    epsilon12 = mat1(0,4);
+    epsilon13 = mat1(0,5);
+    epsilon14 = mat1(0,6);
     // epsilon12 = mat1(0, 4);
     // epsilon13 = mat1(0, 5);
     // epsilon14 = mat1(0, 6);
@@ -275,7 +275,7 @@ int main(int argc, char **argv)
 
 
 
-    double dt = 0.005;
+    double dt = 0.05;
     //double dx = 0.05;
 
     //double temp1 = (1. / (dx * p.N1)) ;
@@ -287,7 +287,7 @@ int main(int argc, char **argv)
     // //cout << (1. / (dx * p.N1)) << endl;
     // cout << temp1 << endl;
 
-    double diffusion_constant =  10.;
+    double diffusion_constant =  1.;
 
 
     // //double surface_width = 2.0;

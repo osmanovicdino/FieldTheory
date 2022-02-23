@@ -46,7 +46,7 @@ def graph(filename):
     fig = plt.figure()
     outputfilename = os.path.splitext(filename)[0]+'.png'
     plt.imshow(mat)
-    plt.clim(0., 1.)
+    #plt.clim(0., 1.)
     plt.colorbar()
     plt.savefig(outputfilename, format='png')
     plt.close(fig)

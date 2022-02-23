@@ -96,7 +96,7 @@ public:
             T as = 0.0;
             for (int k = 0; k < whichs.getsize(); k++)
                 as += chis[k] * SQR(fields[whichs[k]][i]);
-            a[j][i] = as;
+            a[j][i] = as*fields[j][i];
         }
     }
     DiffDiffusiveWeightGenericNSQR *clone() const
@@ -320,7 +320,7 @@ public:
             // }
             
             
-            a[j][i] = as + cons1 * CUB(fields[0][i]) + cons2 * SQR(fields[0][i]) + cons3 * (fields[0][i]) + cons4;
+            a[j][i] = as*fields[j][i] + cons1 * CUB(fields[j][i]) + cons2 * SQR(fields[j][i]) + cons3 * (fields[j][i]) + cons4;
         }
     }
     CahnHilliardWithCouplingWeightGenericN *clone() const
