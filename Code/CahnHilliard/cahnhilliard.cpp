@@ -82,7 +82,7 @@ void CH<T>::set_field(T **orig) {
 template<class T>
 void CH<T>::Update() {
     //cout << fields[0][0] << endl;
-    //cout << "trying" << endl;
+
 
     weigs.Calculate_Results(fields);
 
@@ -422,6 +422,113 @@ void CHWithNoise<Q>::Update() {
     cout << 7 << endl;
     // pausel();
     // cout << reverse_transform.calculated_reactions[0][0] << endl;
+
+    set_field(reverse_transform.calculated_reactions);
+}
+
+void CHSubFrac::Update()
+{
+
+
+    fractional_weight.Calculate_Results(fields, initial_cond.calculated_reactions, initial_cond.calculated_reactions);
+
+
+    weigs.Calculate_Results(fields);
+
+
+    chems.Calculate_Results(fields);
+
+
+    transformed1.Calculate_Results(fractional_weight.calculated_reactions);
+
+
+    transformed2.Calculate_Results(weigs.calculated_reactions);
+
+
+    transformed3.Calculate_Results(chems.calculated_reactions);
+
+    rules.Calculate_Results(transformed1.calculated_reactions, transformed2.calculated_reactions, transformed3.calculated_reactions);
+
+    reverse_transform.Calculate_Results(rules.calculated_reactions);
+
+    cout << "Reverse Transform done" << endl;
+    reverse_transform.GetMaximas();
+    reverse_transform.GetMaximasIndex();
+    reverse_transform.GetMinimas();
+    reverse_transform.GetMinimasIndex();
+    cout << endl;
+    cout << 7 << endl;
+
+
+    set_field(reverse_transform.calculated_reactions);
+}
+
+void CHFrac::Update() {
+    // cout << "calculating weight" << endl;
+
+
+    fractional_weight.Calculate_Results(fields,old_fields.calculated_reactions,initial_cond.calculated_reactions);
+
+    // cout << "weight? calculated" << endl;
+
+    weigs.Calculate_Results(fields);
+
+    // cout << "fractionalweight: " << endl;
+    // cout << fractional_weight.calculated_reactions[0][0] << endl;
+    // cout << fractional_weight.calculated_reactions[1][0] << endl;
+    // cout << fractional_weight.calculated_reactions[2][0] << endl;
+    // cout << fractional_weight.calculated_reactions[3][0] << endl;
+    // pausel();
+    // cout << "weigs done" << endl;
+    // weigs.GetMaximas();
+    // weigs.GetMinimas();
+
+    chems.Calculate_Results(fields);
+
+    // cout << "chems: " << endl;
+    // cout << chems.calculated_reactions[0][0] << endl;
+    // cout << chems.calculated_reactions[1][0] << endl;
+    // cout << chems.calculated_reactions[2][0] << endl;
+    // cout << chems.calculated_reactions[3][0] << endl;
+
+    // pausel();
+    // cout << "chemical dynamics: ";
+    // for (int i = 0; i < myp.number_of_fields; i++)
+    //     cout << chems.calculated_reactions[i][0] << ",";
+    // cout << endl;
+    // cout << "chems done" << endl;
+    // chems.GetMaximas();
+    // chems.GetMinimas();
+
+    transformed1.Calculate_Results(fractional_weight.calculated_reactions);
+
+    // cout << "FFT1 done" << endl;
+    // transformed1.GetMaximas();
+    // transformed1.GetMinimas();
+    // cout << 3 << endl;
+
+    transformed2.Calculate_Results(weigs.calculated_reactions);
+
+    // cout << "FFT2 done" << endl;
+    // transformed2.GetMaximas();
+    // transformed2.GetMinimas();
+    // cout << 4 << endl;
+
+    transformed3.Calculate_Results(chems.calculated_reactions);
+
+    rules.Calculate_Results(transformed1.calculated_reactions, transformed2.calculated_reactions, transformed3.calculated_reactions);
+
+    reverse_transform.Calculate_Results(rules.calculated_reactions);
+
+    cout << "Reverse Transform done" << endl;
+    reverse_transform.GetMaximas();
+    reverse_transform.GetMaximasIndex();
+    reverse_transform.GetMinimas();
+    reverse_transform.GetMinimasIndex();
+    cout << endl;
+    cout << 7 << endl;
+
+    old_fields.set_field(fields);
 
     set_field(reverse_transform.calculated_reactions);
 }

@@ -51,99 +51,60 @@ using namespace std;
 int main(int argc, char **argv)
 {
     srand(time(NULL));
-
     double c0 = 0.2;
     double c1 = 0.8;
     double eps = 0.4;
 
+    // line 1 = all parameters;
 
-
-
-    //line 1 = all parameters;
-
-    //line 2-5 = no. of terms -> rate, pow1, pow2, pow3, pow4 etc
+    // line 2-5 = no. of terms -> rate, pow1, pow2, pow3, pow4 etc
     string importstring;
-    string field1s;
-    string field2s;
-    string field3s;
 
-    double ani;
-
-
-    if(argc == 6) {
+    if (argc == 2)
+    {
         stringstream ss;
         ss << argv[1];
         importstring = ss.str();
-
-        stringstream ssg1,ssg2,ssg3;
-        ssg1 << argv[2];
-        ssg2 << argv[3];
-        ssg3 << argv[4];
-        ani = atof(argv[5]);
-
-        field1s = ssg1.str();
-        field2s = ssg2.str();
-        field3s = ssg3.str();
     }
-    else{
+    else
+    {
         error("no");
     }
 
     double T;
     bool err1;
-    matrix<double> mat1 = importcsv(importstring,T,err1);
+    matrix<double> mat1 = importcsv(importstring, T, err1);
 
-    int n = mat1(0,0);
+    int n = mat1(0, 0);
 
     vector1<int> phaseseps(n);
 
-    for(int i = 0  ; i < n ; i++)
-    phaseseps[i] = mat1(1,i);
+    for (int i = 0; i < n; i++)
+        phaseseps[i] = mat1(1, i);
 
-    vector1<double> epsi((n)*(n-1)/2);
+    vector1<double> epsi((n) * (n - 1) / 2);
 
-
-
-
-    for(int i = 0  ; i < (n)*(n-1)/2 ; i++) {
-        epsi[i] = mat1(2,i);
+    for (int i = 0; i < (n) * (n - 1) / 2; i++)
+    {
+        epsi[i] = -mat1(2, i);
     }
 
-    
-
-    int k  = 0;
-    matrix<double> epsa(n,n);
-    for(int i = 0  ; i < n ; i++) {
-        for(int j =  i+1 ; j < n ; j++) {
-            epsa(i,j) =  epsi[k];
-            epsa(j,i) = epsi[k];
+    int k = 0;
+    matrix<double> epsa(n, n);
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = i + 1; j < n; j++)
+        {
+            epsa(i, j) = epsi[k];
+            epsa(j, i) = epsi[k];
             k++;
         }
     }
-
-
 
     vector1<double> init(n);
 
     for (int i = 0; i < n; i++)
         init[i] = mat1(3, i);
-
-    // epsilon12 = -mat1(0,4);
-    // epsilon13 = -mat1(0,5);
-    // epsilon14 = -mat1(0,6);
-    // // epsilon12 = mat1(0, 4);
-    // // epsilon13 = mat1(0, 5);
-    // // epsilon14 = mat1(0, 6);
-    // epsilon23 = mat1(0,7);
-    // epsilon24 = mat1(0,8);
-    // epsilon34 = mat1(0,9);
-
-    // x1 = mat1(0,10);
-    // x2 = mat1(0,11);
-    // x3 = mat1(0,12);
-    // x4 = mat1(0,13);
-
-
 
     // if (argc == 5)
     // {
@@ -168,19 +129,13 @@ int main(int argc, char **argv)
     typedef Rule_Wrapper<myc, myc, myc, myc> RWC;
 
     CH_builder p;
-    int nof = n;
+    int nof = 4;
     p.number_of_fields = nof;
     p.N1 = 1024;
     p.N2 = 1024;
-    double *str = new double[4];
-    str[0] = 0.*1.;
-    str[1] = 0.*1.;
-    str[2] = 0.*1.;
-    str[3] = 0.*1.;
-    //GenNoise<myc> b(p);
-    modelABnoise A(1.0,1.0);
 
-    CHWithNoise<modelABnoise> a(p,A,str);
+
+    CHSubFrac a(p);
 
 
     // ILB c0(ratef1, 0.0 * ratef1 /*no growth from below as this is the lowest field*/, 0.0 * rateb1 /*no decay down*/, rateb1, 0, 0, 1, 5);
@@ -189,150 +144,83 @@ int main(int argc, char **argv)
     // ILB c3(ratef1, ratef1, rateb1, rateb1, 3, 2, 4, 5);
     // ILB c4(0.0 * ratef1 /*no loss to above*/, ratef1, rateb1, 0.0 * rateb1 /*no decay above*/, 4, 3, 4, 5);
 
-
     FWCC my_chemsitry(p);
     NoWeight<myc, myc> nw;
-    for (int j = 4 ; j < mat1.getnrows() ; j++)
+    for (int j = 4; j < mat1.getnrows(); j++)
     {
         int no_chem = mat1(j, 0);
         // cout << no_chem << endl;
 
-        if(no_chem == 0 ) {
-            my_chemsitry.add_method(nw,j-4);
+        if (no_chem == 0)
+        {
+            my_chemsitry.add_method(nw, j - 4);
         }
-        else{
-        MultipleReactions<myc> c6(no_chem);
+        else
+        {
+            MultipleReactions<myc> c6(no_chem);
 
-        double tot = 0.0;
+            double tot = 0.0;
 
-        for(int i = 0 ; i < no_chem ; i++) {
-            // cout << i << endl;
-            vector1<int> jpow(nof);
-            for(int k =  i*(nof+1)+2 ; k < i*(nof+1)+2+nof ; k++) {
- 
-                jpow[k- (i*(nof+1)+2)] = (int)mat1(j,k);
+            for (int i = 0; i < no_chem; i++)
+            {
+                // cout << i << endl;
+                vector1<int> jpow(nof);
+                for (int k = i * (nof + 1) + 2; k < i * (nof + 1) + 2 + nof; k++)
+                {
+
+                    jpow[k - (i * (nof + 1) + 2)] = (int)mat1(j, k);
+                }
+                // cout << mat1(j,i*(nof+1)+1) << endl;
+                // cout << jpow << endl;
+                // pausel();
+                GenericChemistry<myc> c6_0(mat1(j, i * (nof + 1) + 1), jpow);
+                c6.add_chemical_reaction(c6_0, i);
+                double tot1 = 1.0;
+                for (int k = 0; k < nof; k++)
+                {
+                    tot1 *= Power(init[k], jpow[k]);
+                    // cout << tot1 << ",";
+                }
+                // cout << endl;
+
+                tot += mat1(j, i * (nof + 1) + 1) * tot1;
+
+                // cout << endl;
             }
+            cout << tot << endl;
 
-            GenericChemistry<myc> c6_0(mat1(j,i*(nof+1)+1), jpow);
-            c6.add_chemical_reaction(c6_0,i);
-            double tot1 = 1.0;
-            for(int k = 0 ; k < nof ; k++) {
-                tot1 *= Power(init[k], jpow[k]);
-               // cout << tot1 << ",";
-            }
-            //cout << endl;
-
-            
-            tot += mat1(j, i * (nof + 1) + 1) * tot1;
-
-            // cout << endl;
-        }
-        //cout << tot << endl;
-        
-        my_chemsitry.add_method(c6, j-4);
+            my_chemsitry.add_method(c6, j - 4);
         }
     }
 
-    
-
     cout << "chemistries added" << endl;
-   
-    // the solvent;
-    // double rate2 = 0.192;
-    // double rate1 = 0.712;
-    // InvasionLinearReversibleA<myc> c6(-rate1,-rate2,3,2,0);
-    // InvasionLinearReversibleA<myc> c7(rate1, rate2, 3, 2, 0);
-    // InvasionLinearReversibleA<myc> c8(rate1, rate2, 3, 2, 0);
-
-    
-    // double kr1 = 0.514;
-    // double kr2 = 0.676;
-    // double kf1 = 0.4356;
-    // double kf2 = 0.367;
-
-    // MultipleReactions<myc> c6(4);
-    // // InvasionSquared<myc> c6_1(kf2,1,0);
-    // // InvasionSquared<myc> c6_2(2*kf1, 0, 3);
-    // InvasionLinear<myc> c6_1(kf1,0,0);
-    // InvasionDecay<myc> c6_2(kf2,0);
-    // InvasionLinear<myc> c6_3(-kr1, 0, 1);
-    // InvasionLinear<myc> c6_4(-kr2, 2, 3);
-
-    // c6.add_chemical_reaction(c6_1, 0);
-    // c6.add_chemical_reaction(c6_2, 1);
-    // c6.add_chemical_reaction(c6_3, 2);
-    // c6.add_chemical_reaction(c6_4, 3);
-
-    // my_chemsitry.add_method(c6, 0);
-
-    // MultipleReactions<myc> c7(2);
-    // InvasionLinear<myc> c7_1(-kf1, 0, 0);
-    // InvasionLinear<myc> c7_2(kr1, 0, 1);
-
-    // c7.add_chemical_reaction(c7_1, 0);
-    // c7.add_chemical_reaction(c7_2, 1);
-
-
-    // my_chemsitry.add_method(c7, 1);
-    // cout << "done" << endl;
-    // MultipleReactions<myc> c8(2);
-    // InvasionDecay<myc> c8_1(-kf2, 0);
-    // InvasionLinear<myc> c8_2(kr2, 2, 3);
-
-    // c8.add_chemical_reaction(c8_1, 0);
-    // c8.add_chemical_reaction(c8_2, 1);
-
-    // my_chemsitry.add_method(c8, 2);
-    // cout << "done" << endl;
-    // MultipleReactions<myc> c9(2);
-    // InvasionDecay<myc> c9_1(-kf2, 0);
-    // InvasionLinear<myc> c9_4(kr2, 2, 3);
-
-    // c9.add_chemical_reaction(c9_1, 0);
-    // c9.add_chemical_reaction(c9_4, 1);
-
-    // my_chemsitry.add_method(c9, 3);
-
-    // cout << "added chemistries" << endl;
-
-    // myc ** calculated_reactions = new myc *[p.number_of_fields];
-
-    // for(int k =0 ; k < p.number_of_fields ; k++) {
-    // calculated_reactions[k] = (myc *)fftw_malloc(p.N1 * p.N2 * sizeof(myc));
-    // for (int j = 0; j < p.N1 * p.N2; j++)
-    // {
-    //     calculated_reactions[k][j] = 1.0;
-    // }
-    // }
-    // my_chemsitry.Calculate_Results(calculated_reactions);
-
-    // cout << "up to here" << endl;
 
     FWCC my_weights(p);
 
     double nu = 1.0;
 
-
     {
         int k = 0;
-        vector1<int> which1(nof-1);
-        vector1<double> myeps(nof-1);
-        for(int i = 0  ;  i < nof ; i++) {
-            if(i==0) {
-
+        vector1<int> which1(nof - 1);
+        vector1<double> myeps(nof - 1);
+        for (int i = 0; i < nof; i++)
+        {
+            if (i == 0)
+            {
             }
-            else{
+            else
+            {
                 which1[k] = i;
-                myeps(k) = epsa(0,i);
+                myeps(k) = epsa(0, i);
                 k++;
             }
         }
-        CahnHilliardWithCouplingWeightGenericNSQR<myc> w0(c0,c1, nu,myeps,which1);
+        CahnHilliardWithCouplingWeightGenericN<myc> w0(c0, c1, nu, myeps, which1);
         my_weights.add_method(w0, 0);
     }
 
-
-    for(int lk = 1 ; lk < nof ; lk++) {
+    for (int lk = 1; lk < nof; lk++)
+    {
         int k = 0;
         vector1<int> which1(nof - 1);
         vector1<double> myeps(nof - 1);
@@ -349,13 +237,12 @@ int main(int argc, char **argv)
             }
         }
 
-        DiffDiffusiveWeightGenericNSQR<myc> w1(myeps,which1);
+        DiffDiffusiveWeightGenericN<myc> w1(myeps, which1);
 
         my_weights.add_method(w1, lk);
     }
 
-
-    //my_weights.add_method(w0, 0);
+    // my_weights.add_method(w0, 0);
 
     // my_weights.add_method(w1, 1);
 
@@ -368,44 +255,33 @@ int main(int argc, char **argv)
     a.set_chems(my_chemsitry);
     a.set_weights(my_weights);
 
-
-
-
     double dt = 0.05;
-    //double dx = 0.05;
+    // double dx = 0.05;
 
-    //double temp1 = (1. / (dx * p.N1)) ;
+    // double temp1 = (1. / (dx * p.N1)) ;
 
     double surf = eps;
-    double L = 100.0;
-    double temp1 = SQR(2.*pii/L);
+    double L = 50.0;
+    double temp1 = SQR(2. * pii / L);
 
     // //cout << (1. / (dx * p.N1)) << endl;
     // cout << temp1 << endl;
 
-    double diffusion_constant =  1.;
-
+    double diffusion_constant = 1.;
 
     // //double surface_width = 2.0;
 
     RWC my_rules(p);
     // //MultiPhaseBundleComplex Bund(w0, p, dt, Di, temp1, surface_width, surf);
-
-    DiffusionWithSurfaceTension<myc> C(p, dt, diffusion_constant, temp1, surf);
+    double alpha = 0.5;
+    FractionalSubDiffusionWithSurfaceTension<myc> C(p, dt, diffusion_constant, temp1, surf, alpha);
     my_rules.add_method(C, 0); // as this is a collective one, only need to define the first rule;
 
-
-    for(int lk = 1 ; lk < nof ; lk++) {
-        double diff = diffusion_constant;
-        if(lk>=3) {
-             diff *=100.;
-        }
-    DiffusionWithInteraction<myc> C1(p, dt, diff, temp1);
-    my_rules.add_method(C1, lk);
-    }
-    // DiffusionWithInteraction<myc> C2(p, dt, diffusion_constant, temp1);
-    // DiffusionWithInteraction<myc> C3(p, dt, diffusion_constant, temp1);
-    // // MultiPhase r1(p, 6, dt, Di, temp1, surface_width, ChiMatrix);
+    for (int lk = 1; lk < nof; lk++)
+    {
+        FractionalSubDiffusionWithInteraction<myc> C1(p, dt, diffusion_constant, temp1, alpha);
+        my_rules.add_method(C1, lk);
+    } // // MultiPhase r1(p, 6, dt, Di, temp1, surface_width, ChiMatrix);
     // // MultiPhase r2(p);
     // // MultiPhase r3(p);
     // // MultiPhase r4(p);
@@ -414,17 +290,75 @@ int main(int argc, char **argv)
 
     // // cout << "created diffusion" << endl;
 
-    // //for(int k = 0  ; k < nof ; k++)
+    a.set_rules(my_rules);
 
-    // my_rules.add_method(C1, 1); //as this is a collective one, only need to define the first rule;
-    // my_rules.add_method(C2, 2); //as this is a collective one, only need to define the first rule;
-    // my_rules.add_method(C3, 3); //as this is a collective one, only need to define the first rule;
+    // cout << "Setting rules" << endl;
+
+    cout << "old rules set" << endl;
+
+    // for(int k = 0  ; k < nof ; k++)
+    //     a.rules.chems[k]->print();
+
+    // for (int k = 0; k < nof; k++)
+    //     a.newrules.chems[k]->print();
+
+    // cout << "added methods" << endl;
+
+    vector<matrix<myc>> v;
+
+    for (int j = 0; j < nof; j++)
+    {
+        matrix<myc> field1(p.N1, p.N2);
+        v.push_back(field1);
+    }
+
+    // double x1 = (kr2*sqrt((Power(kf2,2)*kr1*Power(x2,5))/(kf1*Power(kr2,2)*Power(x4,4)))*Power(x4,2))/(kf2*Power(x2,2));
+    // double x3 = sqrt((Power(kf2, 2) * kr1 * Power(x2, 5)) / (kf1 * Power(kr2, 2) * Power(x4, 4)));
+
+    double gt = 0.6;
+
+    for (int lk = 0; lk < nof; lk++)
+    {
+        double x1 = init[lk];
+        for (int i = 0; i < p.N1; i++)
+        {
+            for (int j = 0; j < p.N2; j++)
+            {
+                double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
+                v[lk](i, j) = x1 + gt * x1 * r1;
+            }
+        }
+    }
+
+    for (int lk = 0; lk < nof; lk++)
+    {
+        a.set_field(v[lk], lk);
+    }
+
+    FWCC init_c(p);
+
+    for(int lk = 0 ; lk < nof ; lk++)
+    init_c.set_field(v[lk], lk);
+
+    a.set_init_cond(init_c);
+
+    RWC upd(p);
+    for (int lk = 0; lk < nof; lk++)
+    {
+    FractionalSubDiffusionCalculateUpdateWeight<myc> D(p, dt, alpha);
+    upd.add_method(D,lk);
+    }
+    // FractionalSubDiffusionCalculateUpdateWeight<myc> D1(p, dt, alpha);
+    // FractionalSubDiffusionCalculateUpdateWeight<myc> D2(p, dt, alpha);
+    // FractionalSubDiffusionCalculateUpdateWeight<myc> D3(p, dt, alpha);
+
 
     cout << "all rules added" << endl;
     // cout << "all methods added" << endl;
 
 
     a.set_rules(my_rules);
+    a.set_frac_weight(upd);
 
     // cout << "Setting rules" << endl;
 
@@ -440,96 +374,21 @@ int main(int argc, char **argv)
 
     // cout << "added methods" << endl;
 
-    vector<matrix<myc> > v;
 
-    for(int j = 0 ; j < nof ; j++) {
-    matrix<myc> field1(p.N1, p.N2);
-    v.push_back(field1);
-    }
 
-    matrix<double> f1 = importcsv(field1s, T, err1);
-    matrix<double> f2 = importcsv(field2s, T, err1);
-    matrix<double> f3 = importcsv(field3s, T, err1);
     // double x1 = (kr2*sqrt((Power(kf2,2)*kr1*Power(x2,5))/(kf1*Power(kr2,2)*Power(x4,4)))*Power(x4,2))/(kf2*Power(x2,2));
     // double x3 = sqrt((Power(kf2, 2) * kr1 * Power(x2, 5)) / (kf1 * Power(kr2, 2) * Power(x4, 4)));
-    double maxval;
-    (f1+f2).maxima(maxval);
-    double meanofinv = 0.0;
-    // for(int lk  = 0  ; lk < nof ; lk++) {
-    //     double x1 = init[lk];
-        for (int i = 0; i < p.N1; i++)
-        {
-            for (int j = 0; j < p.N2; j++)
-            {
-                //double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
-                v[0](i, j) = f1(i,j);
-                v[1](i, j) = f2(i, j);
-                v[2](i, j) = f3(i, j);
-                v[3](i, j) = 1.E-6 + maxval - (f1(i, j))-f2(i,j);
-                meanofinv += v[3](i,j).real();
-                v[4](i, j) =  0.0;
-            }
-        }
-    //}
-
-        meanofinv /= SQR((double)(p.N1));
-
-        // cout << meanofinv << endl;
-        myc fac = (ani / meanofinv);
-        v[3] *= fac;
-
-        // double val;
-        // (field1+(5.*field2)+field3).maxima(val);
-        // if(val>1.) error("initial packing fracs not correct");
-
-        for (int lk = 0; lk < nof; lk++)
-        {
-            a.set_field(v[lk], lk);
-    }
 
 
 
-    // my_chemsitry.Calculate_Results(a.fields);
 
-    // for(int i = 0  ; i < nof ; i++)
-    // cout << a.fields[i][0] <<",",
-    // cout << endl;
 
-    // for (int i = 0; i < nof; i++)
-    //     cout << my_chemsitry.calculated_reactions[i][0] << ",",
-    //         cout << endl;
-    // pausel();
-    // for(int k = 0  ; k < nof ; k++) {
-    // cout << a.fields[k][0] << ",";
-    // }
-    // cout << endl;
-
-    // for (int k = 0; k < nof; k++)
-    // {
-    //     cout << a.fields[k][1000] << ",";
-    // }
-    // cout << endl;
-
-    // for (int i = 0; i < nof; i++)
-    //     cout << a.fields[i][0] << endl;
-    // a.chems.Calculate_Results(a.fields);
-    // for(int i = 0  ; i < nof ; i++)
-    //     cout << a.fields[i][0] << endl;
-    // cout << "chem done" << endl;
-    // pausel();
-
-    // a.set_field(field2, 1);
-
-    // a.set_field(field3, 2);
-
-    // a.set_field(field4, 3);
 
     cout << "all fields set" << endl;
  
 
-    cout << init << endl;
     // auto start = std::chrono::high_resolution_clock::now();
-    int runtime = 10001;
+    int runtime = 50001;
     int every = 100;
 
     int tf = ceil((double)runtime / (double)every);
@@ -565,6 +424,7 @@ int main(int argc, char **argv)
             a.print_all_results(su + s2);
         }
         cout << i << endl;
+        cout << "begin" << endl;
         a.Update();
     }
 

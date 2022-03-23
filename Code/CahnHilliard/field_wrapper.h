@@ -27,6 +27,30 @@ struct Field_Wrapper
 
     void Add_Noise(GenNoise<T> &a);
 
+    void set_field(const matrix<T> &mymat, int k)
+    {
+        for (int i = 0; i < params.N1; i++)
+        {
+            for (int j = 0; j < params.N2; j++)
+            {
+                calculated_reactions[k][i * params.N2 + j] = mymat.gpcons(i, j);
+            }
+        }
+    }
+    void set_field(T **orig)
+    {
+        for (int k = 0; k < params.number_of_fields; k++)
+        {
+            for (int i = 0; i < params.N1; i++)
+            {
+                for (int j = 0; j < params.N2; j++)
+                {
+                    calculated_reactions[k][i * params.N2 + j] = orig[k][i * params.N2 + j];
+                }
+            }
+        }
+    }
+
     void Check_fields();
     void GetMaximas();
     void GetMinimas();
@@ -59,6 +83,7 @@ struct Rule_Wrapper
 };
 
 #include "updateRules.cpp"
+#include "updateRulesFrac.cpp"
 #include "field_wrapper.cpp"
 #include "rule_wrapper.cpp"
 

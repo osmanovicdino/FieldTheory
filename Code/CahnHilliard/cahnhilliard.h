@@ -137,6 +137,42 @@ struct CHWithNoise : public CH<complex<double>>
     void Update();
 };
 
+struct CHSubFrac : public CH<complex<double>>
+{
+    Field_Wrapper<complex<double>, complex<double>> initial_cond;
+    // Field_Wrapper< complex<double>, complex<double> > fractional_weight;
+    Rule_Wrapper<complex<double>, complex<double>, complex<double>, complex<double>> fractional_weight;
+
+    void set_init_cond(const Field_Wrapper<complex<double>, complex<double>> &a) { initial_cond = a; }
+    void set_frac_weight(const Rule_Wrapper<complex<double>, complex<double>, complex<double>, complex<double>> &a) { fractional_weight = a; }
+
+    CHSubFrac(const CH_builder &p) : CH(p)
+    {
+    }
+
+    void Update();
+};
+
+struct CHFrac : public CH<complex<double> > 
+{
+    Field_Wrapper < complex<double>, complex<double> > initial_cond;
+    Field_Wrapper < complex<double>, complex<double> > old_fields; //need to set old fields as well
+
+    // Field_Wrapper< complex<double>, complex<double> > fractional_weight;
+    Rule_Wrapper<complex<double>, complex<double>, complex<double>, complex<double> > fractional_weight;
+
+    void set_init_cond(const Field_Wrapper<complex<double>, complex<double> > &a) {initial_cond = a; }
+    void set_old_fields(const Field_Wrapper<complex<double>, complex<double> > &a) { old_fields = a; }
+    void set_frac_weight(const Rule_Wrapper<complex<double>, complex<double>, complex<double>, complex<double> > &a) { fractional_weight = a; }
+
+    CHFrac(const CH_builder &p) : CH(p) 
+    {
+
+    }
+
+    void Update();
+};
+
 #include "cahnhilliard.cpp"
 
 #endif

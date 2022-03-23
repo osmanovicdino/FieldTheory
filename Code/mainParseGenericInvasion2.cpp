@@ -70,20 +70,20 @@ int main(int argc, char **argv)
     double ani;
 
 
-    if(argc == 6) {
+    if(argc == 2) {
         stringstream ss;
         ss << argv[1];
         importstring = ss.str();
 
-        stringstream ssg1,ssg2,ssg3;
-        ssg1 << argv[2];
-        ssg2 << argv[3];
-        ssg3 << argv[4];
-        ani = atof(argv[5]);
+        // stringstream ssg1,ssg2,ssg3;
+        // ssg1 << argv[2];
+        // ssg2 << argv[3];
+        // ssg3 << argv[4];
+        // ani = atof(argv[5]);
 
-        field1s = ssg1.str();
-        field2s = ssg2.str();
-        field3s = ssg3.str();
+        // field1s = ssg1.str();
+        // field2s = ssg2.str();
+        // field3s = ssg3.str();
     }
     else{
         error("no");
@@ -396,11 +396,11 @@ int main(int argc, char **argv)
 
 
     for(int lk = 1 ; lk < nof ; lk++) {
-        double diff = diffusion_constant;
-        if(lk>=3) {
-             diff *=100.;
-        }
-    DiffusionWithInteraction<myc> C1(p, dt, diff, temp1);
+    //     double diff = diffusion_constant;
+    //     if(lk>=3) {
+    //          diff *=10.;
+    //     }
+    DiffusionWithInteraction<myc> C1(p, dt, diffusion_constant, temp1);
     my_rules.add_method(C1, lk);
     }
     // DiffusionWithInteraction<myc> C2(p, dt, diffusion_constant, temp1);
@@ -447,36 +447,38 @@ int main(int argc, char **argv)
     v.push_back(field1);
     }
 
-    matrix<double> f1 = importcsv(field1s, T, err1);
-    matrix<double> f2 = importcsv(field2s, T, err1);
-    matrix<double> f3 = importcsv(field3s, T, err1);
+    // matrix<double> f1 = importcsv(field1s, T, err1);
+    // matrix<double> f2 = importcsv(field2s, T, err1);
+    // matrix<double> f3 = importcsv(field3s, T, err1);
     // double x1 = (kr2*sqrt((Power(kf2,2)*kr1*Power(x2,5))/(kf1*Power(kr2,2)*Power(x4,4)))*Power(x4,2))/(kf2*Power(x2,2));
     // double x3 = sqrt((Power(kf2, 2) * kr1 * Power(x2, 5)) / (kf1 * Power(kr2, 2) * Power(x4, 4)));
-    double maxval;
-    (f1+f2).maxima(maxval);
-    double meanofinv = 0.0;
-    // for(int lk  = 0  ; lk < nof ; lk++) {
+    // double maxval;
+    // (f1+f2).maxima(maxval);
+    double gt =0.6;
+    // double meanofinv = 0.0;
+    for(int lk  = 0  ; lk < nof ; lk++) {
     //     double x1 = init[lk];
         for (int i = 0; i < p.N1; i++)
         {
             for (int j = 0; j < p.N2; j++)
             {
+                double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
                 //double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
-                v[0](i, j) = f1(i,j);
-                v[1](i, j) = f2(i, j);
-                v[2](i, j) = f3(i, j);
-                v[3](i, j) = 1.E-6 + maxval - (f1(i, j))-f2(i,j);
-                meanofinv += v[3](i,j).real();
-                v[4](i, j) =  0.0;
+                v[lk](i, j) = init[lk] + gt * init[lk] * r1;
+                // v[1](i, j) = f2(i, j);
+                // v[2](i, j) = f3(i, j);
+                // v[3](i, j) = 1.E-6 + maxval - (f1(i, j))-f2(i,j);
+                // meanofinv += v[3](i,j).real();
+                // v[4](i, j) =  0.0;
             }
         }
-    //}
+    }
 
-        meanofinv /= SQR((double)(p.N1));
+        // meanofinv /= SQR((double)(p.N1));
 
-        // cout << meanofinv << endl;
-        myc fac = (ani / meanofinv);
-        v[3] *= fac;
+        // // cout << meanofinv << endl;
+        // myc fac = (ani / meanofinv);
+        // v[3] *= fac;
 
         // double val;
         // (field1+(5.*field2)+field3).maxima(val);

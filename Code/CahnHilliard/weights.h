@@ -487,6 +487,8 @@ public:
     void print() { cout << "the Cahn Hilliard weight class\n"; }
 };
 
+
+
 template<class T> //we want a template here in case we start with complex data
 class CoupledPhaseSeparatingSystem : public Weight<T, T>
 {

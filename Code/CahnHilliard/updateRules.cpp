@@ -148,6 +148,8 @@ double temp1;
 
 };
 
+
+
 template<class T>
 struct DiffusionWithInteraction : updateRules<T,T,T,T>
 {
@@ -260,6 +262,7 @@ struct DiffusionWithInteraction : updateRules<T,T,T,T>
         cout << "Diffusion With Interaction" << endl;
     }
 };
+
 
 template <class T>
 struct DiffusionWithSurfaceTension : updateRules<T,T,T,T>
@@ -422,8 +425,18 @@ struct DiffusionWithSurfaceTension : updateRules<T,T,T,T>
     }
 };
 
+
+
+// struct CompleteRuleFractional
+// {
+//     Rule_Wrapper<complex<double>, complex<double>, complex<double>, complex<double> > fractional_update;
+//     Rule_Wrapper<complex<double>, complex<double>, complex<double>, complex<double> > fractional_weight;
+
+
+// };
+
 // struct MultiPhase : updateRules {
-    
+
 //     int no_pha;
 //     double dt;
 //     matrix<double> Chi;
@@ -434,7 +447,7 @@ struct DiffusionWithSurfaceTension : updateRules<T,T,T,T>
 //     double temp1;
 //     double surface_width;
 
-//     MultiPhase(const CH_builder &params, int no_phaa, double dtt, vector1<double> Dii, double temp11, double surface_widthh, matrix<double> Chii) : updateRules(params), Di(Dii), Chi(Chii) 
+//     MultiPhase(const CH_builder &params, int no_phaa, double dtt, vector1<double> Dii, double temp11, double surface_widthh, matrix<double> Chii) : updateRules(params), Di(Dii), Chi(Chii)
 //     {
 //         no_pha = no_phaa;
 //         dt = dtt;
@@ -442,7 +455,7 @@ struct DiffusionWithSurfaceTension : updateRules<T,T,T,T>
 //         surface_width = surface_widthh;
 
 //         upd3 = new double * [no_pha];
-        
+
 //         upd1 = (double *)fftw_malloc(params.N1 * params.N2 * sizeof(double));
 //         upd2 = (double *)fftw_malloc(params.N1 * params.N2 * sizeof(double));
 //         for(int j = 0  ; j < no_pha ; j++)
@@ -475,7 +488,6 @@ struct DiffusionWithSurfaceTension : updateRules<T,T,T,T>
 //             Chi(k, k) = vol;
 //         }
 
-
 //         for(int k = 0  ; k < no_pha ; k++) {
 //         for (int i = 0; i < params.N1; i++)
 //         {
@@ -486,7 +498,6 @@ struct DiffusionWithSurfaceTension : updateRules<T,T,T,T>
 //             }
 //         }
 //         }
-
 
 //     }
 
@@ -516,7 +527,6 @@ struct DiffusionWithSurfaceTension : updateRules<T,T,T,T>
 //                 }
 //             }
 //         }
-
 
 //     }
 //     MultiPhase &operator=(const MultiPhase &a)
@@ -576,7 +586,7 @@ struct DiffusionWithSurfaceTension : updateRules<T,T,T,T>
 //         for (int i = 0; i < end; i++)
 //         {
 //             double val  = 0.0;
-            
+
 //             for(int k = 0  ; k < no_pha ; k++ ) {
 //                 // if(k == no_pha) {
 //                 //     double valt = 0.0;
@@ -590,10 +600,8 @@ struct DiffusionWithSurfaceTension : updateRules<T,T,T,T>
 //                 val += (Chi(j,k) - exval)*f[k][i];
 //             }
 
-            
 //             res[j][i] = upd3[j][i] * f[j][i] - upd3[j][i] * upd1[i] * (Di[j] / Di[0]) * w[j][i] + upd3[j][i] * upd2[i] * (Di[j] / Di[0]) * val + dt * upd3[j][i] * r[j][i];
 
-            
 // /*             if(   abs((res[j][i]-f[j][i])/f[j][i])>100.0 && j > 0 )
 //              {
 //                 if ( abs((res[j][i]-f[j][i])/f[j][i]) >0.1 ) {
@@ -628,7 +636,7 @@ struct DiffusionWithSurfaceTension : updateRules<T,T,T,T>
 //             //     pausel();
 //             // }
 //         }
-        
+
 //     }
 
 //     MultiPhase *clone() const

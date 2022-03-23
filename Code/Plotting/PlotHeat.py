@@ -5,6 +5,7 @@ import csv
 import numpy
 import matplotlib.pyplot as plt
 import matplotlib
+from os.path import exists
 matplotlib.use('Agg')
 #from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 unused import
 
@@ -40,16 +41,18 @@ matplotlib.use('Agg')
 
 def graph(filename):
     #mat = np.loadtxt(open(filename, "rb"), delimiter=",", skiprows=1)
-    reader = csv.reader(open(filename, "r"), delimiter=",")
-    x = list(reader)
-    mat = numpy.array(x).astype("float")
-    fig = plt.figure()
     outputfilename = os.path.splitext(filename)[0]+'.png'
-    plt.imshow(mat)
-    #plt.clim(0., 1.)
-    plt.colorbar()
-    plt.savefig(outputfilename, format='png')
-    plt.close(fig)
+    file_exists = exists(outputfilename)
+    if file_exists == 0:
+        reader = csv.reader(open(filename, "r"), delimiter=",")
+        x = list(reader)
+        mat = numpy.array(x).astype("float")
+        fig = plt.figure()
+        plt.imshow(mat)
+        #plt.clim(0., 1.)
+        plt.colorbar()
+        plt.savefig(outputfilename, format='png')
+        plt.close(fig)
 
 
 

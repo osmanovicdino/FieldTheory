@@ -54,7 +54,7 @@ int main(int argc, char **argv)
 
     double c0 = 0.2;
     double c1 = 0.8;
-    double eps = 0.2;
+    double eps = 0.4;
 
 
 
@@ -224,78 +224,9 @@ int main(int argc, char **argv)
 
     cout << "chemistries added" << endl;
    
-    // the solvent;
-    // double rate2 = 0.192;
-    // double rate1 = 0.712;
-    // InvasionLinearReversibleA<myc> c6(-rate1,-rate2,3,2,0);
-    // InvasionLinearReversibleA<myc> c7(rate1, rate2, 3, 2, 0);
-    // InvasionLinearReversibleA<myc> c8(rate1, rate2, 3, 2, 0);
-
-    
-    // double kr1 = 0.514;
-    // double kr2 = 0.676;
-    // double kf1 = 0.4356;
-    // double kf2 = 0.367;
-
-    // MultipleReactions<myc> c6(4);
-    // // InvasionSquared<myc> c6_1(kf2,1,0);
-    // // InvasionSquared<myc> c6_2(2*kf1, 0, 3);
-    // InvasionLinear<myc> c6_1(kf1,0,0);
-    // InvasionDecay<myc> c6_2(kf2,0);
-    // InvasionLinear<myc> c6_3(-kr1, 0, 1);
-    // InvasionLinear<myc> c6_4(-kr2, 2, 3);
-
-    // c6.add_chemical_reaction(c6_1, 0);
-    // c6.add_chemical_reaction(c6_2, 1);
-    // c6.add_chemical_reaction(c6_3, 2);
-    // c6.add_chemical_reaction(c6_4, 3);
-
-    // my_chemsitry.add_method(c6, 0);
-
-    // MultipleReactions<myc> c7(2);
-    // InvasionLinear<myc> c7_1(-kf1, 0, 0);
-    // InvasionLinear<myc> c7_2(kr1, 0, 1);
-
-    // c7.add_chemical_reaction(c7_1, 0);
-    // c7.add_chemical_reaction(c7_2, 1);
-
-
-    // my_chemsitry.add_method(c7, 1);
-    // cout << "done" << endl;
-    // MultipleReactions<myc> c8(2);
-    // InvasionDecay<myc> c8_1(-kf2, 0);
-    // InvasionLinear<myc> c8_2(kr2, 2, 3);
-
-    // c8.add_chemical_reaction(c8_1, 0);
-    // c8.add_chemical_reaction(c8_2, 1);
-
-    // my_chemsitry.add_method(c8, 2);
-    // cout << "done" << endl;
-    // MultipleReactions<myc> c9(2);
-    // InvasionDecay<myc> c9_1(-kf2, 0);
-    // InvasionLinear<myc> c9_4(kr2, 2, 3);
-
-    // c9.add_chemical_reaction(c9_1, 0);
-    // c9.add_chemical_reaction(c9_4, 1);
-
-    // my_chemsitry.add_method(c9, 3);
-
-    // cout << "added chemistries" << endl;
-
-    // myc ** calculated_reactions = new myc *[p.number_of_fields];
-
-    // for(int k =0 ; k < p.number_of_fields ; k++) {
-    // calculated_reactions[k] = (myc *)fftw_malloc(p.N1 * p.N2 * sizeof(myc));
-    // for (int j = 0; j < p.N1 * p.N2; j++)
-    // {
-    //     calculated_reactions[k][j] = 1.0;
-    // }
-    // }
-    // my_chemsitry.Calculate_Results(calculated_reactions);
-
-    // cout << "up to here" << endl;
 
     FWCC my_weights(p);
+
 
     double nu = 1.0;
 
@@ -318,8 +249,11 @@ int main(int argc, char **argv)
         my_weights.add_method(w0, 0);
     }
 
+    cout << "done" << endl;
 
     for(int lk = 1 ; lk < nof ; lk++) {
+
+       
         int k = 0;
         vector1<int> which1(nof - 1);
         vector1<double> myeps(nof - 1);
@@ -358,7 +292,7 @@ int main(int argc, char **argv)
 
 
 
-    double dt = 0.005;
+    double dt = 0.05;
     //double dx = 0.05;
 
     //double temp1 = (1. / (dx * p.N1)) ;
