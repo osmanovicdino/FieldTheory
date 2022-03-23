@@ -36,9 +36,9 @@ else
 fi
 dirwemake="chemistry${SGE_TASK_ID}"
 mkdir /u/scratch/d/dinoo/FieldTheory2/${dirwemake}
-cp ~/FieldTheory2/Code/mainParseWithNoise.cpp /u/scratch/d/dinoo/FieldTheory2/${dirwemake}
+cp ~/FieldTheory2/Code/mainParseWithNoiseFractional.cpp /u/scratch/d/dinoo/FieldTheory2/${dirwemake}
 cp ~/FieldTheory2/Code/InitialConditions/${wt} /u/scratch/d/dinoo/FieldTheory2/${dirwemake}/res.csv
-g++ ~/FieldTheory2/Code/mainParseWithNoise.cpp -lm -lfftw3 -L/usr/local/lib/lfftw3.a -std=c++17 -o /u/scratch/d/dinoo/FieldTheory2/${dirwemake}/angron
+g++ ~/FieldTheory2/Code/mainParseWithNoiseFractional.cpp -lm -lfftw3 -L/usr/local/lib/lfftw3.a -std=c++17 -o /u/scratch/d/dinoo/FieldTheory2/${dirwemake}/angron
 cd /u/scratch/d/dinoo/FieldTheory2/${dirwemake}
 ./angron 'res.csv' > log
 # echo job info on joblog:
