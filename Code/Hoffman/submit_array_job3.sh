@@ -25,7 +25,7 @@ module load fftw/3.3.9
 ## in the two lines below:
 ##echo '/usr/bin/time -v hostname'
 ##/usr/bin/time -v hostname
-filename=~/FieldTheory2/Code/Hoffman/allfiles.dat
+filename=~/FieldTheory/Code/Hoffman/allfiles.dat
 if [ -e ${filename}   ]; then
    # use the unix command sed -n ${line_number}p to read by line
    wt=`sed -n ${SGE_TASK_ID}p ${filename} | awk '{print $1}'`
@@ -36,9 +36,9 @@ else
 fi
 dirwemake="chemistry${SGE_TASK_ID}"
 mkdir /u/scratch/d/dinoo/FieldTheory2/${dirwemake}
-cp ~/FieldTheory2/Code/mainParseWithNoiseFractional.cpp /u/scratch/d/dinoo/FieldTheory2/${dirwemake}
-cp ~/FieldTheory2/Code/InitialConditions/${wt} /u/scratch/d/dinoo/FieldTheory2/${dirwemake}/res.csv
-g++ ~/FieldTheory2/Code/mainParseWithNoiseFractional.cpp -lm -lfftw3 -L/usr/local/lib/lfftw3.a -std=c++17 -o /u/scratch/d/dinoo/FieldTheory2/${dirwemake}/angron
+cp ~/FieldTheory/Code/mainParseWithNoiseFractional.cpp /u/scratch/d/dinoo/FieldTheory2/${dirwemake}
+cp ~/FieldTheory/Code/InitialConditions/${wt} /u/scratch/d/dinoo/FieldTheory2/${dirwemake}/res.csv
+g++ ~/FieldTheory/Code/mainParseWithNoiseFractional.cpp -lm -lfftw3 -L/usr/local/lib/lfftw3.a -std=c++17 -o /u/scratch/d/dinoo/FieldTheory2/${dirwemake}/angron
 cd /u/scratch/d/dinoo/FieldTheory2/${dirwemake}
 ./angron 'res.csv' > log
 # echo job info on joblog:
