@@ -287,12 +287,15 @@ int main(int argc, char **argv)
     cout << "weights added" << endl;
 
     a.set_chems(my_chemsitry);
+
+
+
     a.set_weights(my_weights);
 
 
 
 
-    double dt = 0.05;
+    double dt = 0.5;
     //double dx = 0.05;
 
     //double temp1 = (1. / (dx * p.N1)) ;
@@ -304,7 +307,7 @@ int main(int argc, char **argv)
     // //cout << (1. / (dx * p.N1)) << endl;
     // cout << temp1 << endl;
 
-    double diffusion_constant =  1.;
+    double diffusion_constant =  0.;
 
 
     // //double surface_width = 2.0;

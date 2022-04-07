@@ -114,6 +114,20 @@ Rule_Wrapper<T, T1, T2, T3> &Rule_Wrapper<T, T1, T2, T3>::operator=(const Rule_W
 }
 
 template <class T, class T1, class T2, class T3>
+Rule_Wrapper<T, T1, T2, T3> &Rule_Wrapper<T, T1, T2, T3>::operator+=(const Rule_Wrapper<T, T1, T2, T3> &a) {
+    int tot = params.N1 * params.N2;
+    
+        for (int i = 0; i < params.number_of_fields; i++)
+        {
+            for (int j = 0; j < tot; j++) {
+                calculated_reactions[i][j] += a.calculated_reactions[i][j];
+            }
+        }
+
+        return *this;
+}
+
+template <class T, class T1, class T2, class T3>
 Rule_Wrapper<T, T1, T2, T3>::~Rule_Wrapper()
 {
     //cout << "called rule wrapper destructor" << endl;
@@ -129,15 +143,10 @@ Rule_Wrapper<T, T1, T2, T3>::~Rule_Wrapper()
 template <class T, class T1, class T2, class T3>
 void Rule_Wrapper<T, T1, T2, T3>::add_method(updateRules<T, T1, T2, T3> &a, int j)
 {
-
-    //cout << "trying to add method" << endl;
     updateRules<T,T1,T2,T3> *chem1 = a.clone();
-
-    //cout << "method cloned" << endl;
    
     chems[j] = chem1;
 
-    //cout << "method set" << endl;
 }
 
 template <class T, class T1, class T2, class T3> //allow for the different fields to be of different types
@@ -183,6 +192,92 @@ void Rule_Wrapper<T, T1, T2, T3>::Check_negatives(bool &neg)
             }
         }
     }
+}
+
+template <class T, class T1, class T2, class T3>
+void Rule_Wrapper<T, T1, T2, T3>::GetMaximas()
+{
+    for (int i = 0; i < params.number_of_fields; i++)
+    {
+        T a = calculated_reactions[i][0];
+        int tot = params.get_total();
+        for (int j = 1; j < tot; j++)
+        {
+            if (calculated_reactions[i][j] > a)
+            {
+                a = calculated_reactions[i][j];
+            }
+        }
+        cout << a << " ";
+    }
+    cout << endl;
+}
+
+template <class T, class T1, class T2, class T3>
+void Rule_Wrapper<T, T1, T2, T3>::GetMaximasIndex()
+{
+    for (int i = 0; i < params.number_of_fields; i++)
+    {
+        T a = calculated_reactions[i][0];
+        int ind = 0;
+        int tot = params.get_total();
+        for (int j = 1; j < tot; j++)
+        {
+            if (calculated_reactions[i][j] > a)
+            {
+                a = calculated_reactions[i][j];
+                ind = j;
+            }
+        }
+        int myi = floor((ind / params.N2));
+        int myj = ind % params.N2;
+
+        cout << myi << " " << myj << "\t";
+    }
+    cout << endl;
+}
+
+template <class T, class T1, class T2, class T3>
+void Rule_Wrapper<T, T1, T2, T3>::GetMinimas()
+{
+    for (int i = 0; i < params.number_of_fields; i++)
+    {
+        T a = calculated_reactions[i][0];
+        int tot = params.get_total();
+        for (int j = 1; j < tot; j++)
+        {
+            if (calculated_reactions[i][j] < a)
+            {
+                a = calculated_reactions[i][j];
+            }
+        }
+        cout << a << " ";
+    }
+    cout << endl;
+}
+
+template <class T, class T1, class T2, class T3>
+void Rule_Wrapper<T, T1, T2, T3>::GetMinimasIndex()
+{
+    for (int i = 0; i < params.number_of_fields; i++)
+    {
+        T a = calculated_reactions[i][0];
+        int ind = 0;
+        int tot = params.get_total();
+        for (int j = 1; j < tot; j++)
+        {
+            if (calculated_reactions[i][j] < a)
+            {
+                a = calculated_reactions[i][j];
+                ind = j;
+            }
+        }
+        int myi = floor((ind / params.N2));
+        int myj = ind % params.N2;
+
+        cout << myi << " " << myj << "\t";
+    }
+    cout << endl;
 }
 
 #endif /* RULE_WRAPPER_CPP */

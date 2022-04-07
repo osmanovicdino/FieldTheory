@@ -104,8 +104,8 @@ public:
         template <class Y>
         friend vector1<Y> operator*(Y, const vector1<Y>&); // reverse
 	        
-        template <class Y>
-        friend vector1<Y> operator*(matrix<Y> &m1, vector1<Y> &v1);
+        template <class Y, class Q>
+        friend vector1<Y> operator*(matrix<Q> &m1, vector1<Y> &v1);
 
         template <class Y>
         friend vector1<Y> operator/(const vector1<Y> &a, const vector1<Y> &b);

@@ -64,13 +64,14 @@ void CH<T>::set_field(const matrix<T> &mymat, int k)
 }
 
 template<class T>
-void CH<T>::set_field(T **orig) {
+void CH<T>::set_field(T **orig) { // only set the field to real values
     for(int k = 0 ; k < myp.number_of_fields ; k++) {
         for (int i = 0; i < myp.N1; i++)
         {
             for (int j = 0; j < myp.N2; j++)
             {
-                fields[k][i * myp.N2 + j] = orig[k][i * myp.N2 + j];
+                fields[k][i * myp.N2 + j] = {orig[k][i * myp.N2 + j].real(), 0.};
+                
             }
         }
     }
@@ -149,11 +150,11 @@ void CH<T>::Update() {
     // cout << endl;
     //  cout << 6 << endl;
     reverse_transform.Calculate_Results(rules.calculated_reactions);
-    cout << "beginning renorm" << endl;
-    for (int i = 0; i < myp.number_of_fields; i++)
-        for (int j = 0; j < myp.get_total(); j++)
-            reverse_transform.calculated_reactions[i][j] = {reverse_transform.calculated_reactions[i][j].real(), 0.};
-    cout << "renorm" << endl;
+    // cout << "beginning renorm" << endl;
+    // for (int i = 0; i < myp.number_of_fields; i++)
+    //     for (int j = 0; j < myp.get_total(); j++)
+    //         reverse_transform.calculated_reactions[i][j] = {reverse_transform.calculated_reactions[i][j].real(), 0.};
+    // cout << "renorm" << endl;
     // outfunc(fields[5], filename1, myp);
     // outfunc(weigs.calculated_reactions[5], filename2, myp);
     // outfunc(transformed1.calculated_reactions[5], filename3, myp);
@@ -325,9 +326,15 @@ void CHWithNoise<Q>::Update() {
     // cout << "weigs done" << endl;
     // weigs.GetMaximas();
     // weigs.GetMinimas();
+    // string chem22 = "fields2";
+    // outfunc(fields[0], chem22, myp);
+    
 
     chems.Calculate_Results(fields);
 
+    // string chem2= "chem2";
+    // outfunc(chems.calculated_reactions[0],chem2,myp);
+    // pausel();
     
     // cout << "chemical dynamics: ";
     // for (int i = 0; i < myp.number_of_fields; i++)
@@ -518,6 +525,11 @@ void CHFrac::Update() {
 
     rules.Calculate_Results(transformed1.calculated_reactions, transformed2.calculated_reactions, transformed3.calculated_reactions);
 
+    // cout << transformed1.calculated_reactions[0][0] << endl;
+    // cout << transformed2.calculated_reactions[0][0] << endl;
+    // cout << transformed3.calculated_reactions[0][0] << endl;
+    cout << rules.calculated_reactions[0][0] << " " << rules.calculated_reactions[1][0] << " " << rules.calculated_reactions[2][0] << " " << rules.calculated_reactions[3][0] << endl;
+    
     reverse_transform.Calculate_Results(rules.calculated_reactions);
 
     cout << "Reverse Transform done" << endl;

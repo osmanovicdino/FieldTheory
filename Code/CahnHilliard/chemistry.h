@@ -38,7 +38,7 @@ public:
 GenericChemistry(double rate11, vector1<int> powss) : pows(powss) { n = pows.getsize(); rate1 = rate11; }
 void operator()(T **a, T **fields, int j, const CH_builder &p)
 {
-    // as there is crosstalk here it is required for you to be careful
+    // as there is crosstalk here it is required for you to be careful for out of memory errors
     int end = p.get_total();
     //cout << "j choice: " << j << endl;
     
@@ -62,6 +62,13 @@ GenericChemistry *clone() const
 {
     return new GenericChemistry(*this);
 }
+
+void print() {
+    cout << "Generic Chemistry" << endl;
+    cout << rate1 << endl;
+    cout << pows << endl;
+}
+
 };
 
 template <class T> //allow for complex data
@@ -322,6 +329,16 @@ public:
     MultipleReactions *clone() const {
         return new MultipleReactions(*this);
     }
+
+    void print() {
+        for(int i = 0  ; i < no_chem ; i++) {
+            cout << "chem " << i << endl;
+            multichem[i]->print();
+            cout << endl;
+            cout << endl;
+        }
+    }
+
 };
 
 template <class T>

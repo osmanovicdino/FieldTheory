@@ -280,7 +280,7 @@ int main(int argc, char **argv)
     // //cout << (1. / (dx * p.N1)) << endl;
     // cout << temp1 << endl;
 
-    double diffusion_constant =  1.;
+    double diffusion_constant =  0.;
 
 
     // //double surface_width = 2.0;

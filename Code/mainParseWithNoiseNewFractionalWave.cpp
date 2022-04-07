@@ -131,13 +131,13 @@ int main(int argc, char **argv)
     p.N1 = 1024;
     p.N2 = 1024;
 
-    CHFrac a(p);
 
-    // ILB c0(ratef1, 0.0 * ratef1 /*no growth from below as this is the lowest field*/, 0.0 * rateb1 /*no decay down*/, rateb1, 0, 0, 1, 5);
-    // ILB c1(ratef1, ratef1, rateb1, rateb1, 1, 0, 2, 5);
-    // ILB c2(ratef1, ratef1, rateb1, rateb1, 2, 1, 3, 5);
-    // ILB c3(ratef1, ratef1, rateb1, rateb1, 3, 2, 4, 5);
-    // ILB c4(0.0 * ratef1 /*no loss to above*/, ratef1, rateb1, 0.0 * rateb1 /*no decay above*/, 4, 3, 4, 5);
+
+    //SurfBundle A(p,dt,diffusion_constant,temp1,eps,alpha);
+
+    
+
+    CHFracDt a(p);
 
     FWCC my_chemsitry(p);
     NoWeight<myc, myc> nw;
@@ -168,7 +168,7 @@ int main(int argc, char **argv)
                 // cout << mat1(j,i*(nof+1)+1) << endl;
                 // cout << jpow << endl;
                 // pausel();
-                GenericChemistry<myc> c6_0(20.*mat1(j, i * (nof + 1) + 1), jpow);
+                GenericChemistry<myc> c6_0(20. * mat1(j, i * (nof + 1) + 1), jpow);
                 c6.add_chemical_reaction(c6_0, i);
                 double tot1 = 1.0;
                 for (int k = 0; k < nof; k++)
@@ -263,42 +263,20 @@ int main(int argc, char **argv)
     // cout << temp1 << endl;
 
     double diffusion_constant = 1.;
+    double alpha = 0.9;
 
-    // //double surface_width = 2.0;
-
-    RWC my_rules(p);
-    // //MultiPhaseBundleComplex Bund(w0, p, dt, Di, temp1, surface_width, surf);
-    double alpha = 1.9;
-    FractionalWaveDiffusionWithSurfaceTension<myc> C(p, dt, diffusion_constant, temp1, surf, alpha);
-    my_rules.add_method(C, 0); // as this is a collective one, only need to define the first rule;
-
+    cout << "creating surf bundle" << endl;
+    SurfBundle A(p, dt, diffusion_constant, temp1, eps, alpha);
+    a.AddBundleMethod(A,0);
+    cout << "Bundle 1 added" << endl;
     for (int lk = 1; lk < nof; lk++)
     {
-        FractionalWaveDiffusionWithInteraction<myc> C1(p, dt, diffusion_constant, temp1, alpha);
-        my_rules.add_method(C1, lk);
-    } // // MultiPhase r1(p, 6, dt, Di, temp1, surface_width, ChiMatrix);
-    // // MultiPhase r2(p);
-    // // MultiPhase r3(p);
-    // // MultiPhase r4(p);
-    // // MultiPhase r5(p);
-    // // MultiPhase r6(p); //all empty
+        cout << lk << endl;
+        IntBundle B(p, dt, diffusion_constant, temp1, alpha);
+        a.AddBundleMethod(B,lk);
+    }
 
-    // // cout << "created diffusion" << endl;
-
-    a.set_rules(my_rules);
-
-    // cout << "Setting rules" << endl;
-
-    cout << "old rules set" << endl;
-
-    // for(int k = 0  ; k < nof ; k++)
-    //     a.rules.chems[k]->print();
-
-    // for (int k = 0; k < nof; k++)
-    //     a.newrules.chems[k]->print();
-
-    // cout << "added methods" << endl;
-
+    cout << "bundles added" << endl;
     vector<matrix<myc>> v;
 
     for (int j = 0; j < nof; j++)
@@ -306,9 +284,6 @@ int main(int argc, char **argv)
         matrix<myc> field1(p.N1, p.N2);
         v.push_back(field1);
     }
-
-    // double x1 = (kr2*sqrt((Power(kf2,2)*kr1*Power(x2,5))/(kf1*Power(kr2,2)*Power(x4,4)))*Power(x4,2))/(kf2*Power(x2,2));
-    // double x3 = sqrt((Power(kf2, 2) * kr1 * Power(x2, 5)) / (kf1 * Power(kr2, 2) * Power(x4, 4)));
 
     double gt = 0.6;
 
@@ -329,50 +304,12 @@ int main(int argc, char **argv)
     {
         a.set_field(v[lk], lk);
     }
-    
-    FWCC init_c(p);
-    FWCC old_c(p);
 
-    for (int lk = 0; lk < nof; lk++)
-        init_c.set_field(v[lk], lk);
+    a.setupInitial();
 
-    for (int lk = 0; lk < nof; lk++)
-        old_c.set_field(v[lk], lk);
+    // cout << "done" << endl;
 
-    a.set_init_cond(init_c);
-    a.set_old_fields(old_c);
-
-    RWC upd(p);
-    for (int lk = 0; lk < nof; lk++)
-    {
-        FractionalWaveDiffusionCalculateUpdateWeight<myc> D(p, dt, alpha);
-        upd.add_method(D, lk);
-    }
-    // FractionalSubDiffusionCalculateUpdateWeight<myc> D1(p, dt, alpha);
-    // FractionalSubDiffusionCalculateUpdateWeight<myc> D2(p, dt, alpha);
-    // FractionalSubDiffusionCalculateUpdateWeight<myc> D3(p, dt, alpha);
-
-    cout << "all rules added" << endl;
-    // cout << "all methods added" << endl;
-
-    a.set_rules(my_rules);
-    a.set_frac_weight(upd);
-
-    // cout << "Setting rules" << endl;
-
-    cout << "old rules set" << endl;
-
-    // for(int k = 0  ; k < nof ; k++)
-    //     a.rules.chems[k]->print();
-
-    // for (int k = 0; k < nof; k++)
-    //     a.newrules.chems[k]->print();
-
-    // cout << "added methods" << endl;
-
-    // double x1 = (kr2*sqrt((Power(kf2,2)*kr1*Power(x2,5))/(kf1*Power(kr2,2)*Power(x4,4)))*Power(x4,2))/(kf2*Power(x2,2));
-    // double x3 = sqrt((Power(kf2, 2) * kr1 * Power(x2, 5)) / (kf1 * Power(kr2, 2) * Power(x4, 4)));
-
+    // a.Update();
     cout << "all fields set" << endl;
 
     // auto start = std::chrono::high_resolution_clock::now();
@@ -415,161 +352,4 @@ int main(int argc, char **argv)
         cout << "begin" << endl;
         a.Update();
     }
-
-    // auto stop = std::chrono::high_resolution_clock::now();
-
-    // auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-
-    // cout << duration.count() << endl;
-
-    // cout << "he's done ya again" << endl;
-
-    /*
-    int N1 = 512;
-    int N2 = 512;
-    double **an_in_array = new double *[4];
-    double **an_out_array = new double *[4];
-    an_in_array[0] = (double *)fftw_malloc(N1 * N2 * sizeof(double));
-    an_out_array[0] = (double *)fftw_malloc(N1 * N2 * sizeof(double));
-
-    // fftw_plan p;
-
-    auto start = std::chrono::high_resolution_clock::now();
-
-    // p = fftw_plan_r2r_2d(N1, N2, an_in_array[0], an_out_array[0], FFTW_REDFT10, FFTW_REDFT10, 1);
-
-    for(int i = 0 ; i < 1000 ; i++) {
-        fftw_plan p;
-
-        p = fftw_plan_r2r_2d(N1, N2, an_in_array[0], an_out_array[0], FFTW_REDFT10, FFTW_REDFT10, 1);
-
-        fftw_execute(p);
-
-        fftw_destroy_plan(p);
-    }
-
-    auto stop =  std::chrono::high_resolution_clock::now();
-
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop-start);
-
-    cout << duration.count() << endl;
-    */
-
-    // fftw_destroy_plan(p);
-
-    /*
-CH_builder p;
-p.number_of_fields = 4;
-p.N1=1024;
-p.N2=1024;
-
-
-
-Field_Wrapper a(p);
-
-
-InvasionAntiInvasionLinear b(1.0,0.5);
-NoWeight c;
-
-a.add_method(b,0);
-a.add_method(c, 1);
-a.add_method(c, 2);
-a.add_method(c, 3);
-
-double **fields = new double *[4];
-fields[0] = (double *)fftw_malloc(1024 * 1024 * sizeof(double));
-fields[1] = (double *)fftw_malloc(1024 * 1024 * sizeof(double));
-fields[2] = (double *)fftw_malloc(1024 * 1024 * sizeof(double));
-fields[3] = (double *)fftw_malloc(1024 * 1024 * sizeof(double));
-
-for(int i = 0 ; i < 4 ; i++) {
-    for(int j = 0 ; j < SQR(1024) ; j++) {
-        fields[i][j] = 0.2;
-    }
-}
-
-cout << "fine to here" << endl;
-
-a.Calculate_Results(fields);
-
-cout << a.calculated_reactions[0][0] << endl;
-cout << "done" << endl;
-pausel();
-*/
-    // Reaction_Wrapper()
-
-    // CH a(p);
-
-    // a.chems[0]->what_am_I();
-    // a.update_rules[0]->what_am_I();
-
-    // InvasionAntiInvasion *b = new InvasionAntiInvasion;
-
-    // cout << a.chems.size() << endl;
-
-    // a.chems[0] =  b;
-
-    // a.chems[0]->what_am_I();
-
-    /*
-    int N1 = 512;
-    int N2 = 512;
-    double **an_in_array = new double*[4];
-    double **an_out_array = new double*[4];
-    an_in_array[0] = (double *)fftw_malloc(N1 * N2 * sizeof(double));
-    an_out_array[0] = (double *)fftw_malloc(N1 * N2 * sizeof(double));
-
-    fftw_plan p;
-
-    p = fftw_plan_r2r_2d(N1, N2, an_in_array[0], an_out_array[0], FFTW_REDFT10, FFTW_REDFT10, 1);
-
-    fftw_execute(p);
-    */
-
-    /*
-int N1 = 512;
-int N2 = 512;
-
-
-
-double *an_array;
-an_array = (double *)fftw_malloc(N1 * N2 * sizeof(double));
-
-double *out;
-out = (double *)fftw_malloc(N1 * N2 * sizeof(double));
-// in = (fftw_complex *)fftw_malloc(sizeof(fftw_complex) * N);
-// out = (fftw_complex *)fftw_malloc(sizeof(fftw_complex) * N);
-
-for (int i = 0; i < N1; i++)
-{
-    for (int j = 0; j < N2; j++)
-    {
-        an_array[i * N1 + j] = cos(pi*i*j/10.);
-    }
-}
-
-fftw_plan p;
-
-p = fftw_plan_r2r_2d(N1, N2, an_array, out, FFTW_REDFT10, FFTW_REDFT10, 1);
-
-fftw_execute(p);
-cout << an_array[0] << endl;
-cout << out[0] / (4 * 512) << endl;
-
-
-
-
-outfunc2D(out,N1,N2,"cosine");
-
-fftw_plan p2;
-p2 = fftw_plan_r2r_2d(N1, N2, out, an_array, FFTW_REDFT01, FFTW_REDFT01, 1);
-
-fftw_execute(p2);
-
-cout << an_array[0]/SQR(2*512) << endl;
-cout << an_array[1] << endl;
-cout << out[0] / (4*512) << endl;
-*/
-
-    // cout << a <<endl;
 }

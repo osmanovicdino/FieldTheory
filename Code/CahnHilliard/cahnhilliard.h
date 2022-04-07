@@ -173,6 +173,265 @@ struct CHFrac : public CH<complex<double> >
     void Update();
 };
 
+
+
+
+struct CHFracDt : public CH<complex <double> > {
+
+    Field_Wrapper< complex<double>, complex<double> > old_fieldsft;
+    Field_Wrapper<complex<double>, complex<double> > old_weightsft;
+
+    Rule_Wrapper< complex<double>,complex<double>,complex<double>,complex<double> > ri;
+    Rule_Wrapper< complex<double>,complex<double>,complex<double>,complex<double> > rA;
+    Rule_Wrapper<complex<double>, complex<double>, complex<double>, complex<double>> rB;
+    Rule_Wrapper<complex<double>, complex<double>, complex<double>, complex<double>> rC;
+
+    CHFracDt(const CH_builder &p) : CH(p),
+                                                         old_fieldsft(Field_Wrapper<complex<double>, complex<double>>(p)),
+                                                         old_weightsft(Field_Wrapper<complex<double>, complex<double>>(p)),
+                                                         ri(Rule_Wrapper<complex<double>, complex<double>, complex<double>, complex<double>>(p)),
+                                                         rA(Rule_Wrapper<complex<double>, complex<double>, complex<double>, complex<double>>(p)),
+                                                         rB(Rule_Wrapper<complex<double>, complex<double>, complex<double>, complex<double>>(p)),
+                                                         rC(Rule_Wrapper<complex<double>, complex<double>, complex<double>, complex<double>>(p))
+    {
+        for (int i = 0; i < myp.number_of_fields; i++)
+        {
+            IdentityWeight<complex<double> > fw;
+            old_fieldsft.add_method(fw, i);
+            old_weightsft.add_method(fw, i);
+            
+        }
+    }
+
+    void AddBundleMethod( FracRuleBundle &CDD, int i) {
+        ri.add_method(*(CDD.I), i);
+        rA.add_method(*(CDD.A), i);
+        rB.add_method(*(CDD.B), i);
+        rC.add_method(*(CDD.C), i);
+    }
+
+    void setupInitial() {
+
+        
+        
+        transformed1.Calculate_Results(fields);
+        
+
+        //do the cut off
+        int cut_off_k = 100;
+
+        for (int i = 0; i < myp.number_of_fields; i++)
+        {
+            for (int i1 = 0; i1 < myp.N1; i1++)
+            {
+                for (int j = 0; j < myp.N2; j++)
+                {
+                    double k1, k2;
+                    if (i1 <= myp.N1 / 2)
+                    {
+                        k1 = i1;
+                    }
+                    else
+                    {
+                        k1 = (i1 - myp.N1);
+                    }
+                    if (j <= myp.N2 / 2)
+                    {
+                        k2 = j;
+                    }
+                    else
+                    {
+                        k2 = (j - myp.N2);
+                    }
+
+                    //double tempor = SQR(k1) + SQR(k2);
+                    if(SQR(k1)+SQR(k2)>SQR(cut_off_k ) ) {
+                        transformed1.calculated_reactions[i][i1 * myp.N2 + j] = 0.0;//cut off
+                    }
+                    // upd2[i * params.N2 + j] = 1. / (1. + dt * Di * temp1 * tempor);
+                }
+            }
+        }
+        //cout << "cut off done" << endl;
+
+        reverse_transform.Calculate_Results(transformed1.calculated_reactions);
+
+
+
+        set_field(reverse_transform.calculated_reactions);
+        weigs.Calculate_Results(fields);
+
+        transformed2.Calculate_Results(weigs.calculated_reactions);
+
+        old_fieldsft.Calculate_Results(transformed1.calculated_reactions);
+
+        old_weightsft.Calculate_Results(transformed2.calculated_reactions);
+
+        ri.Calculate_Results(transformed1.calculated_reactions,transformed2.calculated_reactions,fields);
+
+
+        
+        for (int i = 0; i < myp.number_of_fields; i++)
+        {
+            for(int j = 0  ; j < myp.get_total() ; j++) {
+                ri.calculated_reactions[i][j] = transformed1.calculated_reactions[i][j] - ri.calculated_reactions[i][j];
+            }
+        }
+
+
+
+        
+
+        reverse_transform.Calculate_Results(old_fieldsft.calculated_reactions);
+
+
+        transformed1.Calculate_Results(reverse_transform.calculated_reactions);
+        old_fieldsft.Calculate_Results(transformed1.calculated_reactions);
+
+        // reverse_transform.GetMaximas();
+        // reverse_transform.GetMaximasIndex();
+        // reverse_transform.GetMinimas();
+        // reverse_transform.GetMinimasIndex();
+        // cout << endl;
+        // cout << "old field added" << endl;
+        // pausel();
+
+        
+
+        weigs.Calculate_Results(reverse_transform.calculated_reactions);
+
+        transformed2.Calculate_Results(weigs.calculated_reactions);
+
+        old_weightsft.Calculate_Results(transformed2.calculated_reactions);
+
+
+    }
+
+    void Update() {
+        weigs.Calculate_Results(fields);
+        chems.Calculate_Results(fields);
+        transformed1.Calculate_Results(fields);
+        transformed2.Calculate_Results(weigs.calculated_reactions);
+        transformed3.Calculate_Results(chems.calculated_reactions);
+
+        rA.Calculate_Results(transformed1.calculated_reactions,transformed2.calculated_reactions,transformed1.calculated_reactions);
+
+
+        rB.Calculate_Results(old_fieldsft.calculated_reactions, transformed1.calculated_reactions, old_weightsft.calculated_reactions);
+        // string filename7 = "test5";
+        // outfunc(rA.calculated_reactions[0], filename7, myp);
+        // string filename8 = "test6";
+        // outfunc(rB.calculated_reactions[0], filename8, myp);
+        // string filename3 = "oldf";
+        // outfunc(transformed1.calculated_reactions[0], filename3, myp);
+        // string filename4 = "test1";
+        // outfunc(rA.calculated_reactions[0], filename4, myp);
+        // string filename5 = "test2";
+        // outfunc(rB.calculated_reactions[0], filename5, myp);
+        // pausel();
+        rB += rA;
+        rC.Calculate_Results(ri.calculated_reactions, rB.calculated_reactions,transformed3.calculated_reactions);
+
+        // string filename3 = "test1";
+        // outfunc(old_fieldsft.calculated_reactions[0], filename3, myp);
+        // string filename4 = "test2";
+        // outfunc(old_weightsft.calculated_reactions[0], filename4, myp);
+        // string filename5 = "test3";
+        // outfunc(transformed1.calculated_reactions[0], filename5, myp);
+        // string filename6 = "test4";
+        // outfunc(transformed2.calculated_reactions[0], filename6, myp);
+
+
+        // string filename9 = "test7";
+        // outfunc(rC.calculated_reactions[0], filename9, myp);
+        // pausel();
+
+        old_fieldsft.Calculate_Results(transformed1.calculated_reactions);
+
+        old_weightsft.Calculate_Results(transformed2.calculated_reactions);
+
+        reverse_transform.Calculate_Results(rC.calculated_reactions);
+        reverse_transform.GetMaximas();
+        reverse_transform.GetMaximasIndex();
+        reverse_transform.GetMinimas();
+        reverse_transform.GetMinimasIndex();
+        cout << endl;
+        set_field(reverse_transform.calculated_reactions);
+
+    }
+
+
+};
+
+struct CHC : public CH<complex<double>>
+{
+    matrix<double> epsilon_couplings;
+    double diffusion;
+    double epsilon;
+    double c0;
+    double c1;
+    double cons1,cons2,cons3,cons4;
+    double cons3s;
+    double temp1;
+
+    double alpha;
+    double dt;
+
+    Field_Wrapper<complex<double>, complex<double>> oldfieldFT;
+    Field_Wrapper<complex<double>, complex<double>> oldfieldNLW;
+    //Field_Wrapper<complex<double>, complex<double>> oldweightFT;
+
+    Field_Wrapper<complex<double>, complex<double>> InitWeight;
+    
+
+    vector<matrix<double> > inverses; //inverse of each update matrix for each value of k1,k2
+    vector<matrix<double> > baremat; //each matrix for each value of k1,k2
+
+    CHC(const CH_builder &p);
+
+    void set_interaction(double val, int i, int j);
+    void set_diffusion(double diff) {diffusion = diff;}
+    void set_epsilon(double epss) {epsilon = epss;}
+    void set_c0_c1(double c00, double c11) {c0 =  c00; c1 = c11;
+        double nu = 1.0;
+        cons1 = 4 * nu;
+        cons2 = (-6 * c0 * nu - 6 * c1 * nu);
+        cons3 = (2 * c0 * c0 * nu + 8 * c0 * c1 * nu + 2 * c1 * c1 * nu);
+        cons4 = -2 * c0 * c0 * c1 * nu - 2 * c0 * c1 * c1 * nu;
+        cons3s = cons3-1;
+    }
+    void set_temp1(double temp11) {temp1 = temp11; }
+
+    void set_alpha(double alphaa) {alpha = alphaa;}
+    void set_dt(double dtt) { dt= dtt; }
+
+    void setup_matrices();
+
+    matrix<double> create_D_mat_split(double k1, double k2) {
+        int field_no = myp.number_of_fields;
+        matrix<double> dmat(field_no,field_no);
+
+        for(int i = 0 ; i < field_no ; i++) {
+            dmat(i, i) += - diffusion *temp1 *(SQR(k1) + SQR(k2));
+        }
+
+        for(int i = 0 ; i < field_no ; i++) {
+            for(int j  = 0 ; j < field_no ; j++) {
+                dmat(i, j) += -diffusion * temp1 * (SQR(k1) + SQR(k2)) *epsilon_couplings(i, j);
+            }
+        }
+        dmat(0, 0) += -diffusion * cons3s * temp1 * (SQR(k1) + SQR(k2)) - diffusion * SQR(epsilon) * SQR(temp1) * SQR(SQR(k1) + SQR(k2));
+        return dmat;
+    }
+
+    void calculate_non_linear_weight(complex<double> **);
+
+    void calculate_initial_weight();
+
+    void Update();
+};
+
 #include "cahnhilliard.cpp"
+#include "cahnhilliardcombo.cpp"
 
 #endif

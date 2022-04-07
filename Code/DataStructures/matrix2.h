@@ -147,8 +147,11 @@ public:
         friend matrix<Y> operator>>=(matrix<Y> &m1,matrix<Y> &m2);
 
         //matrix vector multiplication
-        template <class Y>
-        friend vector1<Y> operator*(matrix<Y> &m1, vector1<Y> &v1);
+        // template <class Y>
+        // friend vector1<Y> operator*(matrix<Y> &m1, vector1<Y> &v1);
+
+        template <class Q, class Y>
+        friend vector1<Q> operator*(matrix<Y> &m1, vector1<Q> &v1);
 
         template <class Y>
         friend matrix<Y> operator-(const matrix<Y>&);

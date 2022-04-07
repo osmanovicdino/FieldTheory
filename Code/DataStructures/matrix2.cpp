@@ -627,32 +627,61 @@ delete p2;
 return mt;
 }
 
-template <class T>
-vector1<T> operator*(matrix<T> &m1, vector1<T> &v) {
-int n = v.getsize();
+// template <class T>
+// vector1<T> operator*(matrix<T> &m1, vector1<T> &v) {
+// int n = v.getsize();
 
 
-if ( n != m1.getnrows() ) error("diff size in mat * vec operation");
-vector1<T> v2(n);
-//T sum;
-// T *p =m1.getdata();
-// T *pp=v.getdat();
+// if ( n != m1.getnrows() ) error("diff size in mat * vec operation");
+// vector1<T> v2(n);
+// //T sum;
+// // T *p =m1.getdata();
+// // T *pp=v.getdat();
 
-#pragma omp parallel for
-for ( int i = 0 ; i < n ; i++ ) {
-T sum = T(0);
-//cout << sum << endl;
-for ( int j = 0 ; j < n ; j++ ) {
-    //cout << sum << " " << (m1.mat[i * n + j] * v.data[j]) << " " << m1.mat[i*n+j] << " " << v.data[j] << " ";
-    sum += (m1.mat[i * n + j] * v.data[j]);
-    //cout << sum << endl;
-}
-v2.data[i] = sum;
-}
+// #pragma omp parallel for
+// for ( int i = 0 ; i < n ; i++ ) {
+// T sum = T(0);
+// //cout << sum << endl;
+// for ( int j = 0 ; j < n ; j++ ) {
+//     //cout << sum << " " << (m1.mat[i * n + j] * v.data[j]) << " " << m1.mat[i*n+j] << " " << v.data[j] << " ";
+//     sum += (m1.mat[i * n + j] * v.data[j]);
+//     //cout << sum << endl;
+// }
+// v2.data[i] = sum;
+// }
 
 
 
-return v2;
+// return v2;
+// }
+
+template <class Q, class T>
+vector1<Q> operator*(matrix<T> &m1, vector1<Q> &v)
+{
+    int n = v.getsize();
+
+    if (n != m1.getnrows())
+        error("diff size in mat * vec operation");
+    vector1<Q> v2(n);
+    // T sum;
+    //  T *p =m1.getdata();
+    //  T *pp=v.getdat();
+
+    //#pragma omp parallel for
+    for (int i = 0; i < n; i++)
+    {
+        Q sum = Q(0.);
+        // cout << sum << endl;
+        for (int j = 0; j < n; j++)
+        {
+            // cout << sum << " " << (m1.mat[i * n + j] * v.data[j]) << " " << m1.mat[i*n+j] << " " << v.data[j] << " ";
+            sum += (m1.mat[i * n + j] * v.data[j]);
+            // cout << sum << endl;
+        }
+        v2.data[i] = sum;
+    }
+
+    return v2;
 }
 
 template <class T>

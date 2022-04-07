@@ -11,6 +11,29 @@ class Weight {
 };
 
 template <class T>
+class IdentityWeight : public Weight<T, T>
+{ // real to real
+private:
+    double eps;
+
+public:
+    IdentityWeight()  {}
+    void operator()(T **a, T **fields, int j, const CH_builder &p)
+    {
+        int end = p.get_total();
+        for (int i = 0; i < end; i++)
+        {
+            a[j][i] = fields[j][i];
+        }
+    }
+    IdentityWeight *clone() const
+    {
+        return new IdentityWeight(*this);
+    }
+    void print() { cout << "the Diffusive weight class\n"; }
+};
+
+template <class T>
 class DiffusiveWeight : public Weight<T, T> { //real to real
 private:
     double eps;
@@ -320,7 +343,7 @@ public:
             // }
             
             
-            a[j][i] = as*fields[j][i] + cons1 * CUB(fields[j][i]) + cons2 * SQR(fields[j][i]) + cons3 * (fields[j][i]) + cons4;
+            a[j][i] = as + cons1 * CUB(fields[j][i]) + cons2 * SQR(fields[j][i]) + cons3 * (fields[j][i]) + cons4;
         }
     }
     CahnHilliardWithCouplingWeightGenericN *clone() const
@@ -376,7 +399,7 @@ public:
             //     pausel();
             // }
 
-            a[j][i] = as + cons1 * CUB(fields[0][i]) + cons2 * SQR(fields[0][i]) + cons3 * (fields[0][i]) + cons4;
+            a[j][i] = as * fields[j][i] + cons1 * CUB(fields[0][i]) + cons2 * SQR(fields[0][i]) + cons3 * (fields[0][i]) + cons4;
         }
     }
     CahnHilliardWithCouplingWeightGenericNSQR *clone() const

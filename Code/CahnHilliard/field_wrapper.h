@@ -70,6 +70,7 @@ struct Rule_Wrapper
     Rule_Wrapper(const CH_builder &p);
     Rule_Wrapper(const Rule_Wrapper &a);
     Rule_Wrapper &operator=(const Rule_Wrapper &); //assignment operator
+    Rule_Wrapper &operator+=(const Rule_Wrapper&);
 
     ~Rule_Wrapper();
 
@@ -79,6 +80,11 @@ struct Rule_Wrapper
 
     void Check_fields();
 
+    void GetMaximas();
+    void GetMinimas();
+    void GetMaximasIndex();
+    void GetMinimasIndex();
+    
     void Check_negatives(bool &he);
 };
 
