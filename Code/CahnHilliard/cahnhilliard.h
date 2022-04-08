@@ -390,8 +390,10 @@ struct CHC : public CH<complex<double>>
     CHC(const CH_builder &p);
 
     void set_interaction(double val, int i, int j);
-    void set_diffusion(double diff) {diffusion = diff;}
-    void set_epsilon(double epss) {epsilon = epss;}
+    void set_diffusion(double diff) {diffusion = diff; cout << "diffusion set to: " << diff << endl;}
+    void set_epsilon(double epss) {epsilon = epss;
+        cout << "epsilon set to: " << epss << endl;
+    }
     void set_c0_c1(double c00, double c11) {c0 =  c00; c1 = c11;
         double nu = 1.0;
         cons1 = 4 * nu;
@@ -399,11 +401,19 @@ struct CHC : public CH<complex<double>>
         cons3 = (2 * c0 * c0 * nu + 8 * c0 * c1 * nu + 2 * c1 * c1 * nu);
         cons4 = -2 * c0 * c0 * c1 * nu - 2 * c0 * c1 * c1 * nu;
         cons3s = cons3-1;
+        cout << "c0 set to: " << c00 << endl;
+        cout << "c1 set to: " << c11 << endl;
     }
-    void set_temp1(double temp11) {temp1 = temp11; }
+    void set_temp1(double temp11) {temp1 = temp11;
+        cout << "temp set to: " << temp1 << endl;
+    }
 
-    void set_alpha(double alphaa) {alpha = alphaa;}
-    void set_dt(double dtt) { dt= dtt; }
+    void set_alpha(double alphaa) {alpha = alphaa;
+        cout << "alpha set to: " << alpha << endl;
+    }
+    void set_dt(double dtt) { dt= dtt;
+        cout << "dt set to: " << dt << endl;
+    }
 
     void setup_matrices();
 

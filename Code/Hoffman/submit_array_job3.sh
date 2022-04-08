@@ -35,11 +35,11 @@ else
    echo "did not read file correctly"
 fi
 dirwemake="chemistry${SGE_TASK_ID}"
-mkdir /u/scratch/d/dinoo/FieldTheory2/${dirwemake}
-cp ~/FieldTheory/Code/mainFractionalDiffusionNormalChem.cpp /u/scratch/d/dinoo/FieldTheory2/${dirwemake}
-cp ~/FieldTheory/Code/InitialConditions/${wt} /u/scratch/d/dinoo/FieldTheory2/${dirwemake}/res.csv
-g++ ~/FieldTheory/Code/mainFractionalDiffusionNormalChem.cpp -lm -lfftw3 -L/usr/local/lib/lfftw3.a -std=c++17 -o /u/scratch/d/dinoo/FieldTheory2/${dirwemake}/angron
-cd /u/scratch/d/dinoo/FieldTheory2/${dirwemake}
+mkdir /u/scratch/d/dinoo/FieldTheory33/${dirwemake}
+cp ~/FieldTheory/Code/mainFractionalDiffusionNormalChem.cpp /u/scratch/d/dinoo/FieldTheory3/${dirwemake}
+cp ~/FieldTheory/Code/InitialConditions/${wt} /u/scratch/d/dinoo/FieldTheory3/${dirwemake}/res.csv
+g++ ~/FieldTheory/Code/mainFractionalDiffusionNormalChem.cpp -lm -lfftw3 -L/usr/local/lib/lfftw3.a -std=c++17 -o /u/scratch/d/dinoo/FieldTheory3/${dirwemake}/angron
+cd /u/scratch/d/dinoo/FieldTheory3/${dirwemake}
 ./angron 'res.csv' > log
 # echo job info on joblog:
 echo "Job $JOB_ID ended on:   " `hostname -s`

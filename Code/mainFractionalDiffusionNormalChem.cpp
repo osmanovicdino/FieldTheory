@@ -68,10 +68,10 @@ int main(int argc, char **argv)
 
     int n = mat1(0, 0);
 
-    vector1<int> phaseseps(n);
+    vector1<double> phasesepsparams(8);
 
-    for (int i = 0; i < n; i++)
-        phaseseps[i] = mat1(1, i);
+    for (int i = 0; i < 8; i++)
+        phasesepsparams[i] = mat1(1, i);
 
     vector1<double> epsi((n) * (n - 1) / 2);
 
@@ -119,7 +119,7 @@ int main(int argc, char **argv)
     typedef Rule_Wrapper<myc, myc, myc, myc> RWC;
 
     CH_builder p;
-    int nof = 4;
+    int nof = n;
     p.number_of_fields = nof;
     p.N1 = 1024;
     p.N2 = 1024;
@@ -129,10 +129,22 @@ int main(int argc, char **argv)
     for(int i = 0 ; i < nof ; i++) {
         for(int j = i+1  ; j < nof ; j++) {
             //cout << i << " " << j << endl;
-             a.set_interaction(0.5, i, j);
+             a.set_interaction(epsa(i,j), i, j);
         }
     }
 
+    a.set_diffusion(phasesepsparams[0]);
+    a.set_epsilon(phasesepsparams[1]);
+    a.set_c0_c1(phasesepsparams[2],phasesepsparams[3]);
+    double L = phasesepsparams[4];
+    double temp1 = SQR(2. * pii / L);
+    a.set_temp1(temp1);
+
+    a.set_alpha(phasesepsparams[5]);
+    a.set_dt(phasesepsparams[6]);
+
+    double rate_multiplier = phasesepsparams[7];
+    
 
     FWCC my_chemsitry(p);
     NoWeight<myc, myc> nw;
@@ -163,7 +175,7 @@ int main(int argc, char **argv)
                 // cout << mat1(j,i*(nof+1)+1) << endl;
                 // cout << jpow << endl;
                 // pausel();
-                GenericChemistry<myc> c6_0(20.*mat1(j, i * (nof + 1) + 1), jpow);
+                GenericChemistry<myc> c6_0(rate_multiplier*mat1(j, i * (nof + 1) + 1), jpow);
                 c6.add_chemical_reaction(c6_0, i);
                 double tot1 = 1.0;
                 for (int k = 0; k < nof; k++)
@@ -188,17 +200,6 @@ int main(int argc, char **argv)
 
     
 
-    a.set_diffusion(10.0);
-    a.set_epsilon(0.4);
-    a.set_c0_c1(0.2,0.8);
-    double L = 100.0;
-    double temp1 = SQR(2. * pii / L);
-    a.set_temp1(temp1);
-
-
-    
-    a.set_alpha(0.5);
-    a.set_dt(0.005);
 
     a.setup_matrices();
 
