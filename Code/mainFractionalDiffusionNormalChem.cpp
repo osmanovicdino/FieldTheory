@@ -141,7 +141,7 @@ int main(int argc, char **argv)
     a.set_temp1(temp1);
 
     a.set_alpha(phasesepsparams[5]);
-    a.set_dt(phasesepsparams[6]);
+    a.set_dt(0.1*phasesepsparams[6]);
 
     double rate_multiplier = phasesepsparams[7];
     
