@@ -5,7 +5,7 @@
 #$ -o joblog.$JOB_ID
 #$ -j y
 ## Edit the line below as needed:
-#$ -l h_rt=2:00:00,h_data=2G
+#$ -l h_rt=2:00:00,h_data=4G
 ## Modify the parallel environment
 ## and the number of cores as needed:
 #$ -t 1-100:1
@@ -29,7 +29,7 @@ module load ffmpeg
 ##/usr/bin/time -v hostname
 
 dirwemake="chemistry${SGE_TASK_ID}"
-cd /u/scratch/d/dinoo/FieldTheory5/${dirwemake}
+cd /u/scratch/d/dinoo/FieldTheory6/${dirwemake}
 export OMP_NUM_THREADS=1
 for file in field0*.csv; do python3 ~/FieldTheory/Code/Plotting/PlotDirectory.py "$file"; done
 ffmpeg -pattern_type glob -i '*.png' -s 1920x1080 -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2" test.mp4
