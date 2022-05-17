@@ -215,6 +215,26 @@ void GetMaximas(T **calculated_reactions, const CH_builder &params)
     cout << endl;
 }
 
+template <class T>
+void GetMinimas(T **calculated_reactions, const CH_builder &params)
+{
+    for (int i = 0; i < params.number_of_fields; i++)
+    {
+        T a = calculated_reactions[i][0];
+        int tot = params.get_total();
+        for (int j = 1; j < tot; j++)
+        {
+            if (calculated_reactions[i][j] < a)
+            {
+                a = calculated_reactions[i][j];
+            }
+        }
+        cout << a << " ";
+    }
+    cout << endl;
+}
+
+
 template <class T, class Q>
 void Field_Wrapper<T,Q>::GetMaximasIndex()
 {

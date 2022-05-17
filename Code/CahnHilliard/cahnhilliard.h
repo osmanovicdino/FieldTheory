@@ -366,6 +366,8 @@ struct CHFracDt : public CH<complex <double> > {
 struct CHC : public CH<complex<double>>
 {
     matrix<double> epsilon_couplings;
+
+    matrix<double> epsilon_couplingsSQR;
     double diffusion;
     double epsilon;
     double c0;
@@ -436,9 +438,14 @@ struct CHC : public CH<complex<double>>
 
     void calculate_non_linear_weight(complex<double> **);
 
+    void calculate_non_linear_weightSQR(complex<double> **);
+
     void calculate_initial_weight();
+    void calculate_initial_weightSQR();
 
     void Update();
+
+    void UpdateSQR();
 };
 
 #include "cahnhilliard.cpp"
