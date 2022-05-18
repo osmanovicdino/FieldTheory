@@ -212,9 +212,6 @@ void CHC::calculate_initial_weight() {
     oldfieldNLW.Calculate_Results(transformed2.calculated_reactions);
 
 
-    int totp = myp.get_total();
-    int nof = myp.number_of_fields;
-
     for (int i = 0; i < myp.N1; i++)
     {
         for (int j = 0; j < myp.N2; j++)
