@@ -294,7 +294,7 @@ int main(int argc, char **argv)
         cout << i << endl;
         cout << "begin" << endl;
         a.UpdateSQR();
-        bool chck;
+        bool chck = true;
         a.check_field(chck);
         if(!chck) break;
     }
