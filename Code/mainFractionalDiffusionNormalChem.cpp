@@ -274,5 +274,9 @@ int main(int argc, char **argv)
         cout << i << endl;
         cout << "begin" << endl;
         a.Update();
+        bool chck = true;
+        a.check_field(chck);
+        if (!chck)
+            break;
     }
 }
