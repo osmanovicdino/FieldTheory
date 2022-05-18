@@ -188,6 +188,24 @@ void CHC::calculate_non_linear_weightSQR(complex<double> **input)
 
 void CHC::calculate_initial_weight() {
     transformed1.Calculate_Results(fields); //calculate FT of fields
+    int totp = myp.get_total();
+    int nof = myp.number_of_fields;
+
+    for (int fn = 0; fn < nof; fn++)
+    {
+        for (int i = 200; i < myp.N1; i++)
+        {
+            for (int j = 200; j < myp.N2; j++)
+            {
+                transformed1.calculated_reactions[fn][i * myp.N2 + j] = 0.;
+            }
+        }
+    }
+    reverse_transform.Calculate_Results(transformed1.calculated_reactions);
+    set_field(reverse_transform.calculated_reactions);
+
+    transformed1.Calculate_Results(fields); // calculate FT of fields
+
     oldfieldFT.Calculate_Results(transformed1.calculated_reactions);
 
     calculate_non_linear_weight(fields);
@@ -280,6 +298,8 @@ void CHC::calculate_initial_weightSQR()
     }
     reverse_transform.Calculate_Results(transformed1.calculated_reactions);
     set_field(reverse_transform.calculated_reactions);
+
+    transformed1.Calculate_Results(fields); // calculate FT of fields
 
     oldfieldFT.Calculate_Results(transformed1.calculated_reactions);
 
