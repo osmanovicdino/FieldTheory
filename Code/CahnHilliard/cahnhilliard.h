@@ -100,6 +100,10 @@ void set_rules(const Rule_Wrapper<T,T,T,T> &a) { rules = a; }
 
 void print_all_results(string s1);
 
+void check_field(bool &a) {
+    if(fields[0][0]!=fields[0][0]) a = false;
+}
+
 virtual void Update();
 
 };
