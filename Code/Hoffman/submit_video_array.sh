@@ -31,12 +31,7 @@ module load ffmpeg
 dirwemake="chemistry${SGE_TASK_ID}"
 cd /u/scratch/d/dinoo/FieldTheory3/${dirwemake}
 export OMP_NUM_THREADS=1
-num=`ls field0*.csv | wc -l`
-if test $num -ge 100;
-then
-    for file in field0*.csv; do python3 ~/FieldTheory/Code/Plotting/PlotDirectory.py "$file"; done
-    ffmpeg -pattern_type glob -i '*.png' -s 1920x1080 -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2" test.mp4
-fi
+ffmpeg -pattern_type glob -i '*.png' -s 1920x1080 -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2" test.mp4
 # echo job info on joblog:
 echo "Job $JOB_ID ended on:   " `hostname -s`
 echo "Job $JOB_ID ended on:   " `date `
