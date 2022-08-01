@@ -46,7 +46,7 @@ fi
 dirwemake="paramset${SGE_TASK_ID}"
 mkdir /u/scratch/d/dinoo/${mydir}/${dirwemake}
 cp ~/FieldTheory/Code/mainCHDouble.cpp /u/scratch/d/dinoo/${mydir}/${dirwemake}
-g++ ~/FieldTheory/Code/mainCHDouble.cpp -lm -lfftw3 -L/usr/local/lib/lfftw3.a -std=c++11 -o /u/scratch/d/dinoo/${mydir}/${dirwemake}/angron
+g++ ~/FieldTheory/Code/mainCHDouble.cpp -lm -lfftw3 -L/usr/local/lib/lfftw3.a -std=c++17 -o /u/scratch/d/dinoo/${mydir}/${dirwemake}/angron
 cd /u/scratch/d/dinoo/${mydir}/${dirwemake}
 ./angron $x12 $x13 $x23 > log
 # echo job info on joblog:
