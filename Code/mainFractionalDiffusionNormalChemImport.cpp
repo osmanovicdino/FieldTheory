@@ -50,12 +50,16 @@ int main(int argc, char **argv)
 {
     srand(time(NULL));
     string importstring;
+    string filenamespos;
 
-    if (argc == 2)
+    if (argc == 3)
     {
         stringstream ss;
         ss << argv[1];
         importstring = ss.str();
+        stringstream ss2;
+        ss2 << argv[2];
+        filenamespos = ss2.str();
     }
     else
     {
@@ -66,7 +70,7 @@ int main(int argc, char **argv)
     bool err1;
     matrix<double> mat1 = importcsv(importstring, T, err1);
 
-    
+
 
     int n = mat1(0, 0);
 
@@ -101,10 +105,34 @@ int main(int argc, char **argv)
     cout << "strings" << endl;
 
     cout << "done" << endl;
-    string imp1[4] = {"/home/dino/Documents/IsingPolymer/PolycombCode/Code/init0.csv", "/home/dino/Documents/IsingPolymer/PolycombCode/Code/init1.csv", "/home/dino/Documents/IsingPolymer/PolycombCode/Code/init2.csv", "/home/dino/Documents/IsingPolymer/PolycombCode/Code/init3.csv"};
+
+
+    ifstream data(filenamespos.c_str());
+    if (!data.is_open())
+    {
+        cout << "file not found during import" << endl;
+        error("could not import initial conditions");
+    }
+    string line;
+    vector<string> an;
+    while (getline(data, line))
+    {
+
+        // stringstream lineStream(line);
+        // string cell;
+        // vector<T> b;
+        // while (getline(lineStream, cell, ','))
+        // {
+        //     b.push_back(atof(cell.c_str()));
+        // }
+        an.push_back(line);
+    }
 
     for (int i = 0; i < n; i++)
-        init[i] = imp1[i];
+        init[i] = an[i];
+
+        cout << init[0] << endl;
+        pausel();
 
     // if (argc == 5)
     // {

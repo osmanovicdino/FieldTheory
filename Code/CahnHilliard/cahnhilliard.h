@@ -452,7 +452,80 @@ struct CHC : public CH<complex<double>>
     void UpdateSQR();
 };
 
+struct CHD : public CH<complex<double>>
+{
+
+    double chi_12;
+
+    double chi_13;
+    double chi_23;
+
+    double diffusion1;
+    double diffusion2;
+
+    double x0; // minima of the density for comp1
+    double y0; //minima of the density for comp2
+
+    double ml1;
+    double ml2;
+    double ml3;
+    double ml4;
+
+    double sl1;
+    double sl2;
+    double sl3;
+    double sl4;
+
+    double dt;
+    double temp1;
+    double epsilon;
+
+    void set_temp1(double temp11)
+    {
+        temp1 = temp11;
+        cout << "temp set to: " << temp1 << endl;
+    }
+
+    void set_epsilon(double epsilonn)
+    {
+        epsilon = epsilonn;
+        cout << "eps set to: " << epsilon << endl;
+    }
+    void set_dt(double dtt)
+    {
+        dt = dtt;
+        cout << "dt set to: " << dt << endl;
+    }
+
+    vector<matrix<double>> inverses; // inverse of each update matrix for each value of k1,k2
+    vector<matrix<double>> baremat;
+
+    CHD(const CH_builder &p);
+    void setup_matrices();
+
+    void set_interaction_and_diffusion(double x12, double x13, double x23, double D1, double D2);
+
+
+    matrix<double> create_D_mat_split(double k1, double k2) {
+        int field_no = myp.number_of_fields;
+        matrix<double> dmat(field_no, field_no);
+
+        dmat(0, 0) = 1 + dt * temp1 * (SQR(k1) + SQR(k2)) * ml1 - dt * SQR(epsilon) * SQR(temp1) * SQR(SQR(k1) + SQR(k2)) * sl1;
+        dmat(0, 1) = dt * temp1 * (SQR(k1) + SQR(k2)) * ml2 - dt * SQR(epsilon) * SQR(temp1) * SQR(SQR(k1) + SQR(k2)) * sl2;
+        dmat(1, 0) = dt * temp1 * (SQR(k1) + SQR(k2)) * ml3 - dt * SQR(epsilon) * SQR(temp1) * SQR(SQR(k1) + SQR(k2)) * sl3;
+        dmat(1, 1) = 1 + dt * temp1 * (SQR(k1) + SQR(k2)) * ml4 - dt * SQR(epsilon) * SQR(temp1) * SQR(SQR(k1) + SQR(k2)) * sl4;
+
+        return dmat;
+    }
+    void calculate_non_linear_weight(complex<double> **);
+
+    void Update();
+
+
+};
+
 #include "cahnhilliard.cpp"
 #include "cahnhilliardcombo.cpp"
+#include "cahnhilliarddouble.cpp"
 
 #endif
