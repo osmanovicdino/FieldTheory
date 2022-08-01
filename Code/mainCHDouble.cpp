@@ -96,7 +96,7 @@ int main(int argc, char **argv)
     init[0]=0.0;
     init[1]=0.0;
 
-    double gt = 0.5;
+    double gt = 0.1;
 
     for (int lk = 0; lk < nof; lk++)
     {
