@@ -77,7 +77,7 @@ int main(int argc, char **argv)
     
     a.set_dt(0.005);
 
-    double L = 100.;
+    double L = 1000.;
     double temp1 = SQR(2. * pii / L);
     a.set_temp1(temp1);
     a.set_epsilon(0.4);

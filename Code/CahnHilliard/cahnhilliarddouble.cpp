@@ -213,7 +213,7 @@ void CHD::Update()
                 for (int k = 0; k < nof; k++)
                 {
 
-                    cout << transformed2.calculated_reactions[k][i * myp.N2 + j] << endl;
+                    cout << dt*fac1*transformed2.calculated_reactions[k][i * myp.N2 + j] << endl;
                 }
                 cout << "old: " << endl;
                 cout << v2 << endl;
