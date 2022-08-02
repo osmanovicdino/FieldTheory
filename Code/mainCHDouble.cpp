@@ -111,6 +111,35 @@ int main(int argc, char **argv)
         }
     }
 
+    vector1<double> tots(nof);
+
+    for (int lk = 0; lk < nof; lk++)
+    {
+        for (int i = 0; i < p.N1; i++)
+        {
+            for (int j = 0; j < p.N2; j++)
+            {
+                
+                tots[lk] += v[lk](i,j).real();
+            }
+        }
+    }
+
+
+    tots /= double(p.N1*p.N2);
+
+    for (int lk = 0; lk < nof; lk++)
+    {
+        for (int i = 0; i < p.N1; i++)
+        {
+            for (int j = 0; j < p.N2; j++)
+            {
+
+                v[lk](i, j) -= tots[lk];
+            }
+        }
+    }
+
     for (int lk = 0; lk < nof; lk++)
     {
         a.set_field(v[lk], lk);
