@@ -128,6 +128,7 @@ int main(int argc, char **argv)
 
     tots /= double(p.N1*p.N2);
 
+    double dens = -0.1;
     for (int lk = 0; lk < nof; lk++)
     {
         for (int i = 0; i < p.N1; i++)
@@ -136,6 +137,7 @@ int main(int argc, char **argv)
             {
 
                 v[lk](i, j) -= tots[lk];
+                v[lk](i,j) += dens;
             }
         }
     }
