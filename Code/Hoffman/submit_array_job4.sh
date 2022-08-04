@@ -30,7 +30,7 @@ module load fftw/3.3.9
 ##echo '/usr/bin/time -v hostname'
 ##/usr/bin/time -v hostname
 filename=~/FieldTheory/Code/Hoffman/params3.dat
-mydir="TwoFieldTheory2"
+mydir="TwoFieldTheory3"
 if [ -e ${filename}   ]; then
    # use the unix command sed -n ${line_number}p to read by line
     x12=`sed -n ${SGE_TASK_ID}p ${filename} | awk '{print $1}'` 
