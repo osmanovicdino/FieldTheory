@@ -54,11 +54,15 @@ int main(int argc, char **argv)
     double x12;
     double x13;
     double x23;
-    if (argc == 4)
+    double den1;
+    double den2;
+    if (argc == 6)
     {
         x12=atof(argv[1]);
         x13=atof(argv[2]);
         x23=atof(argv[3]);
+        den1=atof(argv[4]);
+        den2=atof(argv[5]);
     }
     else
     {
@@ -77,7 +81,7 @@ int main(int argc, char **argv)
     
     a.set_dt(0.005);
 
-    double L = 1000.;
+    double L = 100.;
     double temp1 = SQR(2. * pii / L);
     a.set_temp1(temp1);
     a.set_epsilon(0.4);
@@ -130,8 +134,8 @@ int main(int argc, char **argv)
 
     //double dens = -0.1;
     vector1<double> dens(2);
-    dens[0]=-0.1;
-    dens[1]=-0.2;
+    dens[0]=den1;
+    dens[1]=den2;
     for (int lk = 0; lk < nof; lk++)
     {
         for (int i = 0; i < p.N1; i++)
@@ -150,8 +154,8 @@ int main(int argc, char **argv)
         a.set_field(v[lk], lk);
     }
 
-    int runtime = 5001;
-    int every = 10;
+    int runtime = 50001;
+    int every = 100;
 
     string importstring = "twofields";
     int tf = ceil((double)runtime / (double)every);

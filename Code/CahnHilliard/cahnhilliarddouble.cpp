@@ -203,24 +203,24 @@ void CHD::Update()
             
 
             v3 = inverses[rel] * v;
-            if (rel == 131839)
-            {
-                cout << "bare mat: " << endl;
-                cout << baremat[rel] << endl;
-                cout << "inverse mat: " << endl;
-                cout << inverses[rel] << endl;
+            // if (rel == 131839)
+            // {
+            //     cout << "bare mat: " << endl;
+            //     cout << baremat[rel] << endl;
+            //     cout << "inverse mat: " << endl;
+            //     cout << inverses[rel] << endl;
                 
-                for (int k = 0; k < nof; k++)
-                {
+            //     for (int k = 0; k < nof; k++)
+            //     {
 
-                    cout << dt*fac1*transformed2.calculated_reactions[k][i * myp.N2 + j] << endl;
-                }
-                cout << "old: " << endl;
-                cout << v2 << endl;
-                cout << "new: " << endl;
-                cout << v << endl;
-                pausel();
-            }
+            //         cout << dt*fac1*transformed2.calculated_reactions[k][i * myp.N2 + j] << endl;
+            //     }
+            //     cout << "old: " << endl;
+            //     cout << v2 << endl;
+            //     cout << "new: " << endl;
+            //     cout << v << endl;
+            //     pausel();
+            // }
             for (int k = 0; k < nof; k++)
             {
                 rules.calculated_reactions[k][i * myp.N2 + j] = v3[k];
