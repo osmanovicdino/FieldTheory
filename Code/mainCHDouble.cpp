@@ -56,6 +56,7 @@ int main(int argc, char **argv)
     double x23;
     double den1;
     double den2;
+    int cutoff;
     if (argc == 6)
     {
         x12=atof(argv[1]);
@@ -63,6 +64,7 @@ int main(int argc, char **argv)
         x23=atof(argv[3]);
         den1=atof(argv[4]);
         den2=atof(argv[5]);
+        cutoff=atof(argv[6]);
     }
     else
     {
@@ -149,10 +151,16 @@ int main(int argc, char **argv)
         }
     }
 
+    //we can cut off the high frequency modes
+
+    
+
     for (int lk = 0; lk < nof; lk++)
     {
         a.set_field(v[lk], lk);
     }
+
+    a.setupInitial(cutoff);
 
     int runtime = 50001;
     int every = 100;
@@ -170,7 +178,7 @@ int main(int argc, char **argv)
     for (int i = 0; i < runtime; i++)
     {
 
-        if (i % every == 0 && i > 0)
+        if (i % every == 0)
         {
             // stringstream strep1;
             // stringstream strep2;

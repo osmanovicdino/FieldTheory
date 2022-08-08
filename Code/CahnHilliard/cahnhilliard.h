@@ -517,6 +517,50 @@ struct CHD : public CH<complex<double>>
 
         return dmat;
     }
+
+    void setupInitial(int cut_off_k) {
+    transformed1.Calculate_Results(fields);
+
+    for (int i = 0; i < myp.number_of_fields; i++)
+    {
+        for (int i1 = 0; i1 < myp.N1; i1++)
+        {
+            for (int j = 0; j < myp.N2; j++)
+            {
+                double k1, k2;
+                if (i1 <= myp.N1 / 2)
+                {
+                    k1 = i1;
+                }
+                else
+                {
+                    k1 = (i1 - myp.N1);
+                }
+                if (j <= myp.N2 / 2)
+                {
+                    k2 = j;
+                }
+                else
+                {
+                    k2 = (j - myp.N2);
+                }
+
+                // double tempor = SQR(k1) + SQR(k2);
+                if (SQR(k1) + SQR(k2) > SQR(cut_off_k))
+                {
+                    transformed1.calculated_reactions[i][i1 * myp.N2 + j] = 0.0; // cut off
+                }
+                // upd2[i * params.N2 + j] = 1. / (1. + dt * Di * temp1 * tempor);
+            }
+        }
+    }
+    // cout << "cut off done" << endl;
+
+    reverse_transform.Calculate_Results(transformed1.calculated_reactions);
+
+    set_field(reverse_transform.calculated_reactions);
+    }
+
     void calculate_non_linear_weight(complex<double> **);
 
     void Update();
