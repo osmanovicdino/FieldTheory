@@ -57,7 +57,7 @@ int main(int argc, char **argv)
     double den1;
     double den2;
     int cutoff;
-    if (argc == 6)
+    if (argc == 7)
     {
         x12=atof(argv[1]);
         x13=atof(argv[2]);
