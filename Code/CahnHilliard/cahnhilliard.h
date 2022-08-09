@@ -518,7 +518,7 @@ struct CHD : public CH<complex<double>>
         return dmat;
     }
 
-    void setupInitial(int cut_off_k) {
+    void setupInitial(vector1<int> cut_off_k) {
     transformed1.Calculate_Results(fields);
 
     for (int i = 0; i < myp.number_of_fields; i++)
@@ -546,7 +546,7 @@ struct CHD : public CH<complex<double>>
                 }
 
                 // double tempor = SQR(k1) + SQR(k2);
-                if (SQR(k1) + SQR(k2) > SQR(cut_off_k))
+                if (SQR(k1) + SQR(k2) > SQR(cut_off_k[i]))
                 {
                     transformed1.calculated_reactions[i][i1 * myp.N2 + j] = 0.0; // cut off
                 }

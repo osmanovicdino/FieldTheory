@@ -250,13 +250,15 @@ int main(int argc, char **argv)
 
     double gt = 0.6;
 
-
+    bool perform_small_perturbation = false;
+    double perturbationmag =  0.01;
 
     for (int lk = 0; lk < nof; lk++)
     {
         double T;
         bool vv1;
         matrix<double> postemp = importcsv(init[lk], T, vv1);
+        double mean = trap(postemp,1.,1.)/(double)(postemp.getdatapoints());
         cout << init[lk] << endl;
         cout << postemp(512,512) << endl;
         // double x1 = init[lk];
@@ -264,8 +266,11 @@ int main(int argc, char **argv)
         {
             for (int j = 0; j < p.N2; j++)
             {
-                // double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
+                double r1 = perturbationmag*mean*(2. * ((double)rand() / (double)RAND_MAX) - 1.);
                 v[lk](i, j) = postemp(i,j);
+                if(perform_small_perturbation) {
+                    v[lk](i,j) += r1;
+                }
             }
         }
     }
