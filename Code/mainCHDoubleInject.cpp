@@ -48,8 +48,12 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-    srand(time(NULL));
+    uint64_t microseconds_since_epoch = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
+    // cout << microseconds_since_epoch << endl;
+    // cout << time(NULL) << endl;
+    int seed = microseconds_since_epoch % time(NULL);
+    srand(seed);
 
     double x12;
     double x13;
@@ -213,13 +217,44 @@ int main(int argc, char **argv)
 
     matrix<myc> fieldtemp(p.N1, p.N2);
 
+    //check the field variable 
+    bool inject_away = true;
     double x1 = den2;
+    int totplaces=0;
     for (int i = 0; i < p.N1; i++)
     {
         for (int j = 0; j < p.N2; j++)
         {
             double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
+            if(inject_away && a.fields[0][i*p.N1+j] < 0.0) {
             fieldtemp(i, j) = x1 + gt * r1;
+            totplaces++;
+            }
+            else{
+                fieldtemp(i,j) =-0.33;
+            }
+        }
+    }
+
+    double profactor = (double)(p.N1*p.N2)/((double)totplaces);
+
+    for (int i = 0; i < p.N1; i++)
+    {
+        for (int j = 0; j < p.N2; j++)
+        {
+            double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
+            if (inject_away && a.fields[0][i * p.N1 + j] < 0.0)
+            {
+                fieldtemp(i, j) = profactor*x1 + gt * r1;
+                
+            }
+            else if(!inject_away) {
+                fieldtemp(i, j) = x1 + gt * r1;
+            }
+            else
+            {
+                fieldtemp(i, j) = -0.33;
+            }
         }
     }
 

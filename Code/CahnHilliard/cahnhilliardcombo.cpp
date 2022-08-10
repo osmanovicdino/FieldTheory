@@ -499,6 +499,139 @@ void CHC::Update() {
 
 }
 
+template<class Q>
+void CHC::UpdateNoise(Q &func, GenNoise<complex<double>> &mynoise, vector1<double> &str)
+{
+
+    // string fieldss = "fields";
+    // outfunc(fields[0], fieldss, myp);
+
+    chems.Calculate_Results(fields); // calculate chemistry
+
+    // string schem = "chem";
+    // outfunc(chems.calculated_reactions[0],schem,myp);
+
+    transformed3.Calculate_Results(chems.calculated_reactions);
+    // string ftschem = "ftchem";
+    // outfunc(transformed3.calculated_reactions[0], ftschem, myp);
+    //     pausel();
+    mynoise.GenFields(func, str, 1.0 / 2.0);
+
+    transformed3.Add_Noise(mynoise);
+
+
+    // GetMaximas(transformed3.calculated_reactions,schem,myp);
+    // pausel();
+
+    transformed1.Calculate_Results(fields); // calculate FT of fields
+    calculate_non_linear_weight(fields);
+
+    int totp = myp.get_total();
+    int nof = myp.number_of_fields;
+
+    for (int i = 0; i < myp.N1; i++)
+    {
+        for (int j = 0; j < myp.N2; j++)
+        {
+
+            double k1, k2;
+            if (i <= myp.N1 / 2)
+            {
+                k1 = i;
+            }
+            else
+            {
+                k1 = (i - myp.N1);
+            }
+            if (j <= myp.N2 / 2)
+            {
+                k2 = j;
+            }
+            else
+            {
+                k2 = (j - myp.N2);
+            }
+
+            // take absolute values of k1 and k2
+            int k1a = abs(k1);
+            int k2a = abs(k2);
+            if (k2a < k1a)
+            {
+                k1a = k2a;
+                k2a = abs(k1);
+            }
+            int rel = k2a - (k1a * (1 + k1a - 2 * (1 + myp.N1 / 2))) / 2.;
+
+            double tempor = SQR(k1) + SQR(k2);
+
+            // vector1<complex<double> > v(nof);
+
+            double fac = diffusion * tempor * temp1;
+            vector1<complex<double>> v(nof);
+            vector1<complex<double>> v2(nof);
+            vector1<complex<double>> v3(nof);
+
+            for (int k = 0; k < nof; k++)
+            {
+                v2[k] = transformed1.calculated_reactions[k][i * myp.N2 + j]; // oldfieldFT.calculated_reactions[k][i * myp.N2 + j];
+            }
+
+            v2 = baremat[rel] * v2;
+
+            for (int k = 0; k < nof; k++)
+            {
+                v[k] = -((1 - alpha) + (alpha)*dt) * fac * (transformed2.calculated_reactions[k][i * myp.N2 + j]) + transformed1.calculated_reactions[k][i * myp.N2 + j]                                                       // oldfieldFT.calculated_reactions[k][i * myp.N2 + j]
+                       - (1 - alpha) * v2[k] + ((1 - alpha) /* -  0.5*(alpha) * dt */) * fac * oldfieldNLW.calculated_reactions[k][i * myp.N2 + j] - 0.0 * 2 * alpha * dt * InitWeight.calculated_reactions[k][i * myp.N2 + j] // zeroed because of the initial conditions we set
+                       + dt * transformed3.calculated_reactions[k][i * myp.N2 + j];
+            }
+
+            v3 = inverses[rel] * v;
+            // if (rel == 131839)
+            // {
+            //     cout << inverses[rel] << endl;
+            //     cout << nof << endl;
+            //     for (int k = 0; k < nof; k++)
+            //     {
+
+            //         cout << "before: " << transformed1.calculated_reactions[k][i * myp.N2 + j] << endl;
+            //         cout << "1: " << -(2 * (1 - alpha) - (alpha)*dt) * fac * (transformed2.calculated_reactions[k][i * myp.N2 + j]) << endl;
+            //         cout << "2: " << +oldfieldFT.calculated_reactions[k][i * myp.N2 + j] << endl;
+            //         cout << "3: " << -(1 - alpha) * v2[k] << endl;
+            //         cout << "4: " << +(2 * (1 - alpha) + (alpha)*dt) * fac * oldfieldNLW.calculated_reactions[k][i * myp.N2 + j] << endl;
+            //         cout << "5: " << +2 * alpha * dt * InitWeight.calculated_reactions[k][i * myp.N2 + j] << endl;
+            //         cout << "6: " << +2 * dt * transformed3.calculated_reactions[k][i * myp.N2 + j] << endl;
+            //        // cout << "7: " << 2 * dt * transformed3.calculated_reactions[k][i * myp.N2 + j] << endl;
+            //         cout << "after: " << v3[k] << endl;
+            //         cout << endl;
+            //         cout << endl;
+            //     }
+
+            //     cout << v << endl;
+            //     cout << v3 << endl;
+            //     pausel();
+            // }
+            for (int k = 0; k < nof; k++)
+            {
+                rules.calculated_reactions[k][i * myp.N2 + j] = v3[k];
+            }
+        }
+    }
+
+    oldfieldFT.Calculate_Results(transformed1.calculated_reactions);
+    oldfieldNLW.Calculate_Results(transformed2.calculated_reactions);
+
+    reverse_transform.Calculate_Results(rules.calculated_reactions);
+
+    GetMaximas(fields, myp);
+    reverse_transform.GetMaximas();
+    reverse_transform.GetMaximasIndex();
+    reverse_transform.GetMinimas();
+    reverse_transform.GetMinimasIndex();
+    cout << endl;
+
+    set_field(reverse_transform.calculated_reactions);
+}
+
 void CHC::UpdateSQR()
 {
     GetMaximas(fields, myp);

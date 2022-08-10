@@ -449,6 +449,9 @@ struct CHC : public CH<complex<double>>
 
     void Update();
 
+    template <class Q>
+    void UpdateNoise(Q &func,GenNoise<complex<double> > &,vector1< double>&);
+
     void UpdateSQR();
 };
 

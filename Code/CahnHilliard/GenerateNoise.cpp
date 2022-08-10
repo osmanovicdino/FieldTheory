@@ -132,7 +132,7 @@ void create_rands(complex<double> *val, int n) //ran is a random
 
 template <class T>
 template <class Q>
-void GenNoise<T>::GenFields(Q &func, double *strs, double samprat)
+void GenNoise<T>::GenFields(Q &func, vector1<double> &strs, double samprat)
 {
 
     if (params.N1 != params.N2)

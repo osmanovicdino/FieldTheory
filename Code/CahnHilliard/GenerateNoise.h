@@ -48,7 +48,7 @@ struct GenNoise {
     ~GenNoise();
 
     template<class Q>
-    void GenFields(Q &func, double* strs, double samprat); //create the random fields in k space, with psd of func, and size params;
+    void GenFields(Q &func, vector1<double> &strs, double samprat); //create the random fields in k space, with psd of func, and size params;
 };
 
 #include "GenerateNoise.cpp"
