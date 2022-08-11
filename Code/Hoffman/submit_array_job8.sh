@@ -5,10 +5,10 @@
 #$ -o joblog.$JOB_ID
 #$ -j y
 ## Edit the line below as needed:
-#$ -l h_rt=12:00:00,h_data=2G
+#$ -l h_rt=3:00:00,h_data=2G
 ## Modify the parallel environment
 ## and the number of cores as needed:
-#$ -t 1-19:1
+#$ -t 1-38:1
 
 # echo job info on joblog:
 echo "Job $JOB_ID started on:   " `hostname -s`
@@ -25,8 +25,8 @@ module load fftw/3.3.9
 ## in the two lines below:
 ##echo '/usr/bin/time -v hostname'
 ##/usr/bin/time -v hostname
-filename=~/FieldTheory/Code/Hoffman/params6.dat
-mydir="TwoFieldTheory4"
+filename=~/FieldTheory/Code/Hoffman/params7.dat
+mydir="TwoFieldTheory5"
 if [ -e ${filename}   ]; then
    # use the unix command sed -n ${line_number}p to read by line
     x12=`sed -n ${SGE_TASK_ID}p ${filename} | awk '{print $1}'` 

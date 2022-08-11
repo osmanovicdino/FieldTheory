@@ -263,7 +263,7 @@ int main(int argc, char **argv)
     
     
 
-    for (int i = runtime; i < 2*runtime; i++)
+    for (int i = runtime; i < runtime+5000; i++)
     {
 
         if (i % every == 0)

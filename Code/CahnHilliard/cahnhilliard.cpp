@@ -367,6 +367,7 @@ void CHWithNoise<Q>::Update() {
     // cout << 5 << endl;
 
 
+
     mynoise.GenFields(func,str,1.0/2.0);
 
     transformed3.Add_Noise(mynoise);

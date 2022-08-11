@@ -515,6 +515,7 @@ void CHC::UpdateNoise(Q &func, GenNoise<complex<double>> &mynoise, vector1<doubl
     // string ftschem = "ftchem";
     // outfunc(transformed3.calculated_reactions[0], ftschem, myp);
     //     pausel();
+
     mynoise.GenFields(func, str, 1.0 / 2.0);
 
     transformed3.Add_Noise(mynoise);
