@@ -231,12 +231,12 @@ int main(int argc, char **argv)
             totplaces++;
             }
             else{
-                fieldtemp(i,j) =-0.33;
+                fieldtemp(i,j) =-0.333333333;
             }
         }
     }
 
-    double profactor = (double)(p.N1*p.N2)/((double)totplaces);
+    double profactor = (double)(p.N1*p.N2-totplaces)/((double)totplaces);
 
     for (int i = 0; i < p.N1; i++)
     {
@@ -245,7 +245,7 @@ int main(int argc, char **argv)
             double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
             if (inject_away && a.fields[0][i * p.N1 + j] < 0.0)
             {
-                fieldtemp(i, j) = profactor*x1 + gt * r1;
+                fieldtemp(i, j) = x1*(1+profactor)-profactor*(-0.3333333) + gt * r1;
                 
             }
             else if(!inject_away) {
@@ -253,7 +253,7 @@ int main(int argc, char **argv)
             }
             else
             {
-                fieldtemp(i, j) = -0.33;
+                fieldtemp(i, j) = -0.33333333;
             }
         }
     }

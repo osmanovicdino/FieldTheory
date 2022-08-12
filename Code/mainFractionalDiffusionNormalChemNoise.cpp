@@ -242,7 +242,7 @@ int main(int argc, char **argv)
     // str[2] = 0.01 * 1.;
     // str[3] = 0.01 * 1.;
     // str[4] = 0.01 * 1.;
-    vector1<double> str(nof,100.);
+    vector1<double> str(nof,0.);
 
     cout << "all fields set" << endl;
 
