@@ -92,7 +92,7 @@ int main(int argc, char **argv)
     double L = 100.;
     double temp1 = SQR(2. * pii / L);
     a.set_temp1(temp1);
-    a.set_epsilon(0.1);
+    a.set_epsilon(0.4);
 
     a.setup_matrices();
 
