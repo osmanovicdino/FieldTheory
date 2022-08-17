@@ -61,7 +61,8 @@ int main(int argc, char **argv)
     double den1;
     double den2;
     int rr;
-    if (argc == 7)
+    int wh;
+    if (argc == 8)
     {
         x12=atof(argv[1]);
         x13=atof(argv[2]);
@@ -69,6 +70,7 @@ int main(int argc, char **argv)
         den1=atof(argv[4]);
         den2=atof(argv[5]);
         rr=atof(argv[6]);
+        wh = atof(argv[7]);
     }
     else
     {
@@ -90,7 +92,7 @@ int main(int argc, char **argv)
     double L = 100.;
     double temp1 = SQR(2. * pii / L);
     a.set_temp1(temp1);
-    a.set_epsilon(0.4);
+    a.set_epsilon(0.1);
 
     a.setup_matrices();
 
@@ -139,9 +141,17 @@ int main(int argc, char **argv)
     tots /= double(p.N1*p.N2);
 
     //double dens = -0.1;
+    int which_first = wh;
+    vector1<double> init2(2);
+    init2[0] = den1;
+    init2[1] = den2;
+    double zeroden=-1./3.;
+
     vector1<double> dens(2);
-    dens[0]=den1;
-    dens[1]=-0.33;
+    int wh2 = wh == 1 ? 0 : 1;
+    dens[wh2]=init2[wh2];
+    dens[wh] = zeroden;
+
     for (int lk = 0; lk < nof; lk++)
     {
         for (int i = 0; i < p.N1; i++)
@@ -166,7 +176,7 @@ int main(int argc, char **argv)
 
     vector1<int> cutoff(2);
     cutoff[0]=100;
-    cutoff[1]=1;
+    cutoff[1]=100;
     a.setupInitial(cutoff);
 
     int runtime = rr;
@@ -218,20 +228,21 @@ int main(int argc, char **argv)
     matrix<myc> fieldtemp(p.N1, p.N2);
 
     //check the field variable 
+
     bool inject_away = true;
-    double x1 = den2;
+    double x1 = init2[wh];
     int totplaces=0;
     for (int i = 0; i < p.N1; i++)
     {
         for (int j = 0; j < p.N2; j++)
         {
             double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
-            if(inject_away && a.fields[0][i*p.N1+j] < 0.0) {
+            if(inject_away && a.fields[wh2][i*p.N1+j] < 0.0) {
             fieldtemp(i, j) = x1 + gt * r1;
             totplaces++;
             }
             else{
-                fieldtemp(i,j) =-0.333333333;
+                fieldtemp(i,j) =zeroden;
             }
         }
     }
@@ -243,22 +254,21 @@ int main(int argc, char **argv)
         for (int j = 0; j < p.N2; j++)
         {
             double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
-            if (inject_away && a.fields[0][i * p.N1 + j] < 0.0)
+            if (inject_away && a.fields[wh2][i * p.N1 + j] < 0.0)
             {
-                fieldtemp(i, j) = x1*(1+profactor)-profactor*(-0.3333333) + gt * r1;
-                
+                fieldtemp(i, j) = x1 * (1 + profactor) - profactor * (zeroden) + gt * r1;
             }
             else if(!inject_away) {
                 fieldtemp(i, j) = x1 + gt * r1;
             }
             else
             {
-                fieldtemp(i, j) = -0.33333333;
+                fieldtemp(i, j) = zeroden;
             }
         }
     }
 
-    a.set_field(fieldtemp, 1);
+    a.set_field(fieldtemp, wh);
 
     
     

@@ -1487,6 +1487,56 @@ matrix<T> importcsv(string filename, T temp, bool &error) {
     
 }
 
+template <class T, class N, class Q>
+matrix<N> importcsv(string filename, T temp, N newt, bool &error, Q &func)
+{
+    // func takes an argument of type T and produces a value of type N
+    ifstream data(filename.c_str());
+    if (!data.is_open())
+    {
+        cout << "file not found during import" << endl;
+        error = true;
+        return matrix<long double>(100, 100);
+    }
+    string line;
+    vector<vector<T>> a;
+    while (getline(data, line))
+    {
+
+        stringstream lineStream(line);
+        string cell;
+        vector<T> b;
+        while (getline(lineStream, cell, ','))
+        {
+            b.push_back(atof(cell.c_str()));
+        }
+        a.push_back(b);
+    }
+
+    int nr = a.size();
+    vector1<int> msizes(nr);
+    for (int j = 0; j < nr; j++)
+        msizes[j] = a[j].size();
+
+    int nz = maxval(msizes);
+
+    matrix<N> qq(nr, nz);
+    for (int i = 0; i < nr; i++)
+    {
+        for (int j = 0; j < nz; j++)
+        {
+            if (j > a[i].size() - 1)
+            {
+                qq(i, j) = N(0.0);
+            }
+            else
+                qq(i, j) = func(a[i][j]);
+        }
+    }
+    error = false;
+    return qq;
+}
+
 matrix<double> periodic(matrix<double> &a, matrix<double> &b, double l) {
 if(a.getnrows() != b.getnrows() ) error("size of matrices must be the same");
 
