@@ -237,7 +237,7 @@ int main(int argc, char **argv)
 
     // auto start = std::chrono::high_resolution_clock::now();
     int runtime = 50001;
-    int every = 10;
+    int every = 1000;
 
     int tf = ceil((double)runtime / (double)every);
     int number_of_digits = 0;
