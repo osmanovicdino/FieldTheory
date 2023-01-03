@@ -19,12 +19,12 @@
 
 CHCF::CHCF(const CH_builder &p) : CHC(p),  OLD(vector<Eigen::VectorXcd>())
 {
-    for (int i = 0; i < myp.number_of_fields; i++)
-    {
-        IdentityWeight<complex<double>> fw;
-        oldfieldFT.add_method(fw, i);
-        oldfieldNLW.add_method(fw, i);
-    }
+    // for (int i = 0; i < myp.number_of_fields; i++)
+    // {
+    //     IdentityWeight<complex<double>> fw;
+    //     oldfieldFT.add_method(fw, i);
+    //     oldfieldNLW.add_method(fw, i);
+    // }
     M = 1;
 }
 

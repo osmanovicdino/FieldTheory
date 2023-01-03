@@ -15,7 +15,7 @@ CHC::CHC(const CH_builder &p) : CH(p), phase_separators(vector1<bool>(p.number_o
         oldfieldFT.add_method(fw, i);
         oldfieldNLW.add_method(fw, i);
     }
-    M=1;
+    //M=1;
 
 }
 
