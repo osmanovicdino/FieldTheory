@@ -41,6 +41,7 @@ inline omp_int_t omp_get_num_threads() { return 1; }
 #include "DataStructures/matrix2.h"
 #include "DataStructures/matrix2.cpp"
 #include "CahnHilliard/cahnhilliard.h"
+#include "CahnHilliard/cahnhilliardComplete.h"
 
 #include "fftw3.h"
 
@@ -125,7 +126,7 @@ int main(int argc, char **argv)
     p.N1 = 64;
     p.N2 = 64;
 
-    CHC a(p);
+    CHCF a(p);
 
     for(int i = 0 ; i < nof ; i++) {
         for(int j = i+1  ; j < nof ; j++) {
