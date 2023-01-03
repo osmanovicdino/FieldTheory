@@ -50,12 +50,17 @@ struct Field_Wrapper
             }
         }
     }
-
+    void means(vector1<T> &v);
+    void means();
     void Check_fields();
+    void rescale();
     void GetMaximas();
+    void GetMaximas(vector1<T> &vv);
     void GetMinimas();
+    void GetMinimas(vector1<T> &vv);
     void GetMaximasIndex();
     void GetMinimasIndex();
+    
 };
 
 template <class T, class T1, class T2, class T3> //output class T, input classes T1,T2,T3
@@ -84,6 +89,7 @@ struct Rule_Wrapper
     void GetMinimas();
     void GetMaximasIndex();
     void GetMinimasIndex();
+    void GetTotal();
     
     void Check_negatives(bool &he);
 };

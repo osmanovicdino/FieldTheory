@@ -95,7 +95,7 @@ inline void pausel() { //pause the program (this is faster than system("pause")
     int pause;
     cin >> pause;
 }
-#define Stop pausel();
+// #define Stop pausel();
 
 
 template <class T>

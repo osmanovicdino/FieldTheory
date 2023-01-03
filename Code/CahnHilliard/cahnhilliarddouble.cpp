@@ -33,10 +33,9 @@ void CHD::setup_matrices()
     }
 }
 
-void CHD::set_interaction_and_diffusion(double x12, double x13, double x23, double D1, double D2) {
+void CHD::set_interaction_and_diffusion(double x12, double x13, double x23, matrix<double> D1) {
 
-    diffusion1 = D1;
-    diffusion2 = D2;
+    diffusion_matrix = D1;
 
     chi_12 = x12;
     chi_13 = x13;
@@ -75,6 +74,8 @@ void CHD::set_interaction_and_diffusion(double x12, double x13, double x23, doub
     y0 = 1./3.;
 
     cout << x0 << " " << y0 << endl;
+    double diffusion1 = diffusion_matrix(0, 0);
+    double diffusion2 = diffusion_matrix(1, 1);
 
     ml1 = diffusion1*(2 * (1 / (2. * x0) - 1 / (2. * (-1 + x0 + y0)) - chi_13));
     ml2 = diffusion1*(-(1 / (-1 + x0 + y0)) + chi_12 - chi_13 - chi_23);
@@ -101,6 +102,7 @@ void CHD::set_interaction_and_diffusion(double x12, double x13, double x23, doub
 void CHD::calculate_non_linear_weight(complex<double> **input)
 {
     int totp = myp.get_total();
+    int nof = myp.number_of_fields;
 
     for (int j = 0; j < totp; j++)
     {
@@ -112,6 +114,12 @@ void CHD::calculate_non_linear_weight(complex<double> **input)
                                            2. * (input[0][j] / (2. * SQR(-1 + x0 + y0)) - SQR(input[0][j]) / (2. * CUB(-1 + x0 + y0))) * input[1][j] +
                                            3. * (-0.16666666666666666 * 1 / SQR(y0) + 1 / (6. * SQR(-1 + x0 + y0)) - input[0][j] / (3. * CUB(-1 + x0 + y0))) * SQR(input[1][j]) +
                                            4. * (1 / (12. * CUB(y0)) - 1 / (12. * CUB(-1 + x0 + y0))) * CUB(input[1][j]);
+    }
+
+    for(int k = 2 ; k < nof ; k++)
+    for (int j = 0; j < totp; j++)
+    {
+        weigs.calculated_reactions[k][j] = 0.0;
     }
 
     transformed2.Calculate_Results(weigs.calculated_reactions);
@@ -179,8 +187,8 @@ void CHD::Update()
 
             // vector1<complex<double> > v(nof);
 
-            double fac1 = diffusion1 * tempor * temp1;
-            double fac2 = diffusion2 * tempor * temp1;
+            // double fac1 = diffusion1 * tempor * temp1;
+            // double fac2 = diffusion2 * tempor * temp1;
             vector1<complex<double>> v(nof);
             vector1<complex<double>> v2(nof);
             vector1<complex<double>> v3(nof);
@@ -194,8 +202,11 @@ void CHD::Update()
 
             
 
-            v[0] = v2[0] - dt * fac1 * transformed2.calculated_reactions[0][i * myp.N2 + j];
-            v[1] = v2[1] - dt * fac2 * transformed2.calculated_reactions[1][i * myp.N2 + j];
+            for(int k = 0 ; k < nof ; k++  ) {
+            double fac = diffusion_matrix(k,k) * tempor * temp1;
+            v[k] = v2[k] - dt * fac * transformed2.calculated_reactions[k][i * myp.N2 + j];
+
+            }
             // v[k] = -((1 - alpha) + (alpha)*dt) * fac * (transformed2.calculated_reactions[k][i * myp.N2 + j]) + transformed1.calculated_reactions[k][i * myp.N2 + j]                                                       // oldfieldFT.calculated_reactions[k][i * myp.N2 + j]
             //        - (1 - alpha) * v2[k] + ((1 - alpha) /* -  0.5*(alpha) * dt */) * fac * oldfieldNLW.calculated_reactions[k][i * myp.N2 + j] - 0.0 * 2 * alpha * dt * InitWeight.calculated_reactions[k][i * myp.N2 + j] // zeroed because of the initial conditions we set
             //        + dt * transformed3.calculated_reactions[k][i * myp.N2 + j];
@@ -204,7 +215,7 @@ void CHD::Update()
             
 
             v3 = inverses[rel] * v;
-            // if (rel == 131839)
+            // if (rel == 10000)
             // {
             //     cout << "bare mat: " << endl;
             //     cout << baremat[rel] << endl;
@@ -213,8 +224,157 @@ void CHD::Update()
                 
             //     for (int k = 0; k < nof; k++)
             //     {
+            //         double fac = diffusion_matrix(k, k) * tempor * temp1;
+            //         cout << dt*fac*transformed2.calculated_reactions[k][i * myp.N2 + j] << endl;
+            //     }
+            //     cout << "old: " << endl;
+            //     cout << v2 << endl;
+            //     cout << "new: " << endl;
+            //     cout << v << endl;
+            //     pausel();
+            // }
+            
+            for (int k = 0; k < nof; k++)
+            {
+                rules.calculated_reactions[k][i * myp.N2 + j] = v3[k];
+            }
+        }
+    }
 
-            //         cout << dt*fac1*transformed2.calculated_reactions[k][i * myp.N2 + j] << endl;
+    // string gilename1 = "gello1";
+    // string gilename2 = "gello2";
+
+    // string filename1 = "hello1";
+    // string filename2 = "hello2";
+
+    // outfunc(transformed1.calculated_reactions[0], gilename1, myp);
+
+    // outfunc(transformed1.calculated_reactions[1], gilename2, myp);
+    
+    // outfunc(rules.calculated_reactions[0], filename1, myp);
+
+    // outfunc(rules.calculated_reactions[1], filename2, myp);
+    // pausel();
+    // oldfieldFT.Calculate_Results(transformed1.calculated_reactions);
+    // oldfieldNLW.Calculate_Results(transformed2.calculated_reactions);
+
+    reverse_transform.Calculate_Results(rules.calculated_reactions);
+
+    GetMaximas(fields, myp);
+    reverse_transform.GetMaximas();
+    reverse_transform.GetMaximasIndex();
+    reverse_transform.GetMinimas();
+    reverse_transform.GetMinimasIndex();
+    cout << endl;
+
+    set_field(reverse_transform.calculated_reactions);
+}
+
+void CHD::Update_With_Chem()
+{
+
+    // string fieldss = "fields";
+    // outfunc(fields[0], fieldss, myp);
+
+    //because the density is defined as relative to a constant point, we need to account for this in the chemistry
+    chems.Calculate_Results(fields); // calculate chemistry
+
+    // string schem = "chem";
+    // outfunc(chems.calculated_reactions[0],schem,myp);
+
+    transformed3.Calculate_Results(chems.calculated_reactions);
+    //  string ftschem = "ftchem";
+    //  outfunc(transformed3.calculated_reactions[0], ftschem, myp);
+    //      pausel();
+
+    // GetMaximas(transformed3.calculated_reactions,schem,myp);
+    // pausel();
+
+    transformed1.Calculate_Results(fields); // calculate FT of fields
+    calculate_non_linear_weight(fields);
+
+    int totp = myp.get_total();
+    int nof = myp.number_of_fields;
+
+    for (int i = 0; i < myp.N1; i++)
+    {
+        for (int j = 0; j < myp.N2; j++)
+        {
+
+            double k1, k2;
+            if (i <= myp.N1 / 2)
+            {
+                k1 = i;
+            }
+            else
+            {
+                k1 = (i - myp.N1);
+            }
+            if (j <= myp.N2 / 2)
+            {
+                k2 = j;
+            }
+            else
+            {
+                k2 = (j - myp.N2);
+            }
+
+            // take absolute values of k1 and k2
+            int k1a = abs(k1);
+            int k2a = abs(k2);
+            if (k2a < k1a)
+            {
+                k1a = k2a;
+                k2a = abs(k1);
+            }
+            int rel = k2a - (k1a * (1 + k1a - 2 * (1 + myp.N1 / 2))) / 2.;
+
+            double tempor = SQR(k1) + SQR(k2);
+
+            // vector1<complex<double> > v(nof);
+
+            // double fac1 = diffusion1 * tempor * temp1;
+            // double fac2 = diffusion2 * tempor * temp1;
+            vector1<complex<double>> v(nof);
+            vector1<complex<double>> v2(nof);
+            vector1<complex<double>> v3(nof);
+
+            for (int k = 0; k < nof; k++)
+            {
+                v2[k] = transformed1.calculated_reactions[k][i * myp.N2 + j]; // oldfieldFT.calculated_reactions[k][i * myp.N2 + j];
+            }
+
+            // v2 = baremat[rel] * v2;
+
+            for (int k = 0; k < nof; k++)
+            {
+                double fac = diffusion_matrix(k, k) * tempor * temp1;
+                v[k] = v2[k] - dt * fac * transformed2.calculated_reactions[k][i * myp.N2 + j] + dt * transformed3.calculated_reactions[k][i * myp.N2 + j];
+            }
+            // v[k] = -((1 - alpha) + (alpha)*dt) * fac * (transformed2.calculated_reactions[k][i * myp.N2 + j]) + transformed1.calculated_reactions[k][i * myp.N2 + j]                                                       // oldfieldFT.calculated_reactions[k][i * myp.N2 + j]
+            //        - (1 - alpha) * v2[k] + ((1 - alpha) /* -  0.5*(alpha) * dt */) * fac * oldfieldNLW.calculated_reactions[k][i * myp.N2 + j] - 0.0 * 2 * alpha * dt * InitWeight.calculated_reactions[k][i * myp.N2 + j] // zeroed because of the initial conditions we set
+            //        + dt * transformed3.calculated_reactions[k][i * myp.N2 + j];
+
+            v3 = inverses[rel] * v;
+            // if (rel == 10000)
+            // {
+            //     cout << "bare mat: " << endl;
+            //     cout << baremat[rel] << endl;
+            //     cout << "inverse mat: " << endl;
+            //     cout << inverses[rel] << endl;
+
+            //     cout << "normal weights" << endl;
+            //     for (int k = 0; k < nof; k++)
+            //     {
+            //         double fac = diffusion_matrix(k, k) * tempor * temp1;
+            //         cout << dt*fac*transformed2.calculated_reactions[k][i * myp.N2 + j] << endl;
+            //     }
+
+            //     cout << "chemical weights" << endl;
+            //     for (int k = 0; k < nof; k++)
+            //     {
+
+            //         cout << dt * transformed3.calculated_reactions[k][i * myp.N2 + j] << endl;
             //     }
             //     cout << "old: " << endl;
             //     cout << v2 << endl;
@@ -238,7 +398,7 @@ void CHD::Update()
     // outfunc(transformed1.calculated_reactions[0], gilename1, myp);
 
     // outfunc(transformed1.calculated_reactions[1], gilename2, myp);
-    
+
     // outfunc(rules.calculated_reactions[0], filename1, myp);
 
     // outfunc(rules.calculated_reactions[1], filename2, myp);

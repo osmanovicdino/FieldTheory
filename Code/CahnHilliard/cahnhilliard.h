@@ -10,11 +10,7 @@
 #include "GenerateNoise.h"
 #include "updateRules.h"
 #include "field_wrapper.h"
-
-
-
-
-
+#include </home/dino/Documents/IsingPolymer/Eigen/eigen-3.4.0/Eigen/Sparse>
 
 //In pseudocode
 
@@ -99,6 +95,7 @@ void set_weights(const Field_Wrapper<T, T> &a) { weigs = a; }
 void set_rules(const Rule_Wrapper<T,T,T,T> &a) { rules = a; }
 
 void print_all_results(string s1);
+void print_some_results(string s1,vector1<bool>&ps);
 
 void check_field(bool &a) {
     if(fields[0][0]!=fields[0][0]) a = false;
@@ -366,10 +363,12 @@ struct CHFracDt : public CH<complex <double> > {
 
 
 };
-
+typedef complex<double> cd;
 struct CHC : public CH<complex<double>>
 {
     matrix<double> epsilon_couplings;
+
+    vector1<bool> phase_separators;
 
     matrix<double> epsilon_couplingsSQR;
     double diffusion;
@@ -393,15 +392,18 @@ struct CHC : public CH<complex<double>>
     vector<matrix<double> > inverses; //inverse of each update matrix for each value of k1,k2
     vector<matrix<double> > baremat; //each matrix for each value of k1,k2
 
+    
+
     CHC(const CH_builder &p);
 
+    void set_phase_separators(vector1<bool> &ps) {phase_separators = ps;}
     void set_interaction(double val, int i, int j);
     void set_diffusion(double diff) {diffusion = diff; cout << "diffusion set to: " << diff << endl;}
     void set_epsilon(double epss) {epsilon = epss;
         cout << "epsilon set to: " << epss << endl;
     }
-    void set_c0_c1(double c00, double c11) {c0 =  c00; c1 = c11;
-        double nu = 1.0;
+    void set_c0_c1(double c00, double c11, double nu1 = 1.0) {c0 =  c00; c1 = c11;
+        double nu = nu1;
         cons1 = 4 * nu;
         cons2 = (-6 * c0 * nu - 6 * c1 * nu);
         cons3 = (2 * c0 * c0 * nu + 8 * c0 * c1 * nu + 2 * c1 * c1 * nu);
@@ -436,7 +438,10 @@ struct CHC : public CH<complex<double>>
                 dmat(i, j) += -diffusion * temp1 * (SQR(k1) + SQR(k2)) *epsilon_couplings(i, j);
             }
         }
-        dmat(0, 0) += -diffusion * cons3s * temp1 * (SQR(k1) + SQR(k2)) - diffusion * SQR(epsilon) * SQR(temp1) * SQR(SQR(k1) + SQR(k2));
+        for(int i = 0  ; i < field_no ; i++) {
+        if(phase_separators[i])
+        dmat(i, i) += -diffusion * cons3s * temp1 * (SQR(k1) + SQR(k2)) - diffusion * SQR(epsilon) * SQR(temp1) * SQR(SQR(k1) + SQR(k2));
+        }
         return dmat;
     }
 
@@ -453,18 +458,43 @@ struct CHC : public CH<complex<double>>
     void UpdateNoise(Q &func,GenNoise<complex<double> > &,vector1< double>&);
 
     void UpdateSQR();
+
+    Eigen::SparseMatrix<complex<double>> CalculateJ(complex<double> **input, bool); // based on the current state calculate J
+
+    int M; //memory length
+    vector<Eigen::VectorXcd> OLD; //old weights
+
+    Eigen::VectorXcd CalculateWeight(complex<double> **input);
+    Eigen::VectorXcd CalculateWeightPartial(complex<double> *input);
+    Eigen::VectorXcd CalculateRHS(complex<double> **, complex<double> **, complex<double> **);
+    Eigen::VectorXd CalculateRHS_real(complex<double> **, complex<double> **, complex<double> **);
+    Eigen::VectorXcd SolveLinearProblem(Eigen::SparseMatrix<complex<double> > &unchangedJ, complex<double> **, complex<double> **);
+
+    void SetupFracScheme(int MM);
+    void UpdateWithNewton(bool);
+    void UpdateWithNewtonCalcJ();
+    Eigen::SparseMatrix<double> PartialJCalculation(Rule_Wrapper<cd, cd, cd, cd> &);
+    Eigen::SparseMatrix<double> CalculateInitialJ();
+    void UpdateWithNewtonGivenJ(Eigen::SparseMatrix<double> &);
 };
+
+
 
 struct CHD : public CH<complex<double>>
 {
+    matrix<double> epsilon_couplings;
+
+    matrix<double> epsilon_couplingsSQR;
 
     double chi_12;
 
     double chi_13;
     double chi_23;
 
-    double diffusion1;
-    double diffusion2;
+    // double diffusion1;
+    // double diffusion2;
+
+    matrix<double> diffusion_matrix;
 
     double x0; // minima of the density for comp1
     double y0; //minima of the density for comp2
@@ -500,23 +530,51 @@ struct CHD : public CH<complex<double>>
         cout << "dt set to: " << dt << endl;
     }
 
+    void set_interaction(double val, int i, int j) {
+       if((i==0 && j==1)||(i==1&&j==0) ) {
+        error("trying to set interaction in the double phase separating system between components 0 and 1, however, these are the components that are defined to be phase separating, and thus already have an interaction");
+       }
+       else{
+        epsilon_couplings(i, j) = val;
+        epsilon_couplings(j, i) = val;
+       }
+    }
+
     vector<matrix<double>> inverses; // inverse of each update matrix for each value of k1,k2
     vector<matrix<double>> baremat;
 
     CHD(const CH_builder &p);
     void setup_matrices();
 
-    void set_interaction_and_diffusion(double x12, double x13, double x23, double D1, double D2);
+    void set_interaction_and_diffusion(double x12, double x13, double x23, matrix<double> D1);
 
 
     matrix<double> create_D_mat_split(double k1, double k2) {
         int field_no = myp.number_of_fields;
         matrix<double> dmat(field_no, field_no);
 
-        dmat(0, 0) = 1 + dt * temp1 * (SQR(k1) + SQR(k2)) * ml1 - dt * SQR(epsilon) * SQR(temp1) * SQR(SQR(k1) + SQR(k2)) * sl1;
-        dmat(0, 1) = dt * temp1 * (SQR(k1) + SQR(k2)) * ml2 - dt * SQR(epsilon) * SQR(temp1) * SQR(SQR(k1) + SQR(k2)) * sl2;
-        dmat(1, 0) = dt * temp1 * (SQR(k1) + SQR(k2)) * ml3 - dt * SQR(epsilon) * SQR(temp1) * SQR(SQR(k1) + SQR(k2)) * sl3;
-        dmat(1, 1) = 1 + dt * temp1 * (SQR(k1) + SQR(k2)) * ml4 - dt * SQR(epsilon) * SQR(temp1) * SQR(SQR(k1) + SQR(k2)) * sl4;
+         dmat(0, 0) = 1 + dt * temp1 * (SQR(k1) + SQR(k2)) * ml1 - dt * SQR(epsilon) * SQR(temp1) * SQR(SQR(k1) + SQR(k2)) * sl1;
+         dmat(0, 1) = dt * temp1 * (SQR(k1) + SQR(k2)) * ml2 - dt * SQR(epsilon) * SQR(temp1) * SQR(SQR(k1) + SQR(k2)) * sl2;
+         dmat(1, 0) = dt * temp1 * (SQR(k1) + SQR(k2)) * ml3 - dt * SQR(epsilon) * SQR(temp1) * SQR(SQR(k1) + SQR(k2)) * sl3;
+         dmat(1, 1) = 1 + dt * temp1 * (SQR(k1) + SQR(k2)) * ml4 - dt * SQR(epsilon) * SQR(temp1) * SQR(SQR(k1) + SQR(k2)) * sl4;
+
+
+         for (int i = 0; i < field_no; i++)
+         {
+             for (int j = 0; j < field_no; j++)
+             {
+                 dmat(i, j) += dt * diffusion_matrix(i, i) * temp1 * (SQR(k1) + SQR(k2)) * epsilon_couplings(i, j);
+             }
+        }
+
+
+
+        for(int i = 2 ; i < field_no ; i++) {
+            dmat(i, i) += 1. + dt* diffusion_matrix(i, i) * temp1 * (SQR(k1) + SQR(k2));
+        }
+
+
+
 
         return dmat;
     }
@@ -568,7 +626,7 @@ struct CHD : public CH<complex<double>>
 
     void Update();
 
-
+    void Update_With_Chem(); //turn on the chemical reactions
 };
 
 #include "cahnhilliard.cpp"

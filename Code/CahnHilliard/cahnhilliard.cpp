@@ -191,8 +191,23 @@ void CH<T>::print_all_results(string s1) {
     //outfunc(fields[0],);
 }
 
+template <class T>
+void CH<T>::print_some_results(string s1,vector1<bool> &ps)
+{
+    for (int i = 0; i < myp.number_of_fields; i++)
+    {
+        if(ps[i]) {
+        stringstream ss;
+        ss << i;
+        string fiel = ss.str();
+        string fie = "field";
+        string filename = fie + fiel + s1;
+        outfunc(fields[i], filename, myp);
+        }
+    }
 
-
+    // outfunc(fields[0],);
+}
 
 void CHN::Update() {
 

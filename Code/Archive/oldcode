@@ -1,0 +1,137 @@
+                //break;
+                //pausel();
+                // ofstream myfile;
+                // myfile.open("calcJ.csv");
+                // for(int fieldno = 0 ; fieldno < 5 ; fieldno++) {
+                //     for (int jk = 0 ; jk < myp.N1 * myp.N2; jk++)
+                //     {
+
+                //         cd **fields1;
+                //         cd **fields2;
+
+                //         fields1 = new cd *[myp.number_of_fields];
+                //         fields2 = new cd *[myp.number_of_fields];
+
+                //         for (int i = 0; i < myp.number_of_fields; i++)
+                //         {
+                //             fields1[i] = (cd *)fftw_malloc(myp.N1 * myp.N2 * sizeof(cd));
+                //             fields2[i] = (cd *)fftw_malloc(myp.N1 * myp.N2 * sizeof(cd));
+                //             for (int j = 0; j < myp.N1 * myp.N2; j++)
+                //             {
+                //                 fields1[i][j] = rules.calculated_reactions[i][j];
+                //                 fields2[i][j] = rules.calculated_reactions[i][j];
+                //             }
+                //         }
+                //         cd dc = 0.001;
+                //         fields1[fieldno][jk] += dc;
+
+                //         fields2[fieldno][jk] -= dc;
+
+                //         Eigen::VectorXcd w0 = CalculateRHS(fields1, transformed1.calculated_reactions, transformed3.calculated_reactions);
+                //         Eigen::VectorXcd w1 = CalculateRHS(fields2, transformed1.calculated_reactions, transformed3.calculated_reactions);
+
+                //         for(int fieldno1 = 0 ; fieldno1 < 5 ; fieldno1++) {
+                //             for(int p =0 ; p < myp.N1 * myp.N2 ; p++) {
+                //                 // cout << "(" << fieldno << "," << jk << "), (" << fieldno1 << "," << p << ")" << endl;
+                //                 // cout << "J: " <<J.coeff(fieldno * myp.N1 * myp.N2 + jk, myp.N1 * myp.N2 * fieldno1 + p) << endl;
+                //                 // cout << "JT: " << J.coeff(myp.N1 * myp.N2 * fieldno1 + p, fieldno * myp.N1 * myp.N2 + jk) << endl;
+                //                 // cout << "WT: " << (w0[myp.N1 * myp.N2 * fieldno1 + p] - w1[myp.N1 * myp.N2 * fieldno1 + p]) / (2. * dc) << endl;
+                //                 // cout << ((w0[myp.N1 * myp.N2 * fieldno1 + p] - w1[myp.N1 * myp.N2 * fieldno1 + p]) / (2. * dc)) /J.coeff(fieldno * myp.N1 * myp.N2 + jk, myp.N1 * myp.N2 * fieldno1 + p) << endl; 
+                //                 // pausel();
+                //                 myfile << ((w0[myp.N1 * myp.N2 * fieldno1 + p] - w1[myp.N1 * myp.N2 * fieldno1 + p]) / (2. * dc)).real() << ",";
+                //             }
+                //         }
+                //         myfile << endl;
+
+                //         for (int i = 0; i < myp.number_of_fields; i++)
+                //         {
+                //             fftw_free(fields1[i]);
+                //             fftw_free(fields2[i]);
+                //         }
+                //         delete fields1;
+                //         delete fields2;
+                //     }
+                // }
+                // myfile.close();
+
+                // ofstream myfile2;
+                // myfile2.open("J.csv");
+                // for(int k = 0 ; k < 5*myp.N1*myp.N2 ; k++) {
+                //     for (int k1 = 0; k1 < 5 * myp.N1 * myp.N2; k1++) {
+                //         myfile2 << J.coeff(k,k1).real();
+                //         if(k1 != myp.N1 * myp.N2) myfile2 << ",";
+                //     }
+                //     myfile2 << endl;
+                // }
+                // myfile2.close();
+
+                // pausel(); 
+
+                // for(int fieldno = 0 ; fieldno < 5 ; fieldno++) {
+
+
+                // cd **fields1;
+                // cd **fields2;
+
+                // fields1 = new cd *[myp.number_of_fields];
+                // fields2 = new cd *[myp.number_of_fields];
+
+                // for (int i = 0; i < myp.number_of_fields; i++)
+                // {
+                //     fields1[i] = (cd *)fftw_malloc(myp.N1 * myp.N2 * sizeof(cd));
+                //     fields2[i] = (cd *)fftw_malloc(myp.N1 * myp.N2 * sizeof(cd));
+                //     for (int j = 0; j < myp.N1 * myp.N2; j++)
+                //     {
+                //         fields1[i][j] = rules.calculated_reactions[i][j];
+                //         fields2[i][j] = rules.calculated_reactions[i][j];
+                //     }
+                // }
+                // cd dc = 0.0001;
+                // fields1[fieldno][4094] += dc;
+
+                // fields2[fieldno][4094] -= dc;
+                // // Eigen::VectorXcd w0 = CalculateRHS(fields1, transformed1.calculated_reactions, transformed3.calculated_reactions);
+                // reverse_transform.Calculate_Results(fields1);
+                // Eigen::VectorXcd w0 =  CalculateWeight(reverse_transform.calculated_reactions);
+                // // cout << transformed1.calculated_reactions[0][1] << endl;
+
+                // // cout << transformed3.calculated_reactions[0][1] << endl;
+                // // Eigen::VectorXcd w1 = CalculateRHS(fields2, transformed1.calculated_reactions, transformed3.calculated_reactions);
+                // reverse_transform.Calculate_Results(fields2);
+                // Eigen::VectorXcd w1 = CalculateWeight(reverse_transform.calculated_reactions);
+
+                // cout << "fieldno: " << fieldno << endl;
+                // for(int fieldno1 = 0 ; fieldno1 < 5 ; fieldno1++) {
+                // cout << "fieldno1: " << fieldno1 << endl;
+                // cout << "h" << endl;
+                // cout << (w0[16384 * fieldno1 + 4094] - w1[16384 * fieldno1+4094]) / (2. * dc) << endl;
+
+                // // cout << (w0[1] - w1[1]) / (2 * 0.001) << endl;
+                // cout << "J orig" << endl;
+                // cout << J.coeff(16384 * fieldno1 + 4094, 16384 * fieldno + 4094)  << " " << J.coeff(16384 * fieldno + 4094, 16384 * fieldno1 + 4094) << endl;
+                // }
+                // cout << endl;
+                // cout << endl;
+                // ofstream myfile;
+                // stringstream ss;
+                // ss << fieldno;
+                // string sn = ss.str();
+                // string ext =".csv";
+                // string filename = "error";
+                // myfile.open((filename+sn+ext).c_str());
+                // for(int jk = fieldno*16384 ; jk < (fieldno+1)*16384; jk++) {
+                //     myfile << J.coeff(fieldno * 16384 + 4094, jk) << "," << J.coeff(jk, fieldno * 16384+ 4094) << "," << (w0[jk] - w1[jk]) / (2. * dc) << endl;
+                // }
+                // myfile.close();
+
+                // for (int i = 0; i < myp.number_of_fields; i++)
+                // {
+                //     fftw_free(fields1[i]);
+                //     fftw_free(fields2[i]);
+                // }
+                // delete fields1;
+                // delete fields2;
+                // }
+
+                // pausel();
+                //pausel();

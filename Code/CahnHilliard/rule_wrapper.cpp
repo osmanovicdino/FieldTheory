@@ -280,4 +280,26 @@ void Rule_Wrapper<T, T1, T2, T3>::GetMinimasIndex()
     cout << endl;
 }
 
+template <class T, class T1, class T2, class T3>
+void Rule_Wrapper<T, T1, T2, T3>::GetTotal()
+{
+    for (int i = 0; i < params.number_of_fields; i++)
+    {
+        int ind = 0;
+        int tot = params.get_total();
+        T ever = T(0.0);
+        for (int j = 0; j < tot; j++)
+        {
+
+                ever += calculated_reactions[i][j];
+ 
+            
+        }
+
+
+        cout << ever << "\t";
+    }
+    cout << endl;
+}
+
 #endif /* RULE_WRAPPER_CPP */

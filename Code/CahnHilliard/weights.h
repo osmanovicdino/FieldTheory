@@ -598,9 +598,8 @@ private:
 public:
     void operator()(complex<double> **a, complex<double> **fields, int j, const CH_builder &p)
     {
-        fftw_plan p2;
-
-        p2 = fftw_plan_dft_2d(p.N1, p.N2, reinterpret_cast<fftw_complex *>(fields[j]), reinterpret_cast<fftw_complex *>(a[j]), FFTW_FORWARD, FFTW_ESTIMATE);
+        
+        fftw_plan p2(fftw_plan_dft_2d(p.N1, p.N2, reinterpret_cast<fftw_complex *>(fields[j]), reinterpret_cast<fftw_complex *>(a[j]), FFTW_FORWARD, FFTW_ESTIMATE));
 
         fftw_execute(p2);
         double corr = 1. / (p.N1);
@@ -611,6 +610,7 @@ public:
         }
 
         fftw_destroy_plan(p2);
+        // fftw_cleanup();
     }
     FourierWeightForward2D *clone() const
     {

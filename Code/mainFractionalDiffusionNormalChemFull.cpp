@@ -49,6 +49,7 @@ using namespace std;
 int main(int argc, char **argv)
 {
     srand(time(NULL));
+    int fftw_init_threads(void);
     string importstring;
 
     if (argc == 2)
@@ -121,8 +122,8 @@ int main(int argc, char **argv)
     CH_builder p;
     int nof = n;
     p.number_of_fields = nof;
-    p.N1 = 1024;
-    p.N2 = 1024;
+    p.N1 = 64;
+    p.N2 = 64;
 
     CHC a(p);
 
@@ -132,17 +133,10 @@ int main(int argc, char **argv)
              a.set_interaction(epsa(i,j), i, j);
         }
     }
-    vector1<bool> ps(n);
-    ps[0] = true;
-    ps[1] = true;
-
-
-    a.set_phase_separators(ps);
-
 
     a.set_diffusion(phasesepsparams[0]);
     a.set_epsilon(phasesepsparams[1]);
-    a.set_c0_c1(phasesepsparams[2],phasesepsparams[3]);
+    a.set_c0_c1(phasesepsparams[2],phasesepsparams[3]),0.1;
     double L = phasesepsparams[4];
     double temp1 = SQR(2. * pii / L);
     a.set_temp1(temp1);
@@ -232,120 +226,40 @@ int main(int argc, char **argv)
             }
         }
     }
-    /* 
-
-    {
-        int centroidx = 128;
-        int centroidy = 128;
-        double x1 = init[0];
-        for (int i = 0; i < p.N1; i++)
-        {
-            for (int j = 0; j < p.N2; j++)
-            {
-                double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
-                if(SQR(i-centroidx)+SQR(j-centroidy) < 2500) {
-                v[0](i, j) = x1 + gt * x1 * r1;
-                }
-                else{
-                v[0](i, j) = 0.01;
-                }
-            }
-        }
-    }
-    for (int lk = 1; lk < 5; lk++)
-    {
-        double x1 = init[lk];
-        for (int i = 0; i < p.N1 / 2; i++)
-        {
-            for (int j = 0; j < p.N2; j++)
-            {
-                double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
-                v[lk](i, j) = x1 + gt * x1 * r1;
-            }
-        }
-
-        for (int i = p.N1 / 2; i < p.N1; i++)
-        {
-            for (int j = 0; j < p.N2; j++)
-            {
-                double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
-                v[lk](i, j) = 0.01;
-            }
-        }
-    }
-
-    {
-        int centroidx = 1024-128;
-        int centroidy = 128;
-        double x1 = init[5];
-        for (int i = 0; i < p.N1; i++)
-        {
-            for (int j = 0; j < p.N2; j++)
-            {
-                double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
-                if (SQR(i - centroidx) + SQR(j - centroidy) < 2500)
-                {
-                v[5](i, j) = x1 + gt * x1 * r1;
-                }
-                else
-                {
-                v[5](i, j) = 0.01;
-                }
-            }
-        }
-    }
-    for (int lk = 6; lk < nof; lk++)
-    {
-        double x1 = init[lk];
-        for (int i = 0; i < p.N1 / 2; i++)
-        {
-            for (int j = 0; j < p.N2; j++)
-            {
-                double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
-                v[lk](i, j) = 0.01;
-            }
-        }
-
-        for (int i = p.N1 / 2; i < p.N1; i++)
-        {
-            for (int j = 0; j < p.N2; j++)
-            {
-                double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
-                v[lk](i, j) = x1 + gt * x1 * r1;
-            }
-        }
-    } */
-
-    // for (int lk = 0; lk < nof; lk++)
-    // {  
-    //     if(lk!=0 && lk!=5) {
-    //     double x1 = init[lk];
-    //     for (int i = 0; i < p.N1; i++)
-    //     {
-    //         for (int j = 0; j < p.N2; j++)
-    //         {
-    //             double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
-    //             v[lk](i, j) = x1 + gt * x1 * r1;
-    //         }
-    //     }
-    //     }
-        
-    // }
 
     for (int lk = 0; lk < nof; lk++)
     {
         a.set_field(v[lk], lk);
     }
+    GetMinimas(a.fields,p);
+    GetMaximas(a.fields,p);
 
     a.calculate_initial_weight();
 
 
     cout << "calc" << endl;
-    
+
+    //Eigen::SparseMatrix<complex<double>> a2= a.CalculateJ();
+
+    cout << "Sparse constructed" << endl;
+
 
     cout << "all fields set" << endl;
 
-    // auto start = std::chrono::high_resolution_clock::now();
+    a.SetupFracScheme(100);
+    
+    cout << "system set up" << endl;
+
+
+    // Eigen::SparseLU<Eigen::SparseMatrix<double>, Eigen::COLAMDOrdering<int>> solver;
+    // // fill A and b;
+    // // Compute the ordering permutation vector from the structural pattern of A
+    // solver.analyzePattern(-J);
+    // cout << "pattern analyzed" << endl;
+    // // Compute the numerical factorization
+    // solver.factorize(-J);
+    // cout << "pattern factorized" << endl;
+    // pausel();
     int runtime = 50001;
     int every = 10;
 
@@ -361,7 +275,7 @@ int main(int argc, char **argv)
     for (int i = 0; i < runtime; i++)
     {
 
-        if (i % every == 0 )
+        if (i % every == 0 && i > 0)
         {
             // stringstream strep1;
             // stringstream strep2;
@@ -379,14 +293,15 @@ int main(int argc, char **argv)
             string s2 = "_i=" + ss.str();
             string su = s1.substr(0, s1.size() - 4);
             cout << su + s2 << endl;
-            a.print_some_results(su + s2,ps);
+            a.print_all_results(su + s2);
         }
         cout << i << endl;
         cout << "begin" << endl;
-        a.Update();
+        a.UpdateWithNewton();
         bool chck = true;
         a.check_field(chck);
         if (!chck)
             break;
     }
+
 }

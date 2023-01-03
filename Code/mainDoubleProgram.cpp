@@ -55,47 +55,135 @@ int main(int argc, char **argv)
     int seed = microseconds_since_epoch % time(NULL);
     srand(seed);
 
-    double x12;
-    double x13;
-    double x23;
-    double den1;
-    double den2;
-    int rr;
-    int wh;
-    if (argc == 8)
+
+    // if (argc == 8)
+    // {
+    //     x12=atof(argv[1]);
+    //     x13=atof(argv[2]);
+    //     x23=atof(argv[3]);
+    //     den1=atof(argv[4]);
+    //     den2=atof(argv[5]);
+    //     rr=atof(argv[6]);
+    //     wh = atof(argv[7]);
+    // }
+    // else
+    // {
+    //     error("no");
+    // }
+    string importstring;
+
+    if (argc == 2)
     {
-        x12=atof(argv[1]);
-        x13=atof(argv[2]);
-        x23=atof(argv[3]);
-        den1=atof(argv[4]);
-        den2=atof(argv[5]);
-        rr=atof(argv[6]);
-        wh = atof(argv[7]);
+        stringstream ss;
+        ss << argv[1];
+        importstring = ss.str();
     }
     else
     {
         error("no");
     }
 
+    // double x12 = 4.;
+    // double x13 = 4.;
+    // double x23 = 4.;
+    // double den1 = 0.;
+    // double den2 = 0.;
+    // int rr = 1000;
+    // int wh = 1 ;
+
+    double T;
+    bool err1;
+    matrix<double> mat1 = importcsv(importstring, T, err1);//define the chemistry;
+
     CH_builder p;
-    int nof = 2;
+    int nof = mat1(0,0);
     p.number_of_fields = nof;
     p.N1 = 1024;
     p.N2 = 1024;
 
+    //vector1<double> phasesepparams(8);
+    double x12 = mat1(1,0);
+    double x13 = mat1(1, 1);
+    double x23 = mat1(1, 2);
+    double den1 = mat1(1, 3);
+    double den2 = mat1(1, 4);
+    int rr = mat1(1, 5);
+    int wh = mat1(1, 6);
+
+    matrix<double> dm(nof,nof);
+    for(int i = 0  ; i < nof ; i++) {
+        dm(i,i) = 1.;
+    }
+
     CHD a(p);
 
-    matrix<double> dm(2,2);
-    dm(0,0) =1.;
-    dm(1,1)= 1.;
     a.set_interaction_and_diffusion(x12,x13,x23,dm);
     
-    a.set_dt(0.005);
+    double dt = mat1(1,7);
+    double L = mat1(1,8);
+    double epsilon = mat1(1,9);
 
-    double L = 100.;
+    a.set_dt(dt);
+
     double temp1 = SQR(2. * pii / L);
     a.set_temp1(temp1);
-    a.set_epsilon(0.4);
+    a.set_epsilon(epsilon);
+
+    for(int i = 0 ; i < nof ; i++) {
+        for(int j = 2 ; j < nof ; j++) {
+        a.set_interaction(0.,i,j);
+        }
+    }
+
+    typedef complex<double> myc;
+    typedef Field_Wrapper<myc, myc> FWCC;
+
+    vector1<double> useshifts(nof);
+    useshifts[0] = 1./3.;
+    useshifts[1] = 1./3.;
+
+    double rm =0.1;
+
+    FWCC my_chemsitry(p);
+    NoWeight<myc, myc> nw;
+    for (int j = 4; j < mat1.getnrows(); j++)
+    {
+        int no_chem = mat1(j, 0);
+        // cout << no_chem << endl;
+
+        if (no_chem == 0)
+        {
+            my_chemsitry.add_method(nw, j - 4);
+        }
+        else
+        {
+            MultipleReactions<myc> c6(no_chem);
+
+            double tot = 0.0;
+
+            for (int i = 0; i < no_chem; i++)
+            {
+                // cout << i << endl;
+                vector1<int> jpow(nof);
+                for (int k = i * (nof + 1) + 2; k < i * (nof + 1) + 2 + nof; k++)
+                {
+
+                    jpow[k - (i * (nof + 1) + 2)] = (int)mat1(j, k);
+                }
+                // cout << mat1(j,i*(nof+1)+1) << endl;
+                // cout << jpow << endl;
+                // pausel();
+                GenericChemistry<myc> c6_0(rm*mat1(j, i * (nof + 1) + 1), jpow);
+                c6_0.set_shifts(useshifts);
+                c6.add_chemical_reaction(c6_0, i);
+
+                // cout << endl;
+            }
+
+            my_chemsitry.add_method(c6, j - 4);
+        }
+    }
+    a.set_chems(my_chemsitry);
 
     a.setup_matrices();
 
@@ -111,9 +199,11 @@ int main(int argc, char **argv)
     init[0]=0.0;
     init[1]=0.0;
 
+    int reduced_fieldno = 2;
+
     double gt = 0.1;
 
-    for (int lk = 0; lk < nof; lk++)
+    for (int lk = 0; lk < reduced_fieldno; lk++) //we only change the first 2
     {
         double x1 = init[lk];
         for (int i = 0; i < p.N1; i++)
@@ -128,13 +218,12 @@ int main(int argc, char **argv)
 
     vector1<double> tots(nof);
 
-    for (int lk = 0; lk < nof; lk++)
+    for (int lk = 0; lk < reduced_fieldno; lk++)
     {
         for (int i = 0; i < p.N1; i++)
         {
             for (int j = 0; j < p.N2; j++)
             {
-                
                 tots[lk] += v[lk](i,j).real();
             }
         }
@@ -145,17 +234,19 @@ int main(int argc, char **argv)
 
     //double dens = -0.1;
     int which_first = wh;
-    vector1<double> init2(2);
+    vector1<double> init2(reduced_fieldno);
     init2[0] = den1;
     init2[1] = den2;
     double zeroden=-1./3.;
 
     vector1<double> dens(2);
     int wh2 = wh == 1 ? 0 : 1;
+
+
     dens[wh2]=init2[wh2];
     dens[wh] = zeroden;
 
-    for (int lk = 0; lk < nof; lk++)
+    for (int lk = 0; lk < reduced_fieldno; lk++)
     {
         for (int i = 0; i < p.N1; i++)
         {
@@ -167,25 +258,32 @@ int main(int argc, char **argv)
             }
         }
     }
+    
+
 
     //we can cut off the high frequency modes
 
     
 
-    for (int lk = 0; lk < nof; lk++)
+    for (int lk = 0; lk < reduced_fieldno; lk++)
     {
         a.set_field(v[lk], lk);
     }
 
-    vector1<int> cutoff(2);
-    cutoff[0]=100;
-    cutoff[1]=100;
+
+    matrix<myc> fieldtemp(p.N1, p.N2);
+
+    vector1<int> cutoff(4,100);
+    // cutoff[0]=100;
+    // cutoff[1]=100;
     a.setupInitial(cutoff);
+
+    // do the initial updating without chemistry
 
     int runtime = rr;
     int every = 100;
 
-    string importstring = "twofields";
+    string exportstring = "twofields";
     int tf = ceil((double)runtime / (double)every);
     int number_of_digits = 0;
     do
@@ -209,7 +307,7 @@ int main(int argc, char **argv)
             // strep4 << c0;
             // strep2 << c1;
             // strep3 <<  surf;
-            string s1 = importstring;
+            string s1 = exportstring;
             // string s1 = "denp=" + strep1.str() + "c0=" + strep4.str() + "_c1=" + strep2.str() + "_surf=" + strep3.str();
             stringstream ss;
             ss << setw(number_of_digits) << setfill('0') << i / every;
@@ -228,7 +326,9 @@ int main(int argc, char **argv)
     }
 
 
-    matrix<myc> fieldtemp(p.N1, p.N2);
+    //inject the other material and turn on the chemistry
+
+
 
     //check the field variable 
 
@@ -271,12 +371,64 @@ int main(int argc, char **argv)
         }
     }
 
+    // cout << wh << " " << wh2 << endl;
+    
     a.set_field(fieldtemp, wh);
+    // outfunc2D(a.fields[0],p.N1,p.N2,"b0");
+    // outfunc2D(a.fields[1],p.N1,p.N2 ,"b1");
 
-    
-    
+    // pausel();
 
-    for (int i = runtime; i < runtime+5000; i++)
+    vector1<double> otherfields(nof);
+    for(int i = 2 ; i < nof ; i++ ) {
+        otherfields[i] = mat1(3,i-2);
+    }
+
+    // now we add the other material as well:
+    for (int k = 2; k < nof; k++)
+    {
+        double x1 = otherfields[k];
+        for (int i = 0; i < p.N1; i++)
+        {
+
+            for (int j = 0; j < p.N2; j++)
+            {
+                double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
+                fieldtemp(i, j) = x1 + gt * x1 * r1;
+            }
+        }
+        a.set_field(fieldtemp, k);
+    }
+
+    // vector1<double> otherfields(nof);
+    // otherfields[2] =0.4;
+    // otherfields[3] =0.4;
+
+    // //now we add the other material as well:
+    // for(int k = 2 ; k < nof ; k++) {
+    //     double x1 = otherfields[k];
+    //     for (int i = 0; i < p.N1; i++)
+    //     {
+
+    //         for (int j = 0; j < p.N2; j++)
+    //         {
+    //             double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
+    //             fieldtemp(i, j) = x1 + gt * x1 * r1;
+    //         }
+    // }
+    //     a.set_field(fieldtemp, k);
+    // }
+
+    int newruntime = runtime+5000;
+    tf = ceil((double)newruntime / (double)every);
+    number_of_digits = 0;
+    do
+    {
+        ++number_of_digits;
+        tf /= 10;
+    } while (tf);
+
+    for (int i = runtime; i < newruntime; i++)
     {
 
         if (i % every == 0)
@@ -301,7 +453,7 @@ int main(int argc, char **argv)
         }
         cout << i << endl;
         cout << "begin" << endl;
-        a.Update();
+        a.Update_With_Chem();
         bool chck = true;
         a.check_field(chck);
         if (!chck)

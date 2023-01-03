@@ -22,7 +22,8 @@ Field_Wrapper<T, Q>::Field_Wrapper()
     chems = new Weight<T,Q>*[params.number_of_fields];
 
     NoWeight<T,Q> *chem1 = new NoWeight<T,Q>;
-    chems[0] = chem1;
+    chems[0] = chem1->clone();
+    delete chem1;
 }
 
 template <class T, class Q>
@@ -47,7 +48,8 @@ Field_Wrapper<T, Q>::Field_Wrapper(const CH_builder &a)
     for (int i = 0; i < params.number_of_fields; i++)
     {
         NoWeight<T, Q> *chem1 = new NoWeight<T, Q>;
-        chems[i] = chem1;
+        chems[i] = chem1->clone();
+        delete chem1;
     }
 }
 
@@ -85,8 +87,8 @@ Field_Wrapper<T, Q> &Field_Wrapper<T,Q>::operator=(const Field_Wrapper<T,Q> &a)
         delete chems[i];
         fftw_free(calculated_reactions[i]);
     }
-    delete chems;
-    delete calculated_reactions;
+    delete[] chems;
+    delete[] calculated_reactions;
 
     params.number_of_fields = a.params.number_of_fields;
     params.N1 = a.params.N1;
@@ -123,15 +125,18 @@ Field_Wrapper<T, Q>::~Field_Wrapper()
         delete chems[i];
         fftw_free(calculated_reactions[i]);
     }
-    delete chems;
-    delete calculated_reactions;
+    delete[] chems;
+    delete[] calculated_reactions;
 }
 
 template <class T, class Q>
 void Field_Wrapper<T, Q>::add_method(Weight<T, Q> &a, int j)
 {
-    //Chemistry *chem1 = a.clone();
+    // Weight<T,Q> *chem1 = a.clone();
+    delete chems[j];
     chems[j] = a.clone();
+    // Weight<T, Q> *chem1 = a.clone();
+    // chems[j] = chem1;
 }
 
 
@@ -176,7 +181,59 @@ void Field_Wrapper<T, Q>::Check_fields()
     }
 }
 
+template <class T, class Q>
+void Field_Wrapper<T, Q>::means(vector1<T> &vv)
+{
 
+    for (int i = 0; i < params.number_of_fields; i++)
+    {
+        T a = calculated_reactions[i][0];
+        int tot = params.get_total();
+        for (int j = 1; j < tot; j++)
+        {
+
+            a += calculated_reactions[i][j];
+            
+        }
+        vv[i] = a/T(tot);
+    }
+}
+
+template <class T, class Q>
+void Field_Wrapper<T, Q>::means() {
+    vector1<T> vv(params.number_of_fields);
+    this->means(vv);
+    cout << vv << endl;
+}
+
+template <class T, class Q>
+void Field_Wrapper<T, Q>::rescale()
+{
+    vector1<T> means(params.number_of_fields);
+    vector1<T> mins(params.number_of_fields);
+    vector1<T> maxs(params.number_of_fields);
+
+    this->means(means);
+    this->GetMinimas(mins);
+    this->GetMaximas(maxs);
+
+
+    T fac1 = T(2.);
+    T fac2 = T(0.1);
+
+
+
+    for (int i = 0; i < params.number_of_fields; i++)
+    {
+        T max = fac1 * means[i];
+        T min = fac2 * means[i];
+        int tot = params.get_total();
+        for (int j = 0; j < tot; j++)
+        {
+            calculated_reactions[i][j] = min+(max-min)*(calculated_reactions[i][j]-mins[i])/(maxs[i]-mins[i]);
+        }
+    }
+}
 
 template <class T, class Q>
 void Field_Wrapper<T, Q>::GetMaximas() {
@@ -194,6 +251,23 @@ void Field_Wrapper<T, Q>::GetMaximas() {
     }
     cout << endl;
  
+}
+template <class T, class Q>
+void Field_Wrapper<T, Q>::GetMaximas(vector1<T> &vv)
+{
+    for (int i = 0; i < params.number_of_fields; i++)
+    {
+        T a = calculated_reactions[i][0];
+        int tot = params.get_total();
+        for (int j = 1; j < tot; j++)
+        {
+            if (calculated_reactions[i][j] > a)
+            {
+                a = calculated_reactions[i][j];
+            }
+        }
+        vv[i] = a;
+    }
 }
 
 template <class T>
@@ -276,6 +350,24 @@ void Field_Wrapper<T, Q>::GetMinimas()
         cout << a << " ";
     }
     cout << endl;
+}
+
+template <class T, class Q>
+void Field_Wrapper<T, Q>::GetMinimas(vector1<T> &vv)
+{
+    for (int i = 0; i < params.number_of_fields; i++)
+    {
+        T a = calculated_reactions[i][0];
+        int tot = params.get_total();
+        for (int j = 1; j < tot; j++)
+        {
+            if (calculated_reactions[i][j] < a)
+            {
+                a = calculated_reactions[i][j];
+            }
+        }
+        vv[i] = a;
+    }
 }
 
 template <class T, class Q>

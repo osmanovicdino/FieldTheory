@@ -32,30 +32,58 @@ class GenericChemistry: public Weight<T,T>
 private:
 double rate1;
 vector1<int> pows;
+vector1<double> shifts; //to account for chemistries where the zero is shifted
+bool useshifts = false; //false as a start
 int n;
 
 public: 
-GenericChemistry(double rate11, vector1<int> powss) : pows(powss) { n = pows.getsize(); rate1 = rate11; }
+GenericChemistry(double rate11, vector1<int> powss) : pows(powss), shifts(vector1<double>(pows.getsize())) { n = pows.getsize(); rate1 = rate11; }
+
+void set_shifts(vector1<double> &shfts) 
+{
+    // we change useshifts to true
+    useshifts = true; shifts = shfts;
+}
+
 void operator()(T **a, T **fields, int j, const CH_builder &p)
 {
     // as there is crosstalk here it is required for you to be careful for out of memory errors
     int end = p.get_total();
     //cout << "j choice: " << j << endl;
-    
-    for (int i = 0; i < end; i++)
-    {
-        double tot = 1.0;
-        for(int k = 0  ; k < n ; k++) {
-            if(pows[k]==0) {
+    if(useshifts) {
+        for (int i = 0; i < end; i++)
+        {
+            double tot = 1.0;
+            for (int k = 0; k < n; k++)
+            {
+                if (pows[k] == 0)
+                {
+                }
+                else
+                {
+                    tot *= Power(fields[k][i].real()+shifts[k], pows[k]);
+                }
+            }
 
-            }
-            else{
-            tot *= Power(fields[k][i].real(),pows[k]);
-            }
+            a[j][i] = rate1 * tot;
         }
+    }
+    else{
+        for (int i = 0; i < end; i++)
+        {
+            double tot = 1.0;
+            for(int k = 0  ; k < n ; k++) {
+                if(pows[k]==0) {
+
+                }
+                else{
+                tot *= Power(fields[k][i].real(),pows[k]);
+                }
+            }
 
 
-        a[j][i] = rate1 * tot;
+            a[j][i] = rate1 * tot;
+        }
     }
 }
 GenericChemistry *clone() const
