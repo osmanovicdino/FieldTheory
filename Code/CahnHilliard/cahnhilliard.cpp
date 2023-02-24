@@ -9,35 +9,50 @@ CH<T>::CH(const CH_builder &p) : myp(p), chems(Field_Wrapper<T, T>(p)),
 {
 
     fields = new T *[myp.number_of_fields];
-
+    int totp =  myp.get_total();
     for (int i = 0; i < myp.number_of_fields; i++)
     {
-        fields[i] = (T *)fftw_malloc(myp.N1 * myp.N2 * sizeof(T));
-        for (int j = 0; j < myp.N1 * myp.N2; j++)
+        fields[i] = (T *)fftw_malloc(totp * sizeof(T));
+        for (int j = 0; j < totp; j++)
         {
             fields[i][j] = 0.0;
         }
     }
+    if(myp.dimension == 2) {
+        for(int i = 0  ; i < myp.number_of_fields ; i++) {
+            if constexpr (std::is_same_v<T, double>) {
+                CosineWeightForward fw;
+                transformed1.add_method(fw, i);
+                transformed2.add_method(fw, i);
+                transformed3.add_method(fw, i);
+                CosineWeightBackward fw2;
+                reverse_transform.add_method(fw2,i);
+            }
+            else if constexpr (std::is_same_v<T, complex<double> >) {
+                FourierWeightForward2D fw;
+                transformed1.add_method(fw, i);
+                transformed2.add_method(fw, i);
+                transformed3.add_method(fw, i);
+                FourierWeightBackward2D fw2;
+                reverse_transform.add_method(fw2, i);
+            }
+            else{
+                cout << "will neeed to specify your own functional rules for custom types" << endl;
+            }
+        }
+    }
+    else{
+        for (int i = 0; i < myp.number_of_fields; i++)
+        {
+                cout << "current 3D rules only supported for periodic boundary conditions" << endl;
+                FourierWeightForward3D fw;
+                transformed1.add_method(fw, i);
+                transformed2.add_method(fw, i);
+                transformed3.add_method(fw, i);
+                FourierWeightBackward3D fw2;
+                reverse_transform.add_method(fw2, i);
+            
 
-    for(int i = 0  ; i < myp.number_of_fields ; i++) {
-        if constexpr (std::is_same_v<T, double>) {
-            CosineWeightForward fw;
-            transformed1.add_method(fw, i);
-            transformed2.add_method(fw, i);
-            transformed3.add_method(fw, i);
-            CosineWeightBackward fw2;
-            reverse_transform.add_method(fw2,i);
-        }
-        else if constexpr (std::is_same_v<T, complex<double> >) {
-            FourierWeightForward2D fw;
-            transformed1.add_method(fw, i);
-            transformed2.add_method(fw, i);
-            transformed3.add_method(fw, i);
-            FourierWeightBackward2D fw2;
-            reverse_transform.add_method(fw2, i);
-        }
-        else{
-            cout << "will neeed to specify your own functional rules for custom types" << endl;
         }
     }
 
@@ -65,55 +80,85 @@ void CH<T>::set_field(const matrix<T> &mymat, int k)
 
 template<class T>
 void CH<T>::set_field(T **orig) { // only set the field to real values
-    for(int k = 0 ; k < myp.number_of_fields ; k++) {
-        for (int i = 0; i < myp.N1; i++)
-        {
-            for (int j = 0; j < myp.N2; j++)
+    if(myp.dimension ==2) {
+        for(int k = 0 ; k < myp.number_of_fields ; k++) {
+            for (int i = 0; i < myp.N1; i++)
             {
-                fields[k][i * myp.N2 + j] = {orig[k][i * myp.N2 + j].real(), 0.};
-                
+                for (int j = 0; j < myp.N2; j++)
+                {
+                    fields[k][i * myp.N2 + j] = {orig[k][i * myp.N2 + j].real(), 0.};
+                    
+                }
+            }
+        }
+    }
+    else{
+        for (int k = 0; k < myp.number_of_fields; k++)
+        {
+            for (int i = 0; i < myp.N1; i++)
+            {
+                for (int j = 0; j < myp.N2; j++)
+                {
+                    for (int lk = 0; lk < myp.N3; lk++)
+                    {
+                        fields[k][i * myp.N2 * myp.N3 + j * myp.N3 + lk] = {orig[k][i * myp.N2 * myp.N3 + j * myp.N3 + lk].real(), 0.};
+                    }
+                }
             }
         }
     }
 }
 
+template <class T>
+void CH<T>::set_field(T *orig, int k)
+{ // only set the field to real values
 
+int totp = myp.get_total();
 
+    for(int i  = 0 ; i < totp ; i++)            
+        fields[k][i] = {orig[i].real(), 0.};
+            
+        
+    
+}
 
 template<class T>
 void CH<T>::Update() {
     //cout << fields[0][0] << endl;
 
 
+
+    cout << "start" << endl;
+
     weigs.Calculate_Results(fields);
 
-    // cout << "weigs done" << endl;
+    cout << "weigs done" << endl;
     // weigs.GetMaximas();
     // weigs.GetMinimas();
 
     chems.Calculate_Results(fields);
 
-    // cout << "chems done" << endl;
+    cout << "chems done" << endl;
     // chems.GetMaximas();
     // chems.GetMinimas();
 
     transformed1.Calculate_Results(fields);
 
-    // cout << "FFT1 done" << endl;
+    cout << "FFT1 done" << endl;
     // transformed1.GetMaximas();
     // transformed1.GetMinimas();
     // cout << 3 << endl;
 
     transformed2.Calculate_Results(weigs.calculated_reactions);
     
-    // cout << "FFT2 done" << endl;
+    cout << "FFT2 done" << endl;
     // transformed2.GetMaximas();
     // transformed2.GetMinimas();
     // cout << 4 << endl;
 
     transformed3.Calculate_Results(chems.calculated_reactions);
 
-    // cout << "FFT3 done" << endl;
+    cout << "FFT3 done" << endl;
     // transformed3.GetMaximas();
     // transformed3.GetMinimas();
     // cout << 5 << endl;
@@ -128,7 +173,7 @@ void CH<T>::Update() {
 
 
     rules.Check_fields();
-    // cout << "Rules done" << endl;
+    cout << "Rules done" << endl;
     //rules.GetMaximas();
     // cout << transformed1.calculated_reactions[0][0] << endl;
     // cout << rules.calculated_reactions[0][0] << endl;
@@ -210,6 +255,8 @@ void CH<T>::print_some_results(string s1,vector1<bool> &ps)
 }
 
 void CHN::Update() {
+
+
 
     weigs.Calculate_Results(fields);
 

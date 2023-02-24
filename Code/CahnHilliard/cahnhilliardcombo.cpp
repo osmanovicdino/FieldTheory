@@ -194,13 +194,13 @@ void CHC::calculate_non_linear_weightSQR(complex<double> **input)
     // outfunc(transformed2.calculated_reactions[0], "testft", myp);
 }
 
-void CHC::calculate_initial_weight() {
+void CHC::calculate_initial_weight(int cut_offf=100) {
     transformed1.Calculate_Results(fields); //calculate FT of fields
     int totp = myp.get_total();
     int nof = myp.number_of_fields;
 
     //cut off form
-    int cut_off = 100;
+    int cut_off = cut_offf;
     for (int fn = 0; fn < nof; fn++)
     {
         for (int i = 0; i < myp.N1; i++)
@@ -225,8 +225,10 @@ void CHC::calculate_initial_weight() {
                     k2 = (j - myp.N2);
                     }
                     double tempor = SQR(k1) + SQR(k2);
-                    if(tempor>cut_off)
+                    if(tempor>cut_off) {
                     transformed1.calculated_reactions[fn][i * myp.N2 + j] = 0.; // cut off the high frequency modes
+                    
+                    }
             }
         }
     }

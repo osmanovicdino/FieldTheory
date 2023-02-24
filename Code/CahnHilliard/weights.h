@@ -646,6 +646,63 @@ public:
     void print() { cout << "FourierWeightForwards" << endl; }
 };
 
+class FourierWeightForward3D : public Weight<complex<double>, complex<double>>
+{
+private:
+public:
+    void operator()(complex<double> **a, complex<double> **fields, int j, const CH_builder &p)
+    {
+        if(p.dimension!= 3) error("change dimension of CH builder");
+
+        fftw_plan p2(fftw_plan_dft_3d(p.N1, p.N2, p.N3, reinterpret_cast<fftw_complex *>(fields[j]), reinterpret_cast<fftw_complex *>(a[j]), FFTW_FORWARD, FFTW_ESTIMATE));
+
+        fftw_execute(p2);
+        double corr = 1. / (p.N1);
+        int end = p.get_total();
+        for (int i = 0; i < end; i++)
+        {
+            a[j][i] *= corr;
+        }
+
+        fftw_destroy_plan(p2);
+        // fftw_cleanup();
+    }
+    FourierWeightForward3D *clone() const
+    {
+        return new FourierWeightForward3D(*this);
+    }
+    void print() { cout << "FourierWeightForwards" << endl; }
+};
+
+class FourierWeightBackward3D : public Weight<complex<double>, complex<double>>
+{
+private:
+public:
+    void operator()(complex<double> **a, complex<double> **fields, int j, const CH_builder &p)
+    {
+        if (p.dimension != 3)
+            error("change dimension of CH builder");
+        fftw_plan p2;
+
+        p2 = fftw_plan_dft_3d(p.N1, p.N2, p.N3, reinterpret_cast<fftw_complex *>(fields[j]), reinterpret_cast<fftw_complex *>(a[j]), FFTW_BACKWARD, FFTW_ESTIMATE);
+
+        fftw_execute(p2);
+        double corr = 1./ (p.N2*p.N3);
+        int end = p.get_total();
+        for (int i = 0; i < end; i++)
+        {
+            a[j][i] *= corr;
+        }
+
+        fftw_destroy_plan(p2);
+    }
+    FourierWeightBackward3D *clone() const
+    {
+        return new FourierWeightBackward3D(*this);
+    }
+    void print() { cout << "FourierWeightForwards" << endl; }
+};
+
 class FourierWeightForward2D_r2c : public Weight<complex<double>, double>
 {
 private:

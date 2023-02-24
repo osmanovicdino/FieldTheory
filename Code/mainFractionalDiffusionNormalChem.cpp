@@ -337,7 +337,7 @@ int main(int argc, char **argv)
         a.set_field(v[lk], lk);
     }
 
-    a.calculate_initial_weight();
+    a.calculate_initial_weight(SQR(200));
 
 
     cout << "calc" << endl;

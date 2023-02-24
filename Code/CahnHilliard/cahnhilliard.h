@@ -88,6 +88,8 @@ void set_field(const matrix<T>&,int);
 
 void set_field(T**);
 
+void set_field(T*,int);
+
 void set_chems(const Field_Wrapper<T, T> &a) { chems = a; }
 
 void set_weights(const Field_Wrapper<T, T> &a) { weigs = a; }
@@ -449,7 +451,7 @@ struct CHC : public CH<complex<double>>
 
     void calculate_non_linear_weightSQR(complex<double> **);
 
-    void calculate_initial_weight();
+    void calculate_initial_weight(int);
     void calculate_initial_weightSQR();
 
     void Update();

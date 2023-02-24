@@ -235,7 +235,7 @@ int main(int argc, char **argv)
     GetMinimas(a.fields,p);
     GetMaximas(a.fields,p);
 
-    a.calculate_initial_weight();
+    a.calculate_initial_weight(1024);
 
 
     cout << "calc" << endl;
@@ -276,7 +276,7 @@ int main(int argc, char **argv)
     for (int i = 0; i < runtime; i++)
     {
 
-        if (i % every == 0 && i > 0)
+        if (i % every == 0)
         {
             // stringstream strep1;
             // stringstream strep2;

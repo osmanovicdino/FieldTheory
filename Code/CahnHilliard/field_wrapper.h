@@ -39,6 +39,7 @@ struct Field_Wrapper
     }
     void set_field(T **orig)
     {
+        if(params.dimension == 2) {
         for (int k = 0; k < params.number_of_fields; k++)
         {
             for (int i = 0; i < params.N1; i++)
@@ -48,6 +49,24 @@ struct Field_Wrapper
                     calculated_reactions[k][i * params.N2 + j] = orig[k][i * params.N2 + j];
                 }
             }
+        }
+        }
+        else {
+
+        for (int k = 0; k < params.number_of_fields; k++)
+        {
+            for (int i = 0; i < params.N1; i++)
+            {
+                for (int j = 0; j < params.N2; j++)
+                {
+                    for (int lk = 0; lk < params.N3; lk++)
+                    {
+                        calculated_reactions[k][i * params.N2 * params.N3 + j * params.N3 + lk] = orig[k][i * params.N2 * params.N3 + j * params.N3 + lk];
+                    }
+                }
+            }
+        }
+
         }
     }
     void means(vector1<T> &v);

@@ -7,6 +7,7 @@ Rule_Wrapper<T, T1, T2, T3>::Rule_Wrapper()
     params.number_of_fields = 1;
     params.N1 = 128;
     params.N2 = 128;
+    params.N3 = 0;
     calculated_reactions = new T *[params.number_of_fields];
 
     calculated_reactions[0] = (T *)fftw_malloc(params.N1 * params.N2 * sizeof(T));
@@ -26,14 +27,18 @@ template <class T, class T1, class T2, class T3>
 Rule_Wrapper<T, T1, T2, T3>::Rule_Wrapper(const CH_builder &a)
 {
     params.number_of_fields = a.number_of_fields;
+    params.dimension = a.dimension;
     params.N1 = a.N1;
     params.N2 = a.N2;
+    params.N3 = a.N3;
+
+    int totp = params.get_total();
     calculated_reactions = new T *[params.number_of_fields];
 
     for (int i = 0; i < params.number_of_fields; i++)
     {
-        calculated_reactions[i] = (T *)fftw_malloc(params.N1 * params.N2 * sizeof(T));
-        for (int j = 0; j < params.N1 * params.N2; j++)
+        calculated_reactions[i] = (T *)fftw_malloc(totp * sizeof(T));
+        for (int j = 0; j < totp; j++)
         {
             T b = 0.0;
             calculated_reactions[i][j] = b;
@@ -51,14 +56,19 @@ template <class T, class T1, class T2, class T3>
 Rule_Wrapper<T, T1, T2, T3>::Rule_Wrapper(const Rule_Wrapper<T,T1,T2,T3> &a)
 {
     params.number_of_fields = a.params.number_of_fields;
+    params.dimension = a.params.dimension;
     params.N1 = a.params.N1;
     params.N2 = a.params.N2;
+    params.N3 = a.params.N3;
+
+    int totp = params.get_total();
+
     calculated_reactions = new T *[params.number_of_fields];
 
     for (int i = 0; i < params.number_of_fields; i++)
     {
-        calculated_reactions[i] = (T *)fftw_malloc(params.N1 * params.N2 * sizeof(T));
-        for (int j = 0; j < params.N1 * params.N2; j++)
+        calculated_reactions[i] = (T *)fftw_malloc(totp * sizeof(T));
+        for (int j = 0; j < totp; j++)
         {
             calculated_reactions[i][j] = a.calculated_reactions[i][j];
         }
@@ -88,14 +98,18 @@ Rule_Wrapper<T, T1, T2, T3> &Rule_Wrapper<T, T1, T2, T3>::operator=(const Rule_W
 
     
     params.number_of_fields = a.params.number_of_fields;
+    params.dimension = a.params.dimension;
     params.N1 = a.params.N1;
     params.N2 = a.params.N2;
+    params.N3 = a.params.N3;
+
+    int totp = params.get_total();
 
     calculated_reactions = new T *[params.number_of_fields];
     for (int i = 0; i < params.number_of_fields; i++)
     {
-        calculated_reactions[i] = (T *)fftw_malloc(params.N1 * params.N2 * sizeof(T));
-        for (int j = 0; j < params.N1 * params.N2; j++)
+        calculated_reactions[i] = (T *)fftw_malloc(totp * sizeof(T));
+        for (int j = 0; j < totp; j++)
         {
             calculated_reactions[i][j] = a.calculated_reactions[i][j];
         }
@@ -115,7 +129,7 @@ Rule_Wrapper<T, T1, T2, T3> &Rule_Wrapper<T, T1, T2, T3>::operator=(const Rule_W
 
 template <class T, class T1, class T2, class T3>
 Rule_Wrapper<T, T1, T2, T3> &Rule_Wrapper<T, T1, T2, T3>::operator+=(const Rule_Wrapper<T, T1, T2, T3> &a) {
-    int tot = params.N1 * params.N2;
+    int tot = params.get_total();
     
         for (int i = 0; i < params.number_of_fields; i++)
         {
@@ -165,7 +179,7 @@ void Rule_Wrapper<T, T1, T2, T3>::Check_fields()
 {
     for (int i = 0; i < params.number_of_fields; i++)
     {
-        int tot = params.N1 * params.N2;
+        int tot = params.get_total();
         for (int j = 0; j < tot; j++)
         {
             if (calculated_reactions[i][j] != calculated_reactions[i][j])
@@ -183,7 +197,7 @@ void Rule_Wrapper<T, T1, T2, T3>::Check_negatives(bool &neg)
 {
     for (int i = 0; i < params.number_of_fields; i++)
     {
-        int tot = params.N1 * params.N2;
+        int tot = params.get_total();
         for (int j = 0; j < tot; j++)
         {
             if (calculated_reactions[i][j] < 0 )

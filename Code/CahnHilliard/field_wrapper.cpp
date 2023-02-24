@@ -10,6 +10,7 @@ Field_Wrapper<T, Q>::Field_Wrapper()
     params.number_of_fields = 1;
     params.N1 = 128;
     params.N2 = 128;
+    params.N3 = 0;
     calculated_reactions = new T *[params.number_of_fields];
 
     calculated_reactions[0] = (T *)fftw_malloc(params.N1 * params.N2 * sizeof(T));
@@ -30,14 +31,18 @@ template <class T, class Q>
 Field_Wrapper<T, Q>::Field_Wrapper(const CH_builder &a)
 {
     params.number_of_fields = a.number_of_fields;
+    params.dimension = a.dimension;
     params.N1 = a.N1;
     params.N2 = a.N2;
+    params.N3 = a.N3;
+    int totp = params.get_total();
+
     calculated_reactions = new T *[params.number_of_fields];
 
     for (int i = 0; i < params.number_of_fields; i++)
     {
-        calculated_reactions[i] = (T *)fftw_malloc(params.N1 * params.N2 * sizeof(T));
-        for (int j = 0; j < params.N1 * params.N2; j++)
+        calculated_reactions[i] = (T *)fftw_malloc(totp * sizeof(T));
+        for (int j = 0; j < totp; j++)
         {
             T b;
             calculated_reactions[i][j] = b;
@@ -58,14 +63,18 @@ template <class T, class Q>
 Field_Wrapper<T, Q>::Field_Wrapper(const Field_Wrapper<T,Q> &a)
 {
     params.number_of_fields = a.params.number_of_fields;
+    params.dimension = a.params.dimension;
     params.N1 = a.params.N1;
     params.N2 = a.params.N2;
+    params.N3 = a.params.N3;
+    int totp = params.get_total();
+
     calculated_reactions = new T *[params.number_of_fields];
 
     for (int i = 0; i < params.number_of_fields; i++)
     {
-        calculated_reactions[i] = (T *)fftw_malloc(params.N1 * params.N2 * sizeof(T));
-        for (int j = 0; j < params.N1 * params.N2; j++)
+        calculated_reactions[i] = (T *)fftw_malloc(totp * sizeof(T));
+        for (int j = 0; j < totp; j++)
         {
             calculated_reactions[i][j] = a.calculated_reactions[i][j];
         }
@@ -91,14 +100,17 @@ Field_Wrapper<T, Q> &Field_Wrapper<T,Q>::operator=(const Field_Wrapper<T,Q> &a)
     delete[] calculated_reactions;
 
     params.number_of_fields = a.params.number_of_fields;
+    params.dimension =  a.params.dimension;
     params.N1 = a.params.N1;
     params.N2 = a.params.N2;
+    params.N3 = a.params.N3;
+    int totp = params.get_total();
 
     calculated_reactions = new T *[params.number_of_fields];
     for (int i = 0; i < params.number_of_fields; i++)
     {
-        calculated_reactions[i] = (T *)fftw_malloc(params.N1 * params.N2 * sizeof(T));
-        for (int j = 0; j < params.N1 * params.N2; j++)
+        calculated_reactions[i] = (T *)fftw_malloc(totp * sizeof(T));
+        for (int j = 0; j < totp; j++)
         {
             calculated_reactions[i][j] = a.calculated_reactions[i][j];
         }
