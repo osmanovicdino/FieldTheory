@@ -90,6 +90,10 @@ int main(int argc, char **argv)
     string total2 = dirstr + import2;
 
 
+    cout << total1 << endl;
+
+    cout << total2 << endl;
+
     double Td;
     bool err1;
     matrix<double> mat1 = importcsv(total1, Td, err1);
