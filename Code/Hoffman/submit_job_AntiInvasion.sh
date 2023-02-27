@@ -33,7 +33,7 @@ module load fftw/3.3.9
 ##echo '/usr/bin/time -v hostname'
 ##/usr/bin/time -v hostname
 filename=~/FieldTheory/Code/Hoffman/paramsAntiInvasion.dat
-basedir="AntiInvasion"
+basedir="AntiInvasion2"
 if [ -e ${filename}   ]; then
    # use the unix command sed -n ${line_number}p to read by line
    p0=`sed -n ${SGE_TASK_ID}p ${filename} | awk '{print $1}'`

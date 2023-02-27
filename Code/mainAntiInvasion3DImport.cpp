@@ -234,7 +234,7 @@ int main(int argc, char **argv)
 
             a1[i] = mat1[i];
             a3[i] = densi;
-            a2[i] = mat2[i];
+            a2[i] = mat2[i] * (1 + (0.2 * ((double)rand() / (double)RAND_MAX) - 0.1) );
             //meanofinv += field3(i,j).real();
             //field4(i, j) = A0 + (0.2 * ((double)rand() / (double)RAND_MAX) - 0.1);
         
