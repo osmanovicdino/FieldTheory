@@ -171,7 +171,7 @@ int main(int argc, char **argv)
 
     double dt = 0.005;
     double L = 40.0;
-    double D = 10.0;
+    double D = 1.0;
     double temp1 = SQR(2*pi / L);
     
     double D2 = Di;
