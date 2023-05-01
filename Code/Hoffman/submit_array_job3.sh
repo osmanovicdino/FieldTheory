@@ -8,7 +8,7 @@
 #$ -l h_rt=24:00:00,h_data=2G
 ## Modify the parallel environment
 ## and the number of cores as needed:
-#$ -t 1-90:1
+#$ -t 1-100:1
 
 # echo job info on joblog:
 echo "Job $JOB_ID started on:   " `hostname -s`
@@ -35,7 +35,7 @@ else
    echo "did not read file correctly"
 fi
 dirwemake="chemistry${SGE_TASK_ID}"
-ftdir="FieldTheory7"
+ftdir="CSS"
 mkdir /u/scratch/d/dinoo/${ftdir}/${dirwemake}
 cp ~/FieldTheory/Code/mainFractionalDiffusionNormalChem.cpp /u/scratch/d/dinoo/${ftdir}/${dirwemake}
 cp ~/FieldTheory/Code/InitialConditions/${wt} /u/scratch/d/dinoo/${ftdir}/${dirwemake}/res.csv

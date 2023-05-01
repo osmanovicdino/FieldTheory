@@ -282,12 +282,19 @@ void CHC::calculate_initial_weight(int cut_offf=100) {
 
     reverse_transform.Calculate_Results(transformed1.calculated_reactions);
 
-    //now multiply throught
-
-
-    reverse_transform.rescale();
-
     set_field(reverse_transform.calculated_reactions);
+
+    // outfunc(fields[0], "fi1", myp);
+    // outfunc(fields[1], "fi2", myp);
+
+    // pausel();
+
+    // reverse_transform.rescale();
+
+
+//    set_field(reverse_transform.calculated_reactions);
+
+
 
     transformed1.Calculate_Results(fields); // calculate FT of fields
 
@@ -352,7 +359,15 @@ void CHC::calculate_initial_weight(int cut_offf=100) {
             
             }
     }
-    }
+
+
+    reverse_transform.Calculate_Results(InitWeight.calculated_reactions);
+
+    outfunc(reverse_transform.calculated_reactions[0], "fi1", myp);
+    outfunc(reverse_transform.calculated_reactions[1], "fi2", myp);
+    cout << "done" << endl;
+    pausel();
+}
 
 void CHC::calculate_initial_weightSQR()
 {

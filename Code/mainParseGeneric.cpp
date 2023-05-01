@@ -41,6 +41,7 @@ inline omp_int_t omp_get_num_threads() { return 1; }
 #include "DataStructures/matrix2.h"
 #include "DataStructures/matrix2.cpp"
 #include "CahnHilliard/cahnhilliard.h"
+#include "CahnHilliard/GenerateNoise.h"
 
 #include "fftw3.h"
 
@@ -52,9 +53,9 @@ int main(int argc, char **argv)
 {
     srand(time(NULL));
 
-    double c0 = 0.2;
-    double c1 = 0.8;
-    double eps = 0.4;
+    double c0 = 1.2;
+    double c1 = 4.8;
+    double eps = 2.;
 
 
 
@@ -157,11 +158,7 @@ int main(int argc, char **argv)
     p.number_of_fields = nof;
     p.N1 = 1024;
     p.N2 = 1024;
-    double *str = new double[4];
-    str[0] = 0.*1.;
-    str[1] = 0.*1.;
-    str[2] = 0.*1.;
-    str[3] = 0.*1.;
+    vector1<double> str(2,0.);
     //GenNoise<myc> b(p);
     modelABnoise A(1.0,1.0);
 
@@ -295,7 +292,7 @@ int main(int argc, char **argv)
 
 
 
-    double dt = 0.5;
+    double dt = 0.005;
     //double dx = 0.05;
 
     //double temp1 = (1. / (dx * p.N1)) ;
@@ -307,7 +304,7 @@ int main(int argc, char **argv)
     // //cout << (1. / (dx * p.N1)) << endl;
     // cout << temp1 << endl;
 
-    double diffusion_constant =  0.;
+    double diffusion_constant =  1.;
 
 
     // //double surface_width = 2.0;

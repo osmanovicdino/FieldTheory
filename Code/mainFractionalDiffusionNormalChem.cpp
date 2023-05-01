@@ -124,6 +124,9 @@ int main(int argc, char **argv)
     p.N1 = 1024;
     p.N2 = 1024;
 
+    cout << nof << endl;
+    pausel();
+
     CHC a(p);
 
     for(int i = 0 ; i < nof ; i++) {
@@ -134,15 +137,15 @@ int main(int argc, char **argv)
     }
     vector1<bool> ps(n);
     ps[0] = true;
-    ps[1] = true;
+    //ps[1] = true;
 
 
     a.set_phase_separators(ps);
 
-
+    double nuc = 1.0;
     a.set_diffusion(phasesepsparams[0]);
     a.set_epsilon(phasesepsparams[1]);
-    a.set_c0_c1(phasesepsparams[2],phasesepsparams[3]);
+    a.set_c0_c1(phasesepsparams[2],phasesepsparams[3],nuc);
     double L = phasesepsparams[4];
     double temp1 = SQR(2. * pii / L);
     a.set_temp1(temp1);
@@ -179,9 +182,6 @@ int main(int argc, char **argv)
 
                     jpow[k - (i * (nof + 1) + 2)] = (int)mat1(j, k);
                 }
-                // cout << mat1(j,i*(nof+1)+1) << endl;
-                // cout << jpow << endl;
-                // pausel();
                 GenericChemistry<myc> c6_0(rate_multiplier*mat1(j, i * (nof + 1) + 1), jpow);
                 c6.add_chemical_reaction(c6_0, i);
                 double tot1 = 1.0;
@@ -218,7 +218,7 @@ int main(int argc, char **argv)
         v.push_back(field1);
     }
 
-    double gt = 0.6;
+    double gt[2] = {0.6,0.01};
 
     for (int lk = 0; lk < nof; lk++)
     {
@@ -228,7 +228,7 @@ int main(int argc, char **argv)
             for (int j = 0; j < p.N2; j++)
             {
                 double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
-                v[lk](i, j) = x1 + gt * x1 * r1;
+                v[lk](i, j) = x1 + gt[lk] * x1 * r1;
             }
         }
     }

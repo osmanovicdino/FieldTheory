@@ -124,14 +124,11 @@ struct CHWithNoise : public CH<complex<double>>
     // double **fields;
     Q &func;
     GenNoise<complex<double> > mynoise;
-    double *str;
+    vector1<double> str;
 
-    CHWithNoise(const CH_builder &p, Q &funcc2, double *strs) : CH(p), mynoise(GenNoise<complex<double> >(p)), func(funcc2) {
+    CHWithNoise(const CH_builder &p, Q &funcc2, vector1<double> &strs) : CH(p), str(strs), mynoise(GenNoise<complex<double> >(p)), func(funcc2) {
 
-        str = new double [p.number_of_fields];
-        for(int i = 0  ; i < p.number_of_fields ; i++) {
-            str[i] = strs[i];
-        }
+
 
     }
 

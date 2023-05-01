@@ -50,7 +50,7 @@ def graph(filename):
         fig = plt.figure()
         plt.imshow(mat)
         #plt.clim(0., 1.)
-        plt.colorbar()
+        #plt.colorbar()
         plt.savefig(outputfilename, format='png')
         plt.close(fig)
 
