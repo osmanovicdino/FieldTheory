@@ -132,7 +132,7 @@ int main(int argc, char **argv)
     for(int i = 0 ; i < nof ; i++) {
         for(int j = i+1  ; j < nof ; j++) {
             //cout << i << " " << j << endl;
-             a.set_interaction(epsa(i,j), i, j);
+             a.set_interaction(-epsa(i,j), i, j);
         }
     }
     vector1<bool> ps(n);
