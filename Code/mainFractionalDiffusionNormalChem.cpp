@@ -77,7 +77,7 @@ int main(int argc, char **argv)
 
     for (int i = 0; i < (n) * (n - 1) / 2; i++)
     {
-        epsi[i] = -mat1(2, i);
+        epsi[i] = mat1(2, i);
     }
 
     int k = 0;
@@ -124,7 +124,7 @@ int main(int argc, char **argv)
     p.N1 = 1024;
     p.N2 = 1024;
 
-    cout << nof << endl;
+    cout << epsa << endl;
     pausel();
 
     CHC a(p);
@@ -132,7 +132,7 @@ int main(int argc, char **argv)
     for(int i = 0 ; i < nof ; i++) {
         for(int j = i+1  ; j < nof ; j++) {
             //cout << i << " " << j << endl;
-             a.set_interaction(-epsa(i,j), i, j);
+             a.set_interaction(epsa(i,j), i, j);
         }
     }
     vector1<bool> ps(n);
@@ -218,7 +218,7 @@ int main(int argc, char **argv)
         v.push_back(field1);
     }
 
-    double gt[2] = {0.6,0.01};
+    double gt=0.6;
 
     for (int lk = 0; lk < nof; lk++)
     {
@@ -228,7 +228,7 @@ int main(int argc, char **argv)
             for (int j = 0; j < p.N2; j++)
             {
                 double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
-                v[lk](i, j) = x1 + gt[lk] * x1 * r1;
+                v[lk](i, j) = x1 + gt * x1 * r1;
             }
         }
     }
@@ -337,7 +337,7 @@ int main(int argc, char **argv)
         a.set_field(v[lk], lk);
     }
 
-    a.calculate_initial_weight(SQR(200));
+    a.calculate_initial_weight(SQR(1024));
 
 
     cout << "calc" << endl;
