@@ -124,9 +124,6 @@ int main(int argc, char **argv)
     p.N1 = 1024;
     p.N2 = 1024;
 
-    cout << epsa << endl;
-    pausel();
-
     CHC a(p);
 
     for(int i = 0 ; i < nof ; i++) {
@@ -146,12 +143,12 @@ int main(int argc, char **argv)
     a.set_diffusion(phasesepsparams[0]);
     a.set_epsilon(phasesepsparams[1]);
     a.set_c0_c1(phasesepsparams[2],phasesepsparams[3],nuc);
-    double L = phasesepsparams[4];
+    double L =20.;// phasesepsparams[4];
     double temp1 = SQR(2. * pii / L);
     a.set_temp1(temp1);
 
     a.set_alpha(phasesepsparams[5]);
-    a.set_dt(phasesepsparams[6]);
+    a.set_dt(0.05);
 
     double rate_multiplier = phasesepsparams[7];
     
