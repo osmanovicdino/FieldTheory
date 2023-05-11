@@ -53,21 +53,23 @@ int main(int argc, char **argv)
     double densi;
     string str;
     int sp;
-    c0 = 0.1;
-    c1 = 1.0;
-    eps = 0.2;
+
     double Di;
     string dirstr;
     string str1;
 
 
-    if (argc == 5)
+    if (argc == 8)
     {
         //sp = atof(argv[1]);
-        densi = atof(argv[1]);
-        Di = atof(argv[2]);
-        dirstr = argv[3];
-        str1 = argv[4];
+        c0 = atof(argv[1]);
+        c1 = atof(argv[2]);
+        eps = atof(argv[3]);
+        densi = atof(argv[4]);
+        Di = atof(argv[5]);
+        dirstr = argv[6];
+        str1 = argv[7];
+        
     }
     else{
         error("not enough inputs");
@@ -169,8 +171,8 @@ int main(int argc, char **argv)
     RWC my_rules(p);
     cout << "rule wrapper created" << endl;
 
-    double dt = 0.005;
-    double L = 40.0;
+    double dt = 0.5;
+    double L = 100.0;
     double D = 1.0;
     double temp1 = SQR(2*pi / L);
     
@@ -241,7 +243,7 @@ int main(int argc, char **argv)
     cout << "set fields" << endl;
 
     int runtime = 10000;
-    int every = 100;
+    int every = 10;
 
     cout << "diffusion: " << D2 << endl;
 
