@@ -133,9 +133,9 @@ int main(int argc, char **argv)
     RWC my_rules(p);
     cout << "rule wrapper created" << endl;
 
-    double dt = 0.005;
-    double L = 40.0;
-    double D = 10.0;
+    double dt = 0.5;
+    double L = 100.;
+    double D = 1.0;
     double temp1 = SQR(2*pi / L);
     
     double D2 = D;
@@ -177,15 +177,21 @@ int main(int argc, char **argv)
     
     // double bc = 0.166;
     // double p0 = 0.596;
+    // string total = "/home/dino/Documents/Chemistry/Invasion/Resubmission/Coarsening/field0original=0.2_densi=0.8_eps1=0_D2=1_i=0071_real.csv";
+
+    // double Td;
+    // bool err1;
+    // matrix<double> mat1 = importcsv(total, Td, err1);
 
     double meanofinv = 0.0;
     for (int i = 0; i < p.N1*p.N2*p.N3; i++)
     {
 
-            a1[i] = 0.3 + (0.2 * ((double)rand() / (double)RAND_MAX) - 0.1);
-            a2[i] = 0.;
-            //meanofinv += field3(i,j).real();
-            //field4(i, j) = A0 + (0.2 * ((double)rand() / (double)RAND_MAX) - 0.1);
+        a1[i] = 0.4 + (0.6 * ((double)rand() / (double)RAND_MAX) - 0.3);
+        // a1[i] = mat1[i];
+        a2[i] = 0.;
+        // meanofinv += field3(i,j).real();
+        // field4(i, j) = A0 + (0.2 * ((double)rand() / (double)RAND_MAX) - 0.1);
         
     }
 
@@ -200,10 +206,13 @@ int main(int argc, char **argv)
     a.set_field(a2, 1);
     a.set_field(a2, 2);
 
+    
+    //a.high_k_correct(3*SQR(40));
+
     cout << "set fields" << endl;
 
     int runtime = 100000;
-    int every = 1000;
+    int every = 100;
 
     cout << "diffusion: " << D2 << endl;
 

@@ -363,10 +363,10 @@ void CHC::calculate_initial_weight(int cut_offf=100) {
 
     reverse_transform.Calculate_Results(InitWeight.calculated_reactions);
 
-    outfunc(reverse_transform.calculated_reactions[0], "fi1", myp);
-    outfunc(reverse_transform.calculated_reactions[1], "fi2", myp);
+    // outfunc(reverse_transform.calculated_reactions[0], "fi1", myp);
+    // outfunc(reverse_transform.calculated_reactions[1], "fi2", myp);
     cout << "done" << endl;
-    pausel();
+
 }
 
 void CHC::calculate_initial_weightSQR()
@@ -462,17 +462,12 @@ void CHC::Update() {
 
     chems.Calculate_Results(fields); //calculate chemistry
 
-    // string schem = "chem";
-    // outfunc(chems.calculated_reactions[0],schem,myp);
-   
-
 
 
     transformed3.Calculate_Results(chems.calculated_reactions);
     // string ftschem = "ftchem";
     // outfunc(transformed3.calculated_reactions[0], ftschem, myp);
     //     pausel();
-
     // GetMaximas(transformed3.calculated_reactions,schem,myp);
     // pausel();
 

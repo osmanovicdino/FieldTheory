@@ -139,16 +139,16 @@ int main(int argc, char **argv)
 
     a.set_phase_separators(ps);
 
-    double nuc = 1.0;
+    double nuc = 1.0/0.36;
     a.set_diffusion(phasesepsparams[0]);
     a.set_epsilon(phasesepsparams[1]);
     a.set_c0_c1(phasesepsparams[2],phasesepsparams[3],nuc);
-    double L =20.;// phasesepsparams[4];
+    double L = phasesepsparams[4];
     double temp1 = SQR(2. * pii / L);
     a.set_temp1(temp1);
 
     a.set_alpha(phasesepsparams[5]);
-    a.set_dt(0.05);
+    a.set_dt(phasesepsparams[6]);
 
     double rate_multiplier = phasesepsparams[7];
     
@@ -158,7 +158,6 @@ int main(int argc, char **argv)
     for (int j = 4; j < mat1.getnrows(); j++)
     {
         int no_chem = mat1(j, 0);
-        // cout << no_chem << endl;
 
         if (no_chem == 0)
         {
@@ -179,21 +178,22 @@ int main(int argc, char **argv)
 
                     jpow[k - (i * (nof + 1) + 2)] = (int)mat1(j, k);
                 }
+
                 GenericChemistry<myc> c6_0(rate_multiplier*mat1(j, i * (nof + 1) + 1), jpow);
                 c6.add_chemical_reaction(c6_0, i);
-                double tot1 = 1.0;
-                for (int k = 0; k < nof; k++)
-                {
-                    tot1 *= Power(init[k], jpow[k]);
-                    // cout << tot1 << ",";
-                }
-                // cout << endl;
+                // double tot1 = 1.0;
+                // for (int k = 0; k < nof; k++)
+                // {
+                //     tot1 *= Power(init[k], jpow[k]);
+                //     // cout << tot1 << ",";
+                // }
+                // // cout << endl;
 
-                tot += mat1(j, i * (nof + 1) + 1) * tot1;
+                // tot += mat1(j, i * (nof + 1) + 1) * tot1;
 
                 // cout << endl;
             }
-            cout << tot << endl;
+            //cout << tot << endl;
 
             my_chemsitry.add_method(c6, j - 4);
         }
@@ -334,7 +334,7 @@ int main(int argc, char **argv)
         a.set_field(v[lk], lk);
     }
 
-    a.calculate_initial_weight(SQR(1024));
+    a.calculate_initial_weight(SQR(200));
 
 
     cout << "calc" << endl;
@@ -343,7 +343,7 @@ int main(int argc, char **argv)
     cout << "all fields set" << endl;
 
     // auto start = std::chrono::high_resolution_clock::now();
-    int runtime = 50001;
+    int runtime = 5001;
     int every = 10;
 
     int tf = ceil((double)runtime / (double)every);

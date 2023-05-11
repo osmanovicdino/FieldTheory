@@ -54,14 +54,14 @@ int main(int argc, char **argv)
     string str;
     int sp;
 
-    if (argc == 9)
+    if (argc == 5)
     {
         c0 = atof(argv[1]);
         c1 = atof(argv[2]);
         eps = atof(argv[3]);
         densi = atof(argv[4]);
-        str = string(argv[7]);
-        sp = atof(argv[8]);
+        // str = string(argv[7]);
+        // sp = atof(argv[8]);
     }
     else
     {
@@ -111,7 +111,7 @@ int main(int argc, char **argv)
     double c11 = c1;
     double nu = 1.0;
 
-    double eps1 = atof(argv[5]);
+    double eps1 = 0.0;
     double eps2 = 0.0;
 
     CahnHilliardWithCouplingWeightSQR<myc> d1(c00, c11, nu, eps1, eps2, 1, 0); //activated
@@ -193,7 +193,7 @@ int main(int argc, char **argv)
         for (int j = 0; j < p.N2; j++)
         {
             //field1(i, j) = bc + (0.1 * ((double)rand() / (double)RAND_MAX) - 0.1);
-            field1(i, j) = thefield(i,j);
+            field1(i, j) =  0.4 + (0.6 * ((double)rand() / (double)RAND_MAX) - 0.3);//thefield(i,j);
             field2(i, j) = 0.0; //no inactivated invader to start with
             field3(i, j) = 1.E-6 + maxval-(field1(i,j));
             meanofinv += field3(i,j).real();

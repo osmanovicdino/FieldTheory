@@ -122,6 +122,97 @@ int totp = myp.get_total();
     
 }
 
+template <class T>
+void CH<T>::high_k_correct(int cut_offf) {
+    transformed1.Calculate_Results(fields); // calculate FT of fields
+    int totp = myp.get_total();
+    int nof = myp.number_of_fields;
+
+    // cut off form
+    int cut_off = cut_offf;
+    if(myp.dimension==2)
+    for (int fn = 0; fn < nof; fn++)
+    {
+        for (int i = 0; i < myp.N1; i++)
+        {
+            for (int j = 0; j < myp.N2; j++)
+            {
+                int k1, k2;
+                if (i <= myp.N1 / 2)
+                {
+                    k1 = i;
+                }
+                else
+                {
+                    k1 = (i - myp.N1);
+                }
+                if (j <= myp.N2 / 2)
+                {
+                    k2 = j;
+                }
+                else
+                {
+                    k2 = (j - myp.N2);
+                }
+                double tempor = SQR(k1) + SQR(k2);
+                if (tempor > cut_off)
+                {
+                    transformed1.calculated_reactions[fn][i * myp.N2 + j] = 0.; // cut off the high frequency modes
+                }
+            }
+        }
+    }
+    else if(myp.dimension==3) {
+        for (int fn = 0; fn < nof; fn++)
+        {
+            for (int i = 0; i < myp.N1; i++)
+            {
+                for (int j = 0; j < myp.N2; j++)
+                {
+                    for(int k = 0 ; k < myp.N3 ; k++) {
+                        int k1, k2, k3;
+                        if (i <= myp.N1 / 2)
+                        {
+                            k1 = i;
+                        }
+                        else
+                        {
+                            k1 = (i - myp.N1);
+                        }
+                        if (j <= myp.N2 / 2)
+                        {
+                            k2 = j;
+                        }
+                        else
+                        {
+                            k2 = (j - myp.N2);
+                        }
+                        if (k <= myp.N3 / 2)
+                        {
+                            k3 = k;
+                        }
+                        else
+                        {
+                            k3 = (k - myp.N2);
+                        }
+                        double tempor = SQR(k1) + SQR(k2) + SQR(k3);
+                        if (tempor > cut_off)
+                        {
+                            transformed1.calculated_reactions[fn][i * myp.N2 * myp.N3 + j * myp.N3 + k] = 0.; // cut off the high frequency modes
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+    reverse_transform.Calculate_Results(transformed1.calculated_reactions);
+
+    set_field(reverse_transform.calculated_reactions);
+}
+
+
 template<class T>
 void CH<T>::Update() {
     //cout << fields[0][0] << endl;
@@ -129,6 +220,10 @@ void CH<T>::Update() {
 
 
     cout << "start" << endl;
+
+    GetMaximas(fields,myp);
+    GetMinimas(fields,myp);
+    cout << endl;
 
     weigs.Calculate_Results(fields);
 
@@ -150,7 +245,7 @@ void CH<T>::Update() {
     // cout << 3 << endl;
 
     transformed2.Calculate_Results(weigs.calculated_reactions);
-    
+
     cout << "FFT2 done" << endl;
     // transformed2.GetMaximas();
     // transformed2.GetMinimas();
@@ -213,7 +308,7 @@ void CH<T>::Update() {
     reverse_transform.GetMinimas();
     reverse_transform.GetMinimasIndex();
     cout << endl;
-     cout << 7 << endl;
+
      //pausel();
     //cout << reverse_transform.calculated_reactions[0][0] << endl;
 

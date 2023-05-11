@@ -103,6 +103,8 @@ void check_field(bool &a) {
     if(fields[0][0]!=fields[0][0]) a = false;
 }
 
+void high_k_correct(int cut_offf);
+
 virtual void Update();
 
 };

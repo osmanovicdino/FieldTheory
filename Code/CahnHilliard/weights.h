@@ -687,7 +687,7 @@ public:
         p2 = fftw_plan_dft_3d(p.N1, p.N2, p.N3, reinterpret_cast<fftw_complex *>(fields[j]), reinterpret_cast<fftw_complex *>(a[j]), FFTW_BACKWARD, FFTW_ESTIMATE);
 
         fftw_execute(p2);
-        double corr = 1./ (p.N2*p.N3);
+        double corr = 1. / (p.N2 * p.N3);
         int end = p.get_total();
         for (int i = 0; i < end; i++)
         {
