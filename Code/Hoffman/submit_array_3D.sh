@@ -8,10 +8,6 @@
 #$ -l h_rt=12:00:00,h_data=2G
 ## Modify the parallel environment
 ## and the number of cores as needed:
-# Email address to notify
-#$ -M $USER@mail
-# Notify when
-#$ -m bea
 #$ -t 1-16:1
 
 # echo job info on joblog:
@@ -51,7 +47,7 @@ mkdir /u/scratch/d/dinoo/${basedir}/${dirwemake}
 cp ~/FieldTheory/Code/mainInvasion3D.cpp /u/scratch/d/dinoo/${basedir}/${dirwemake}
 g++ ~/FieldTheory/Code/mainInvasion3D.cpp -lm -lfftw3 -L/usr/local/lib/lfftw3.a -std=c++17 -o /u/scratch/d/dinoo/${basedir}/${dirwemake}/angron
 cd /u/scratch/d/dinoo/${basedir}/${dirwemake}
-./angron $p0 $A0 $dirc $fil1 $fil2 > log
+./angron $c0 $c1 $l > log
 # echo job info on joblog:
 echo "Job $JOB_ID ended on:   " `hostname -s`
 echo "Job $JOB_ID ended on:   " `date `
