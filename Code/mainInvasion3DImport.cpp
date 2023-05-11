@@ -83,11 +83,13 @@ int main(int argc, char **argv)
 
     string total = dirstr + str1;
 
-
+    cout << total << endl;
     double Td;
     bool err1;
     matrix<double> mat1 = importcsv(total,Td,err1);
 
+    cout << err1 << endl;
+    
     //count the total number of  sites that are less than the limit
     int tp =0;
     for(int i = 0  ; i < mat1.getnrows() ; i++) {
