@@ -35,10 +35,10 @@ if [ -e ${filename}   ]; then
    c0=`sed -n ${SGE_TASK_ID}p ${filename} | awk '{print $1}'`
    c1=`sed -n ${SGE_TASK_ID}p ${filename} | awk '{print $2}'`
    l=`sed -n ${SGE_TASK_ID}p ${filename} | awk '{print $3}'`
-   p0=`sed -n ${SGE_TASK_ID}p ${filename} | awk '{print $1}'`
-   A0=`sed -n ${SGE_TASK_ID}p ${filename} | awk '{print $2}'` 
-   dirc=`sed -n ${SGE_TASK_ID}p ${filename} | awk '{print $3}'`
-   fil1=`sed -n ${SGE_TASK_ID}p ${filename} | awk '{print $4}'`
+   p0=`sed -n ${SGE_TASK_ID}p ${filename} | awk '{print $4}'`
+   A0=`sed -n ${SGE_TASK_ID}p ${filename} | awk '{print $5}'` 
+   dirc=`sed -n ${SGE_TASK_ID}p ${filename} | awk '{print $6}'`
+   fil1=`sed -n ${SGE_TASK_ID}p ${filename} | awk '{print $7}'`
    echo "read file correctly" 
 else
    p0=0.5;
