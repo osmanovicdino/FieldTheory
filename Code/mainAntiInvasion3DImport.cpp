@@ -53,9 +53,9 @@ int main(int argc, char **argv)
     double densi;
     string str;
     int sp;
-    c0 = 0.1;
-    c1 = 1.0;
-    eps = 0.2;
+    // c0 = 0.1;
+    // c1 = 1.0;
+    // eps = 0.2;
     double Di;
     string str1,str2;
     string dirstr;
@@ -67,11 +67,14 @@ int main(int argc, char **argv)
     if (argc == 6)
     {
         //sp = atof(argv[1]);
-        densi = atof(argv[1]);
-        Di = atof(argv[2]);
-        dirstr = argv[3];
-        str1 = argv[4];
-        str2 = argv[5];
+        c0 = atof(argv[1]);
+        c1 = atof(argv[2]);
+        eps = atof(argv[3]);
+        densi = atof(argv[4]);
+        Di = atof(argv[5]);
+        dirstr = argv[6];
+        str1 = argv[7];
+        str2 = argv[8];
     }
     else {
         error("not enough inputs");
@@ -183,9 +186,9 @@ int main(int argc, char **argv)
     RWC my_rules(p);
     cout << "rule wrapper created" << endl;
 
-    double dt = 0.005;
-    double L = 40.0;
-    double D = 10.0;
+    double dt = 0.05;
+    double L = 100.0;
+    double D = 1.0;
     double temp1 = SQR(2*pi / L);
     
     double D2 = Di;
@@ -233,7 +236,7 @@ int main(int argc, char **argv)
     {
 
             a1[i] = mat1[i];
-            a3[i] = densi * (1 + (0.5 * ((double)rand() / (double)RAND_MAX) - 0.1));
+            a3[i] = densi *  (0.2 * ((double)rand() / (double)RAND_MAX) - 0.1);
             a2[i] = mat2[i];
             //meanofinv += field3(i,j).real();
             //field4(i, j) = A0 + (0.2 * ((double)rand() / (double)RAND_MAX) - 0.1);
