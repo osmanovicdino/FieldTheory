@@ -182,7 +182,7 @@ int main(int argc, char **argv)
     RWC my_rules(p);
     cout << "rule wrapper created" << endl;
 
-    double dt = 0.5;
+    double dt = 0.05;
     double L = 100.0;
     double D = 1.0;
     double temp1 = SQR(2*pi / L);
