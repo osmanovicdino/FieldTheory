@@ -64,7 +64,7 @@ int main(int argc, char **argv)
     // str1 = "field0original=0.1_densi=1_eps1=0_D2=10_i=";
     // str2 = "field1original=0.1_densi=1_eps1=0_D2=10_i=";
 
-    if (argc == 6)
+    if (argc == 9)
     {
         //sp = atof(argv[1]);
         c0 = atof(argv[1]);
