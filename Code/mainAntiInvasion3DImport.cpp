@@ -228,6 +228,8 @@ int main(int argc, char **argv)
     cd *a2 = new cd[p.N1 * p.N2 * p.N3];
     cd *a3 = new cd[p.N1 * p.N2 * p.N3];
 
+
+
         // double bc = 0.166;
     // double p0 = 0.596;
 
@@ -236,7 +238,7 @@ int main(int argc, char **argv)
     {
 
             a1[i] = mat1[i];
-            a3[i] = densi *  (0.2 * ((double)rand() / (double)RAND_MAX) - 0.1);
+            a3[i] = densi *(1.+  (0.2 * ((double)rand() / (double)RAND_MAX) - 0.1));
             a2[i] = mat2[i];
             //meanofinv += field3(i,j).real();
             //field4(i, j) = A0 + (0.2 * ((double)rand() / (double)RAND_MAX) - 0.1);
