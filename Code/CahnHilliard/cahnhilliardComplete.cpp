@@ -54,7 +54,7 @@ Eigen::VectorXcd CHCF::CalculateWeightPartial(complex<double> *input)
 
     for (int j = 0; j < totp; j++)
     {
-        in[j] = cons1 * CUB(input[j]) + cons2 * SQR(input[j]) + cons4;
+        in[j] = cons1[0] * CUB(input[j]) + cons2[0] * SQR(input[j]) + cons4[0];
     }
 
     //  outfunc(weigs.calculated_reactions[0],"test", myp);
@@ -96,7 +96,7 @@ Eigen::VectorXcd CHCF::CalculateWeightPartial(complex<double> *input)
             int rel = k2a - (k1a * (1 + k1a - 2 * (1 + myp.N1 / 2))) / 2.;
             // x[fn * totp + i1 * N + j1] += -dtalpha * diffusion * cons3s * temp1 * (SQR(k1) + SQR(k2)) * transformed1.calculated_reactions[fn][i1 * N + j1] - dtalpha*diffusion * SQR(epsilon) * SQR(temp1) * SQR(SQR(k1) + SQR(k2)) * transformed1.calculated_reactions[fn][i1 * N + j1];
 
-            x[fn * totp + i1 * N + j1] += -dtalpha * diffusion * temp1 * (SQR(k1) + SQR(k2)) * (out[i1 * N + j1] / (double)myp.N1);
+            x[fn * totp + i1 * N + j1] += -dtalpha * diffusion[0] * temp1 * (SQR(k1) + SQR(k2)) * (out[i1 * N + j1] / (double)myp.N1);
 
             // for(int fn2 = 1 ; fn2 < nof ; fn2++) {
             //     x[fn * totp + i1 * N + j1] += -epsilon_couplings(fn, fn2) * dtalpha * diffusion * temp1 * (SQR(k1) + SQR(k2)) * transformed1.calculated_reactions[fn2][i1 * N + j1];
@@ -136,7 +136,7 @@ Eigen::VectorXcd CHCF::CalculateWeight(complex<double> **input)
 
     for (int j = 0; j < totp; j++)
     {
-        in[j] = cons1 * CUB(input[0][j]) + cons2 * SQR(input[0][j]) + cons4;
+        in[j] = cons1[0] * CUB(input[0][j]) + cons2[0] * SQR(input[0][j]) + cons4[0];
     }
 
     //  outfunc(weigs.calculated_reactions[0],"test", myp);
@@ -183,7 +183,7 @@ Eigen::VectorXcd CHCF::CalculateWeight(complex<double> **input)
             int rel = k2a - (k1a * (1 + k1a - 2 * (1 + myp.N1 / 2))) / 2.;
             // x[fn * totp + i1 * N + j1] += -dtalpha * diffusion * cons3s * temp1 * (SQR(k1) + SQR(k2)) * transformed1.calculated_reactions[fn][i1 * N + j1] - dtalpha*diffusion * SQR(epsilon) * SQR(temp1) * SQR(SQR(k1) + SQR(k2)) * transformed1.calculated_reactions[fn][i1 * N + j1];
 
-            x[fn * totp + i1 * N + j1] += -dtalpha * diffusion * temp1 * (SQR(k1) + SQR(k2)) * (out[i1 * N + j1] / (double)myp.N1);
+            x[fn * totp + i1 * N + j1] += -dtalpha * diffusion[0] * temp1 * (SQR(k1) + SQR(k2)) * (out[i1 * N + j1] / (double)myp.N1);
 
             // for(int fn2 = 1 ; fn2 < nof ; fn2++) {
             //     x[fn * totp + i1 * N + j1] += -epsilon_couplings(fn, fn2) * dtalpha * diffusion * temp1 * (SQR(k1) + SQR(k2)) * transformed1.calculated_reactions[fn2][i1 * N + j1];
@@ -236,13 +236,13 @@ Eigen::VectorXcd CHCF::CalculateWeight(complex<double> **input)
                 k2a = abs(k1);
             }
             int rel = k2a - (k1a * (1 + k1a - 2 * (1 + myp.N1 / 2))) / 2.;
-            x[fn * totp + i1 * N + j1] += -dtalpha * diffusion * cons3 * temp1 * (SQR(k1) + SQR(k2)) * tempf.calculated_reactions[fn][i1 * N + j1] - dtalpha * diffusion * SQR(epsilon) * SQR(temp1) * SQR(SQR(k1) + SQR(k2)) * tempf.calculated_reactions[fn][i1 * N + j1];
+            x[fn * totp + i1 * N + j1] += -dtalpha * diffusion[0] * cons3[0] * temp1 * (SQR(k1) + SQR(k2)) * tempf.calculated_reactions[fn][i1 * N + j1] - dtalpha * diffusion[0] * SQR(epsilon[0]) * SQR(temp1) * SQR(SQR(k1) + SQR(k2)) * tempf.calculated_reactions[fn][i1 * N + j1];
 
             // x[fn * totp + i1 * N + j1] += -dtalpha * diffusion * temp1 * (SQR(k1) + SQR(k2)) * transformed2.calculated_reactions[fn][i1 * N + j1];
 
             for (int fn2 = 1; fn2 < nof; fn2++)
             {
-                x[fn * totp + i1 * N + j1] += -epsilon_couplings(fn, fn2) * dtalpha * diffusion * temp1 * (SQR(k1) + SQR(k2)) * tempf.calculated_reactions[fn2][i1 * N + j1];
+                x[fn * totp + i1 * N + j1] += -epsilon_couplings(fn, fn2) * dtalpha * diffusion[0] * temp1 * (SQR(k1) + SQR(k2)) * tempf.calculated_reactions[fn2][i1 * N + j1];
             }
         }
     }
@@ -286,9 +286,216 @@ Eigen::VectorXcd CHCF::CalculateWeight(complex<double> **input)
                 for (int fn2 = 0; fn2 < nof; fn2++)
                 {
                     if (fn != fn2)
-                        x[fn * totp + i1 * N + j1] += -epsilon_couplings(fn, fn2) * dtalpha * diffusion * temp1 * (SQR(k1) + SQR(k2)) * tempf.calculated_reactions[fn2][i1 * N + j1];
+                        x[fn * totp + i1 * N + j1] += -epsilon_couplings(fn, fn2) * dtalpha * diffusion[fn] * temp1 * (SQR(k1) + SQR(k2)) * tempf.calculated_reactions[fn2][i1 * N + j1];
                     else
-                        x[fn * totp + i1 * N + j1] += -dtalpha * diffusion * temp1 * (SQR(k1) + SQR(k2)) * tempf.calculated_reactions[fn2][i1 * N + j1];
+                        x[fn * totp + i1 * N + j1] += -dtalpha * diffusion[fn] * temp1 * (SQR(k1) + SQR(k2)) * tempf.calculated_reactions[fn2][i1 * N + j1];
+                }
+            }
+        }
+
+    return x;
+}
+
+Eigen::VectorXcd CHCF::CalculateWeight_2PS(complex<double> **input)
+{
+    // cout << "beginning weight calculation" << endl;
+    int totp = myp.get_total();
+    int nof = myp.number_of_fields;
+    Eigen::VectorXcd x(nof * totp);
+
+    for (int i = 0; i < nof * totp; i++)
+    {
+        x[i] = 0.0;
+    }
+    int N = myp.N1;
+    double dtalpha = pow(dt, alpha);
+    int fn = 0;
+    // transformed1.Calculate_Results(input); //find the FT of the fields
+
+    complex<double> *in;
+    complex<double> *out;
+
+    complex<double> *in2;
+    complex<double> *out2;
+    fftw_plan p,q;
+
+    in = (complex<double> *)fftw_malloc(myp.N1 * myp.N2 * sizeof(complex<double>));
+
+    out = (complex<double> *)fftw_malloc(myp.N1 * myp.N2 * sizeof(complex<double>));
+
+    in2 = (complex<double> *)fftw_malloc(myp.N1 * myp.N2 * sizeof(complex<double>));
+
+    out2 = (complex<double> *)fftw_malloc(myp.N1 * myp.N2 * sizeof(complex<double>));
+
+    for (int j = 0; j < totp; j++)
+    {
+        in[j] = cons1[0] * CUB(input[0][j]) + cons2[0] * SQR(input[0][j]) + cons4[0];
+        in2[j] = cons1[1] * CUB(input[1][j]) + cons2[1] * SQR(input[1][j]) + cons4[1];
+    }
+
+    //  outfunc(weigs.calculated_reactions[0],"test", myp);
+    p = fftw_plan_dft_2d(myp.N1, myp.N2, reinterpret_cast<fftw_complex *>(in), reinterpret_cast<fftw_complex *>(out), FFTW_FORWARD, FFTW_ESTIMATE);
+    q = fftw_plan_dft_2d(myp.N1, myp.N2, reinterpret_cast<fftw_complex *>(in2), reinterpret_cast<fftw_complex *>(out2), FFTW_FORWARD, FFTW_ESTIMATE);
+
+    // cout << "created plan" << endl;
+    fftw_execute(p);
+    fftw_execute(q);
+
+    // transformed2.Calculate_Results(weigs.calculated_reactions);
+
+    // for(int fn = 0 ; fn < myp.number_of_fields ; fn++) {
+
+    for (int i1 = 0; i1 < N; i1++)
+    {
+        for (int j1 = 0; j1 < N; j1++)
+        {
+
+            double k1, k2;
+            if (i1 <= myp.N1 / 2)
+            {
+                k1 = i1;
+            }
+            else
+            {
+                k1 = (i1 - myp.N1);
+            }
+            if (j1 <= myp.N2 / 2)
+            {
+                k2 = j1;
+            }
+            else
+            {
+                k2 = (j1 - myp.N2);
+            }
+
+            // take absolute values of k1 and k2
+            int k1a = abs(k1);
+            int k2a = abs(k2);
+            if (k2a < k1a)
+            {
+                k1a = k2a;
+                k2a = abs(k1);
+            }
+            int rel = k2a - (k1a * (1 + k1a - 2 * (1 + myp.N1 / 2))) / 2.;
+            // x[fn * totp + i1 * N + j1] += -dtalpha * diffusion * cons3s * temp1 * (SQR(k1) + SQR(k2)) * transformed1.calculated_reactions[fn][i1 * N + j1] - dtalpha*diffusion * SQR(epsilon) * SQR(temp1) * SQR(SQR(k1) + SQR(k2)) * transformed1.calculated_reactions[fn][i1 * N + j1];
+
+            x[0 * totp + i1 * N + j1] += -dtalpha * diffusion[0] * temp1 * (SQR(k1) + SQR(k2)) * (out[i1 * N + j1] / (double)myp.N1);
+            x[1 * totp + i1 * N + j1] += -dtalpha * diffusion[1] * temp1 * (SQR(k1) + SQR(k2)) * (out2[i1 * N + j1] / (double)myp.N1);
+
+            // for(int fn2 = 1 ; fn2 < nof ; fn2++) {
+            //     x[fn * totp + i1 * N + j1] += -epsilon_couplings(fn, fn2) * dtalpha * diffusion * temp1 * (SQR(k1) + SQR(k2)) * transformed1.calculated_reactions[fn2][i1 * N + j1];
+            // }
+        }
+    }
+    fftw_destroy_plan(p);
+    fftw_free(in);
+    fftw_free(out);
+    fftw_destroy_plan(q);
+    fftw_free(in2);
+    fftw_free(out2);
+
+    Field_Wrapper<complex<double>, complex<double>> tempf(myp);
+
+    for (int i = 0; i < myp.number_of_fields; i++)
+    {
+        FourierWeightForward2D fw;
+        tempf.add_method(fw, i);
+    }
+    // overwrite the weight fourier transform with the field fourier transform
+    tempf.Calculate_Results(input);
+
+    for (int i1 = 0; i1 < N; i1++)
+    {
+        for (int j1 = 0; j1 < N; j1++)
+        {
+
+            double k1, k2;
+            if (i1 <= myp.N1 / 2)
+            {
+                k1 = i1;
+            }
+            else
+            {
+                k1 = (i1 - myp.N1);
+            }
+            if (j1 <= myp.N2 / 2)
+            {
+                k2 = j1;
+            }
+            else
+            {
+                k2 = (j1 - myp.N2);
+            }
+
+            // take absolute values of k1 and k2
+            int k1a = abs(k1);
+            int k2a = abs(k2);
+            if (k2a < k1a)
+            {
+                k1a = k2a;
+                k2a = abs(k1);
+            }
+            int rel = k2a - (k1a * (1 + k1a - 2 * (1 + myp.N1 / 2))) / 2.;
+            x[0 * totp + i1 * N + j1] += -dtalpha * diffusion[0] * cons3[0] * temp1 * (SQR(k1) + SQR(k2)) * tempf.calculated_reactions[0][i1 * N + j1] - dtalpha * diffusion[0] * SQR(epsilon[0]) * SQR(temp1) * SQR(SQR(k1) + SQR(k2)) * tempf.calculated_reactions[0][i1 * N + j1];
+            x[1 * totp + i1 * N + j1] += -dtalpha * diffusion[1] * cons3[1] * temp1 * (SQR(k1) + SQR(k2)) * tempf.calculated_reactions[1][i1 * N + j1] - dtalpha * diffusion[1] * SQR(epsilon[1]) * SQR(temp1) * SQR(SQR(k1) + SQR(k2)) * tempf.calculated_reactions[1][i1 * N + j1];
+
+            // x[fn * totp + i1 * N + j1] += -dtalpha * diffusion * temp1 * (SQR(k1) + SQR(k2)) * transformed2.calculated_reactions[fn][i1 * N + j1];
+
+            for (int fn2 = 1; fn2 < nof; fn2++)
+            {
+                x[0 * totp + i1 * N + j1] += -epsilon_couplings(0, fn2) * dtalpha * diffusion[0] * temp1 * (SQR(k1) + SQR(k2)) * tempf.calculated_reactions[fn2][i1 * N + j1];
+            }
+
+            for (int fn2 = 0; fn2 < nof; fn2++)
+            {
+                if(fn2!=1)
+                x[1 * totp + i1 * N + j1] += -epsilon_couplings(1, fn2) * dtalpha * diffusion[1] * temp1 * (SQR(k1) + SQR(k2)) * tempf.calculated_reactions[fn2][i1 * N + j1];
+            }
+        }
+    }
+
+    for (int fn = 2; fn < nof; fn++)
+        for (int i1 = 0; i1 < N; i1++)
+        {
+            for (int j1 = 0; j1 < N; j1++)
+            {
+
+                double k1, k2;
+                if (i1 <= myp.N1 / 2)
+                {
+                    k1 = i1;
+                }
+                else
+                {
+                    k1 = (i1 - myp.N1);
+                }
+                if (j1 <= myp.N2 / 2)
+                {
+                    k2 = j1;
+                }
+                else
+                {
+                    k2 = (j1 - myp.N2);
+                }
+
+                // take absolute values of k1 and k2
+                int k1a = abs(k1);
+                int k2a = abs(k2);
+                if (k2a < k1a)
+                {
+                    k1a = k2a;
+                    k2a = abs(k1);
+                }
+                int rel = k2a - (k1a * (1 + k1a - 2 * (1 + myp.N1 / 2))) / 2.;
+
+                // x[fn * totp + i1 * N + j1] += -dtalpha * diffusion * temp1 * (SQR(k1) + SQR(k2)) * transformed2.calculated_reactions[fn][i1 * N + j1];
+
+                for (int fn2 = 0; fn2 < nof; fn2++)
+                {
+                    if (fn != fn2)
+                        x[fn * totp + i1 * N + j1] += -epsilon_couplings(fn, fn2) * dtalpha * diffusion[0] * temp1 * (SQR(k1) + SQR(k2)) * tempf.calculated_reactions[fn2][i1 * N + j1];
+                    else
+                        x[fn * totp + i1 * N + j1] += -dtalpha * diffusion[1] * temp1 * (SQR(k1) + SQR(k2)) * tempf.calculated_reactions[fn2][i1 * N + j1];
                 }
             }
         }
@@ -309,6 +516,53 @@ Eigen::VectorXcd CHCF::CalculateRHS(complex<double> **cnp1, complex<double> **cn
     // transformed3.Calculate_Results(chems.calculated_reactions);
 
     Eigen::VectorXcd wn = CalculateWeight(reverse_transform.calculated_reactions);
+
+    // the input is the fourier transformed version of input
+
+    double c = 1.0;
+    Eigen::VectorXcd totalwn = c * wn;
+    int totp = myp.get_total();
+    int nof = myp.number_of_fields;
+
+    for (int i = 0; i < M; i++)
+    {
+        c = (1 - (1 + (1 - alpha)) / (double)(i + 1)) * c;
+        // cout << c << endl;
+        totalwn += c * OLD[i];
+    }
+    // for(int i = 0 ; i < nof ; i++) {
+    //     for(int j = 0  ; j < totp ;j++) {
+    //         if (abs(totalwn[i * totp + j])>1E6 ) {
+    //             cout << i << " " << j << endl;
+    //             pausel();
+    //         }
+    //     }
+    // }
+    // calculate
+    for (int i = 0; i < nof; i++)
+    {
+        for (int j = 0; j < totp; j++)
+        {
+            totalwn[i * totp + j] += cn[i][j] - cnp1[i][j] + dt * Rn[i][j];
+        }
+    }
+
+    return totalwn;
+}
+
+Eigen::VectorXcd CHCF::CalculateRHS_2PS(complex<double> **cnp1, complex<double> **cn, complex<double> **Rn) // input are the already fourier transformed versions
+{
+
+    reverse_transform.Calculate_Results(cnp1);
+
+    // chems.Calculate_Results(reverse_transform.calculated_reactions); // calculate chemistry
+
+    // string schem = "chem";
+    // outfunc(chems.calculated_reactions[0],schem,myp);
+
+    // transformed3.Calculate_Results(chems.calculated_reactions);
+
+    Eigen::VectorXcd wn = CalculateWeight_2PS(reverse_transform.calculated_reactions);
 
     // the input is the fourier transformed version of input
 
@@ -491,7 +745,7 @@ Eigen::SparseMatrix<complex<double>> CHCF::CalculateJ(complex<double> **input, b
         for (int j1 = 0; j1 < myp.N2; j1++)
         {
             int id = myp.N1 * i1 + j1;
-            meanval += (3. * cons1 * SQR(reverse_transform.calculated_reactions[0][id]) + 2. * cons2 * (reverse_transform.calculated_reactions[0][id]) + cons3);
+            meanval += (3. * cons1[0] * SQR(reverse_transform.calculated_reactions[0][id]) + 2. * cons2[0] * (reverse_transform.calculated_reactions[0][id]) + cons3[0]);
         }
     }
 
@@ -500,7 +754,7 @@ Eigen::SparseMatrix<complex<double>> CHCF::CalculateJ(complex<double> **input, b
 
     complex<double> *in;
     complex<double> *out;
-    fftw_plan p, p2;
+    fftw_plan p;//, p2;
 
     in = (complex<double> *)fftw_malloc(myp.N1 * myp.N2 * sizeof(complex<double>));
 
@@ -510,7 +764,7 @@ Eigen::SparseMatrix<complex<double>> CHCF::CalculateJ(complex<double> **input, b
         for (int j = 0; j < myp.N2; j++)
         {
             int id = myp.N1 * i + j;
-            in[id] = (3. * cons1 * SQR(reverse_transform.calculated_reactions[0][id]) + 2. * cons2 * (reverse_transform.calculated_reactions[0][id]) + cons3);
+            in[id] = (3. * cons1[0] * SQR(reverse_transform.calculated_reactions[0][id]) + 2. * cons2[0] * (reverse_transform.calculated_reactions[0][id]) + cons3[0]);
             out[id] = 0.;
         }
     }
@@ -598,7 +852,7 @@ Eigen::SparseMatrix<complex<double>> CHCF::CalculateJ(complex<double> **input, b
             }
             int rel = k2a - (k1a * (1 + k1a - 2 * (1 + myp.N1 / 2))) / 2.;
             int id = myp.N1 * i1 + j1;
-            complex<double> w = -1.0 - dtalpha * diffusion * temp1 * (SQR(k1) + SQR(k2)) * (meanval)-dtalpha * diffusion * SQR(epsilon) * SQR(temp1) * SQR(SQR(k1) + SQR(k2));
+            complex<double> w = -1.0 - dtalpha * diffusion[0] * temp1 * (SQR(k1) + SQR(k2)) * (meanval)-dtalpha * diffusion[0] * SQR(epsilon[0]) * SQR(temp1) * SQR(SQR(k1) + SQR(k2));
 
             // complex<double> w = -1.0 - dtalpha * diffusion * temp1 * (SQR(k1) + SQR(k2)) * (3. * cons1 * SQR(reverse_transform.calculated_reactions[0][id]) + 2. * cons2 * (reverse_transform.calculated_reactions[0][id]) + cons3) - dtalpha * diffusion * SQR(epsilon) * SQR(temp1) * SQR(SQR(k1) + SQR(k2));
             // complex<double> w = -1.0 - dtalpha * diffusion * temp1 * (SQR(k1) + SQR(k2)) * (3 * cons1 * SQR(input[0][id]) + 2 * cons2 * (input[0][id]) + cons3) - dtalpha * diffusion * SQR(epsilon) * SQR(temp1) * SQR(SQR(k1) + SQR(k2));
@@ -668,7 +922,7 @@ Eigen::SparseMatrix<complex<double>> CHCF::CalculateJ(complex<double> **input, b
                         int j = i2 * myp.N2 + j2;
                         if (j != id)
                         {
-                            complex<double> w2 = -dtalpha * diffusion * temp1 * (SQR(k1) + SQR(k2)) * conj((out[findx] / (double)(totN)));
+                            complex<double> w2 = -dtalpha * diffusion[0] * temp1 * (SQR(k1) + SQR(k2)) * conj((out[findx] / (double)(totN)));
                             // if(abs(out[findx]) > 0.01*abs(out[0])) {
                             coeffs.push_back(Trip(id, j, w2));
 
@@ -719,7 +973,7 @@ Eigen::SparseMatrix<complex<double>> CHCF::CalculateJ(complex<double> **input, b
                 int rel = k2a - (k1a * (1 + k1a - 2 * (1 + myp.N1 / 2))) / 2.;
                 int id = i1 * myp.N1 + j1;
 
-                complex<double> w = -1.0 - dtalpha * diffusion * temp1 * (SQR(k1) + SQR(k2));
+                complex<double> w = -1.0 - dtalpha * diffusion[ifn] * temp1 * (SQR(k1) + SQR(k2));
 
                 coeffs.push_back(Trip(ifn * totN + id, ifn * totN + id, w));
             }
@@ -765,7 +1019,7 @@ Eigen::SparseMatrix<complex<double>> CHCF::CalculateJ(complex<double> **input, b
                     int rel = k2a - (k1a * (1 + k1a - 2 * (1 + myp.N1 / 2))) / 2.;
                     int id = i1 * myp.N1 + j1;
 
-                    complex<double> w = -dtalpha * diffusion * temp1 * epsilon_couplings(ifn, ifn2) * (SQR(k1) + SQR(k2));
+                    complex<double> w = -dtalpha * diffusion[ifn] * temp1 * epsilon_couplings(ifn, ifn2) * (SQR(k1) + SQR(k2));
 
                     coeffs.push_back(Trip(ifn * totN + id, ifn2 * totN + id, w));
 
@@ -780,6 +1034,370 @@ Eigen::SparseMatrix<complex<double>> CHCF::CalculateJ(complex<double> **input, b
     Eigen::SparseMatrix<complex<double>> A(N, N);
 
     A.setFromTriplets(coeffs.begin(), coeffs.end());
+
+    return A;
+}
+
+Eigen::SparseMatrix<complex<double>> CHCF::CalculateJ_2PS(complex<double> **input, bool show = false) // the input is Fourier transformed already
+{
+
+    int field_no = myp.number_of_fields;
+    // for the first field fields
+    int totN = myp.N1 * myp.N2;
+    // for each individual field
+    //  for (int i1 = 0; i1 < myp.N1; i1++) {
+    //      for (int j1 = 0; j1 < myp.N2; j1++) {
+
+    //     }
+    // }
+
+    vector<Trip> coeffs;
+
+    double dtalpha = pow(dt, alpha);
+
+    reverse_transform.Calculate_Results(input);
+
+    //CODE NEEDS TO BE REWRITTEN TO ACCOUNT FOR MORE COMPLEX PHASE SEPARATORS WITH DIFFERENT CONS1,CONS2 ETC
+
+    complex<double> meanval1 = 0.0;
+    complex<double> meanval2 = 0.0;
+    for (int i1 = 0; i1 < myp.N1; i1++)
+    {
+        for (int j1 = 0; j1 < myp.N2; j1++)
+        {
+            int id = myp.N1 * i1 + j1;
+            meanval1 += (3. * cons1[0] * SQR(reverse_transform.calculated_reactions[0][id]) + 2. * cons2[0] * (reverse_transform.calculated_reactions[0][id]) + cons3[0]);
+            meanval2 += (3. * cons1[1] * SQR(reverse_transform.calculated_reactions[1][id]) + 2. * cons2[1] * (reverse_transform.calculated_reactions[1][id]) + cons3[1]);
+        }
+    }
+
+    // cout << meanval/(double)(totN) << endl;
+    meanval1 /= (double)(totN);
+    meanval2 /= (double)(totN);
+
+
+
+
+    complex<double> *in;
+    complex<double> *out;
+
+    complex<double> *in2;
+    complex<double> *out2;
+    fftw_plan p;//, p2;
+
+    fftw_plan q;//, q2;
+
+    in = (complex<double> *)fftw_malloc(myp.N1 * myp.N2 * sizeof(complex<double>));
+
+    out = (complex<double> *)fftw_malloc(myp.N1 * myp.N2 * sizeof(complex<double>));
+
+    in2 = (complex<double> *)fftw_malloc(myp.N1 * myp.N2 * sizeof(complex<double>));
+
+    out2 = (complex<double> *)fftw_malloc(myp.N1 * myp.N2 * sizeof(complex<double>));
+
+    for (int i = 0; i < myp.N1; i++)
+    {
+        for (int j = 0; j < myp.N2; j++)
+        {
+            int id = myp.N1 * i + j;
+            in[id] = (3. * cons1[0] * SQR(reverse_transform.calculated_reactions[0][id]) + 2. * cons2[0] * (reverse_transform.calculated_reactions[0][id]) + cons3[0]);
+            out[id] = 0.;
+
+            in2[id] = (3. * cons1[1] * SQR(reverse_transform.calculated_reactions[1][id]) + 2. * cons2[1] * (reverse_transform.calculated_reactions[1][id]) + cons3[1]);
+            out2[id] = 0.;
+        }
+    }
+
+    p = fftw_plan_dft_2d(myp.N1, myp.N2, reinterpret_cast<fftw_complex *>(in), reinterpret_cast<fftw_complex *>(out), FFTW_FORWARD, FFTW_ESTIMATE);
+    q = fftw_plan_dft_2d(myp.N1, myp.N2, reinterpret_cast<fftw_complex *>(in2), reinterpret_cast<fftw_complex *>(out2), FFTW_FORWARD, FFTW_ESTIMATE);
+
+    // cout << "created plan" << endl;
+    fftw_execute(p);
+    fftw_execute(q);
+
+    // vector<int> indexes;
+    vector<cdi> allt;
+    for (int i = 0; i < totN; i++)
+    {
+        allt.push_back({i, abs(out[i])});
+        // indexes.push_back(i);
+    }
+
+    std::sort(allt.begin(), allt.end(),
+              [](const auto &i, const auto &j)
+              { return i.Score > j.Score; });
+
+    vector<cdi> allt2;
+    for (int i = 0; i < totN; i++)
+    {
+        allt2.push_back({i, abs(out2[i])});
+        // indexes.push_back(i);
+    }
+
+    std::sort(allt2.begin(), allt2.end(),
+              [](const auto &i, const auto &j)
+              { return i.Score > j.Score; });
+
+    // for(int i = 0 ; i < 100 ; i++)
+    // cout << allt[i].index << endl;
+
+    // pausel();
+    // int iter = 0;
+    // double m = abs(out[0]);
+    // for(int i = 0  ; i < totN ; i++) {
+    //     if(abs(out[i])>0.001*m) {
+    //         iter++;
+    //     }
+    // }
+    // cout << iter << endl;
+    // pausel();
+    // cout << out[0] / (double)(totN) << endl;
+    // vector<complex<double> > c;
+    // for(int i = 0 ; i < totN ; i++) {
+    //     c.push_back(out[i]/(double)(totN));
+    // }
+
+    // int nof = 1;
+    // CH_builder pg;
+    // pg.number_of_fields = nof;
+    // pg.N1 = myp.N1;
+    // pg.N2 = myp.N2;
+    // outfunc(out, "StartData", pg);
+    // // cout << "done 2" << endl;
+    // pausel();
+
+    // meanval /= (double)(myp.N1*myp.N2);
+
+    // calculate the FT of the weights
+    int fmodes = 1024;
+    // for each individual field
+    for (int i1 = 0; i1 < myp.N1; i1++)
+    {
+        for (int j1 = 0; j1 < myp.N2; j1++)
+        {
+
+            double k1, k2;
+            if (i1 <= myp.N1 / 2)
+            {
+                k1 = i1;
+            }
+            else
+            {
+                k1 = (i1 - myp.N1);
+            }
+            if (j1 <= myp.N2 / 2)
+            {
+                k2 = j1;
+            }
+            else
+            {
+                k2 = (j1 - myp.N2);
+            }
+
+            // take absolute values of k1 and k2
+            int k1a = abs(k1);
+            int k2a = abs(k2);
+            if (k2a < k1a)
+            {
+                k1a = k2a;
+                k2a = abs(k1);
+            }
+            int rel = k2a - (k1a * (1 + k1a - 2 * (1 + myp.N1 / 2))) / 2.;
+            int id = myp.N1 * i1 + j1;
+            complex<double> w = -1.0 - dtalpha * diffusion[0] * temp1 * (SQR(k1) + SQR(k2)) * (meanval1)-dtalpha * diffusion[0] * SQR(epsilon[0]) * SQR(temp1) * SQR(SQR(k1) + SQR(k2));
+            complex<double> w2 = -1.0 - dtalpha * diffusion[1] * temp1 * (SQR(k1) + SQR(k2)) * (meanval2)-dtalpha * diffusion[1] * SQR(epsilon[1]) * SQR(temp1) * SQR(SQR(k1) + SQR(k2));
+
+            // complex<double> w = -1.0 - dtalpha * diffusion[0] * temp1 * (SQR(k1) + SQR(k2)) * (3. * cons1 * SQR(reverse_transform.calculated_reactions[0][id]) + 2. * cons2 * (reverse_transform.calculated_reactions[0][id]) + cons3) - dtalpha * diffusion * SQR(epsilon) * SQR(temp1) * SQR(SQR(k1) + SQR(k2));
+            // complex<double> w = -1.0 - dtalpha * diffusion[0] * temp1 * (SQR(k1) + SQR(k2)) * (3 * cons1 * SQR(input[0][id]) + 2 * cons2 * (input[0][id]) + cons3) - dtalpha * diffusion * SQR(epsilon) * SQR(temp1) * SQR(SQR(k1) + SQR(k2));
+
+            // if (show == true && i1 == 0 && j1 == 1)
+            // {
+            //     cout << "start" << endl;
+            //     cout << cons1 << endl;
+            //     cout << cons2 << endl;
+            //     cout << reverse_transform.calculated_reactions[0][id] << endl;
+            //     cout << SQR(reverse_transform.calculated_reactions[0][id]) << endl;
+            //     cout << -dtalpha * diffusion * temp1 * (SQR(k1) + SQR(k2)) * (3 * cons1 * SQR(reverse_transform.calculated_reactions[0][id])) << endl;
+            //     cout << -dtalpha * diffusion * temp1 * (SQR(k1) + SQR(k2)) * 2 * cons2 * (reverse_transform.calculated_reactions[0][id]) << endl;
+            //     cout << -dtalpha * diffusion *temp1 * (SQR(k1) + SQR(k2))  * cons3 << endl;
+            //     cout << -dtalpha * diffusion * temp1 * (SQR(k1) + SQR(k2)) * (3 * cons1 * SQR(reverse_transform.calculated_reactions[0][id]) + 2 * cons2 * (reverse_transform.calculated_reactions[0][id]) + cons3) << endl;
+            //     cout <<  -dtalpha * diffusion * SQR(epsilon) * SQR(temp1) * SQR(SQR(k1) + SQR(k2)) << endl;
+            //     cout << w << endl;
+            //     cout << "done" << endl;
+            // }
+            coeffs.push_back(Trip(id, id, w));
+            coeffs.push_back(Trip(id + totN, id + totN, w2));
+
+            // for(int j1 = 0  ; j1 < fmodes ; j1++) {
+            //     int j = allt[j1].index;
+            //     //if(j!= id) {
+            //         int indx =  j + id;
+            //         if(indx >= totN) indx -= totN;
+            //         complex<double> w2 = - dtalpha * diffusion * temp1 * (SQR(k1) + SQR(k2)) * conj((out[j]/(double)(totN)));
+            //         //if(abs(out[indx]) > 0.01*abs(out[0])) {
+            //         // coeffs.push_back(Trip(id, indx, w2));
+            //         if(indx != id) coeffs.push_back(Trip(indx, id, w2));
+            //         // if (indx != id)
+            //         //     coeffs.push_back(Trip(id, indx, w2));
+            //         // // coeffs.push_back(Trip(j, id, w2));
+            //         //}
+            //    // }
+            // // }
+            // for(int j = 0  ; j < totN ; j++) {
+            //     if(j!=id) {
+            //         int indx =  j - id;
+            //         if(indx < 0) indx += totN;
+            //         complex<double> w2 = - dtalpha * diffusion * temp1 * (SQR(k1) + SQR(k2)) * conj((out[indx]/(double)(totN)));
+            //         //if(abs(out[indx]) > 0.01*abs(out[0])) {
+            //            if( id == 3 && j ==32) {
+            //             cout << indx << " " << j << endl;
+            //             pausel();
+            //            }
+            //            coeffs.push_back(Trip(id, j, w2));
+            //         //    coeffs.push_back(Trip(j,id, w2));
+            //         //}
+            //     }
+            // }
+
+            if (show)
+                for (int i2 = 0; i2 < myp.N1; i2++)
+                {
+                    for (int j2 = 0; j2 < myp.N2; j2++)
+                    {
+
+                        int indx1 = i2 - i1;
+                        int indx2 = j2 - j1;
+                        if (indx1 < 0)
+                            indx1 += myp.N1;
+                        if (indx2 < 0)
+                            indx2 += myp.N2;
+
+                        int findx = indx1 * myp.N2 + indx2;
+                        int j = i2 * myp.N2 + j2;
+                        if (j != id)
+                        {
+                            complex<double> w2 = -dtalpha * diffusion[0] * temp1 * (SQR(k1) + SQR(k2)) * conj((out[findx] / (double)(totN)));
+
+                            complex<double> w3 = -dtalpha * diffusion[1] * temp1 * (SQR(k1) + SQR(k2)) * conj((out2[findx] / (double)(totN)));
+                            // if(abs(out[findx]) > 0.01*abs(out[0])) {
+                            coeffs.push_back(Trip(id, j, w2));
+                            coeffs.push_back(Trip(id+totN, j+totN, w3));
+
+                            //}
+                        }
+                    }
+                }
+        }
+    }
+
+    fftw_destroy_plan(p);
+    fftw_free(in);
+    fftw_free(out);
+
+    fftw_destroy_plan(q);
+    fftw_free(in2);
+    fftw_free(out2);
+
+    for (int ifn = 2; ifn < myp.number_of_fields; ifn++) // cross fields
+    {
+        for (int i1 = 0; i1 < myp.N1; i1++)
+        {
+            for (int j1 = 0; j1 < myp.N2; j1++)
+            {
+
+                double k1, k2;
+                if (i1 <= myp.N1 / 2)
+                {
+                    k1 = i1;
+                }
+                else
+                {
+                    k1 = (i1 - myp.N1);
+                }
+                if (j1 <= myp.N2 / 2)
+                {
+                    k2 = j1;
+                }
+                else
+                {
+                    k2 = (j1 - myp.N2);
+                }
+
+                // take absolute values of k1 and k2
+                int k1a = abs(k1);
+                int k2a = abs(k2);
+                if (k2a < k1a)
+                {
+                    k1a = k2a;
+                    k2a = abs(k1);
+                }
+                int rel = k2a - (k1a * (1 + k1a - 2 * (1 + myp.N1 / 2))) / 2.;
+                int id = i1 * myp.N1 + j1;
+
+                complex<double> w = -1.0 - dtalpha * diffusion[ifn] * temp1 * (SQR(k1) + SQR(k2));
+
+                coeffs.push_back(Trip(ifn * totN + id, ifn * totN + id, w));
+            }
+        }
+    }
+
+    for (int ifn = 0; ifn < myp.number_of_fields; ifn++) // cross fields
+    {
+        for (int ifn2 = ifn + 1; ifn2 < myp.number_of_fields; ifn2++) // cross fields
+        {
+
+            for (int i1 = 0; i1 < myp.N1; i1++)
+            {
+                for (int j1 = 0; j1 < myp.N2; j1++)
+                {
+
+                    double k1, k2;
+                    if (i1 <= myp.N1 / 2)
+                    {
+                        k1 = i1;
+                    }
+                    else
+                    {
+                        k1 = (i1 - myp.N1);
+                    }
+                    if (j1 <= myp.N2 / 2)
+                    {
+                        k2 = j1;
+                    }
+                    else
+                    {
+                        k2 = (j1 - myp.N2);
+                    }
+
+                    // take absolute values of k1 and k2
+                    int k1a = abs(k1);
+                    int k2a = abs(k2);
+                    if (k2a < k1a)
+                    {
+                        k1a = k2a;
+                        k2a = abs(k1);
+                    }
+                    int rel = k2a - (k1a * (1 + k1a - 2 * (1 + myp.N1 / 2))) / 2.;
+                    int id = i1 * myp.N1 + j1;
+
+                    complex<double> w = -dtalpha * diffusion[ifn] * temp1 * epsilon_couplings(ifn, ifn2) * (SQR(k1) + SQR(k2));
+                    complex<double> w2 = -dtalpha * diffusion[ifn2] * temp1 * epsilon_couplings(ifn, ifn2) * (SQR(k1) + SQR(k2));
+
+                    coeffs.push_back(Trip(ifn * totN + id, ifn2 * totN + id, w));
+
+                    coeffs.push_back(Trip(ifn2 * totN + id, ifn * totN + id, w2));
+                }
+            }
+        }
+    }
+
+    int N = myp.number_of_fields * myp.N1 * myp.N2;
+
+    Eigen::SparseMatrix<complex<double>> A(N, N);
+
+    A.setFromTriplets(coeffs.begin(), coeffs.end());
+    
+
 
     return A;
 }
@@ -807,6 +1425,29 @@ void CHCF::SetupFracScheme(int MM)
     std::rotate(OLD.rbegin(), OLD.rbegin() + 1, OLD.rend());
 }
 
+void CHCF::SetupFracScheme_2PS(int MM)
+{
+    M = MM;
+    int N = myp.N1 * myp.N2;
+    int nof = myp.number_of_fields;
+    for (int i = 1; i < M; i++)
+    {
+        Eigen::VectorXcd dxv(nof * N);
+
+        for (int j = 0; j < nof * N; j++)
+        {
+            dxv[j] = 0.0;
+        }
+        OLD.push_back(dxv);
+    }
+
+    Eigen::VectorXcd w0 = CalculateWeight_2PS(fields);
+
+    // OLD.pop_back();
+    OLD.push_back(w0);
+    std::rotate(OLD.rbegin(), OLD.rbegin() + 1, OLD.rend());
+}
+
 void CHCF::UpdateWithNewton(bool det = true)
 {
 
@@ -828,6 +1469,7 @@ void CHCF::UpdateWithNewton(bool det = true)
 
     double dtalpha = pow(dt, alpha);
     Eigen::SparseMatrix<complex<double>> unchangedJ = CalculateJ(transformed1.calculated_reactions, true);
+
     Eigen::VectorXcd orig = SolveLinearProblem(unchangedJ, transformed1.calculated_reactions, transformed3.calculated_reactions);
 
     for (int k = 0; k < myp.number_of_fields; k++) // set up our initial guess at the solution
@@ -837,7 +1479,7 @@ void CHCF::UpdateWithNewton(bool det = true)
             for (int j1 = 0; j1 < myp.N2; j1++)
             {
                 // int id = i1 + myp.N1 * j1;
-                rules.calculated_reactions[k][i1 * myp.N2 + j1] = orig(k * N + i1 * myp.N2 + j1);
+                rules.calculated_reactions[k][i1 * myp.N2 + j1] = transformed1.calculated_reactions[k][i1 * myp.N2 + j1] + orig(k * N + i1 * myp.N2 + j1);
             }
         }
     }
@@ -1230,6 +1872,321 @@ void CHCF::UpdateWithNewton(bool det = true)
     // we need a starting vector to solve, for which we will choose the
 }
 
+void CHCF::UpdateWithNewton_2PS(bool det = true)
+{
+
+    chems.Calculate_Results(fields); // calculate chemistry
+
+    // string schem = "chem";
+    // outfunc(chems.calculated_reactions[0],schem,myp);
+
+    transformed3.Calculate_Results(chems.calculated_reactions);
+    //  string ftschem = "ftchem";
+    //  outfunc(transformed3.calculated_reactions[0], ftschem, myp);
+    //      pausel();
+    // GetMaximas(transformed3.calculated_reactions,schem,myp);
+    // pausel();
+    int N = myp.N1 * myp.N2;
+    transformed1.Calculate_Results(fields); // calculate FT of fields
+
+    // Eigen::VectorXcd orig(myp.number_of_fields*myp.N1*myp.N2);
+
+    double dtalpha = pow(dt, alpha);
+    Eigen::SparseMatrix<complex<double>> unchangedJ = CalculateJ_2PS(transformed1.calculated_reactions, true);
+
+
+    /*
+    {
+        for (int k = 0; k < myp.number_of_fields; k++) // set up our initial guess at the solution
+        {
+            for (int i1 = 0; i1 < myp.N1; i1++)
+            {
+                for (int j1 = 0; j1 < myp.N2; j1++)
+                {
+                    // int id = i1 + myp.N1 * j1;
+                    rules.calculated_reactions[k][i1 * myp.N2 + j1] = transformed1.calculated_reactions[k][i1 * myp.N2 + j1];
+                }
+            }
+        }
+
+        rules.calculated_reactions[1][1024] += 0.001;
+
+        Eigen::VectorXcd Ft1 = CalculateRHS_2PS(rules.calculated_reactions, transformed1.calculated_reactions, transformed3.calculated_reactions);
+
+        for (int k = 0; k < myp.number_of_fields; k++) // set up our initial guess at the solution
+        {
+            for (int i1 = 0; i1 < myp.N1; i1++)
+            {
+                for (int j1 = 0; j1 < myp.N2; j1++)
+                {
+                    // int id = i1 + myp.N1 * j1;
+                    rules.calculated_reactions[k][i1 * myp.N2 + j1] = transformed1.calculated_reactions[k][i1 * myp.N2 + j1];
+                }
+            }
+        }
+        rules.calculated_reactions[1][1024] -= 0.001;
+        Eigen::VectorXcd Ft2 = CalculateRHS_2PS(rules.calculated_reactions, transformed1.calculated_reactions, transformed3.calculated_reactions);
+    
+        Eigen::VectorXcd J1= (Ft2-Ft1)/(0.002);
+        int tempN = 2 * 64 * 64;
+        double tot = 0.0;
+        for(int i1 = 0 ; i1 < 64*64 ; i1++)
+        tot += abs(J1[i1]);
+
+
+        
+        cout << tot << endl;
+        cout << unchangedJ.coeff(0,1024) << endl;
+
+        cout << unchangedJ.coeff(243 + 64 * 64, 1024 + 64 * 64) << endl;
+
+        cout << "done" << endl;
+
+        pausel();
+    
+
+    }*/
+    Eigen::VectorXcd orig = SolveLinearProblem(unchangedJ, transformed1.calculated_reactions, transformed3.calculated_reactions);
+
+    for (int k = 0; k < myp.number_of_fields; k++) // set up our initial guess at the solution
+    {
+        for (int i1 = 0; i1 < myp.N1; i1++)
+        {
+            for (int j1 = 0; j1 < myp.N2; j1++)
+            {
+                // int id = i1 + myp.N1 * j1;
+                rules.calculated_reactions[k][i1 * myp.N2 + j1] = orig(k * N + i1 * myp.N2 + j1);
+            }
+        }
+    }
+
+
+
+    int iter = 0;
+    double dx = 10.;
+
+    bool cont = true;
+
+    while (cont)
+    {
+        cout << iter << endl;
+        // iter++;
+        // Eigen::ConjugateGradient<Eigen::SparseMatrix<complex<double>>, Eigen::Lower | Eigen::Upper> cg;
+
+        // cout << "CJ set up" << endl;
+        bool usefull = true; // iter>30;
+        Eigen::SparseMatrix<complex<double>> J = CalculateJ_2PS(rules.calculated_reactions, usefull);
+        
+        // cout << J.isApprox(J.transpose()) << endl;
+
+        cout << "J calculated" << endl;
+
+        // check for accuracy.
+        // CalculateWeight(rules.calculated_reactions)
+
+        Eigen::VectorXcd F = CalculateRHS_2PS(rules.calculated_reactions, transformed1.calculated_reactions, transformed3.calculated_reactions);
+
+        cout << "RHS computed" << endl;
+        Eigen::VectorXcd dxv;
+
+        // Eigen::SimplicialCholesky<Eigen::SparseMatrix<complex<double>> > chol(J);
+        // Eigen::VectorXcd dxv = chol.solve(-F);
+        // cg.compute(J);
+
+        if (usefull)
+        {
+            Eigen::BiCGSTAB<Eigen::SparseMatrix<complex<double>>> solver;
+            solver.compute(J);
+            dxv = solver.solve(-F);
+            std::cout << "#iterations:     " << solver.iterations() << std::endl;
+            std::cout << "estimated error: " << solver.error() << std::endl;
+        }
+        else
+        {
+            Eigen::SparseLU<Eigen::SparseMatrix<complex<double>>, Eigen::COLAMDOrdering<int>> solver;
+            // fill A and b;
+            // Compute the ordering permutation vector from the structural pattern of A
+            solver.analyzePattern(J);
+            cout << "pattern analyzed" << endl;
+            // Compute the numerical factorization
+            solver.factorize(J);
+            cout << "pattern factorized" << endl;
+            // Use the factors to solve the linear system
+            dxv = solver.solve(-F);
+        }
+
+        double lambda = 1.;
+        cout << "proceeding" << endl;
+        int it;
+        double maxdx = (lambda * dxv).cwiseAbs().maxCoeff(&it);
+        cout << maxdx << endl;
+        pausel();
+        // // cout << "cg computed" << endl;
+        // cout << "dxv solved" << endl;
+        // Eigen::VectorXcd dxv = cg.solve(-F);
+        // cout << "dxv solved" << endl;
+
+        // if (maxdx > dx)
+        // {
+        //     //break;
+        //     cout << "non-downward step" << endl;
+        //     // for(int i = 0 ; i < 100 ; i++)
+        //     // cout << rules.calculated_reactions[0][i] <<" " <<dxv[i] << endl;
+
+        //     cout << maxdx << " " << dx << " " << it % (myp.N1*myp.N2)  << endl;
+
+        //     if(dx < 0.01)
+        //         break;
+
+        // }
+        // cout << maxdx << " " << it << endl;
+        // cout << F[it] << endl;
+        // cout << rules.calculated_reactions[0][it] << endl;
+        // cout << dxv[it] << endl;
+        // pausel();
+        
+        // for (int k = 0; k < myp.number_of_fields; k++) // set up our initial guess at the solution
+        // {
+        //     for (int i1 = 0; i1 < myp.N1; i1++)
+        //     {
+        //         for (int j1 = 0; j1 < myp.N2; j1++)
+        //         {
+        //             rules.calculated_reactions[k][i1 * myp.N2 + j1] = orig[k * N + i1 * myp.N2 + j1] + lambda*dxv[k * N + i1 * myp.N2 + j1];
+        //         }
+        //     }
+        // }
+
+        for (int k = 0; k < myp.number_of_fields; k++) // set up our initial guess at the solution
+        {
+            for (int i1 = 0; i1 < myp.N1; i1++)
+            {
+                for (int j1 = 0; j1 < myp.N2; j1++)
+                {
+                    rules.calculated_reactions[k][i1 * myp.N2 + j1] = orig[k * N + i1 * myp.N2 + j1] + lambda * dxv[k * N + i1 * myp.N2 + j1];
+                    // rules.calculated_reactions[k][i1 * myp.N2 + j1] += lambda * dxv[k * N + i1 * myp.N2 + j1];
+                    // cout << rules.calculated_reactions[k][i1 * myp.N2 + j1] << " " << orig[k * N + i1 * myp.N2 + j1] + lambda * dxv[k * N + i1 * myp.N2 + j1] << endl;
+                }
+            }
+        }
+
+        //Have we actually calculated the sol
+
+        // pausel();
+
+        Eigen::VectorXcd F2 = CalculateRHS_2PS(rules.calculated_reactions, transformed1.calculated_reactions, transformed3.calculated_reactions);
+
+        double g0 = 0.5 * F.squaredNorm();
+        double g1 = 0.5 * F2.squaredNorm(); 
+
+        //why should this be a convergence test?
+
+
+        /*             cout << endl;
+                    cout << "max original"  << endl;
+                    maxdx = F.cwiseAbs().maxCoeff(&it);
+                    cout << maxdx << " " << it << endl;
+
+                    cout << "max after" << endl;
+                    maxdx = F2.cwiseAbs().maxCoeff(&it);
+                    cout << maxdx  << " " << it << endl;
+                    double g0 = 0.5 * F.squaredNorm();
+                    double g1=  0.5 * F2.squaredNorm();
+
+                    cout << g0 << " " << g1 << endl;
+                    pausel(); */
+        double lambda2 = 0.5;
+        int iter2 = 0;
+        bool hoo;
+        bool failed = false;
+
+        while (g1 > g0)
+        {
+            cout << "g1 bigger!" << g1 << " " << g0 << endl;
+            for (int k = 0; k < myp.number_of_fields; k++) // set up our initial guess at the solution
+            {
+                for (int i1 = 0; i1 < myp.N1; i1++)
+                {
+                    for (int j1 = 0; j1 < myp.N2; j1++)
+                    {
+                        rules.calculated_reactions[k][i1 * myp.N2 + j1] = orig[k * N + i1 * myp.N1 + j1] + (lambda2)*dxv[k * N + i1 * myp.N2 + j1];
+                    }
+                }
+            }
+            F2 = CalculateRHS_2PS(rules.calculated_reactions, transformed1.calculated_reactions, transformed3.calculated_reactions);
+
+            g1 = 0.5 * F2.squaredNorm();
+
+            iter2++;
+            if (iter2 > 20)
+            {
+                failed = true;
+                break;
+            }
+            lambda = lambda2;
+            lambda2 /= 2.;
+        }
+        pausel();
+
+  
+        {
+            cout << "lambda used: " << lambda << endl;
+            for (int k = 0; k < myp.number_of_fields; k++) // set up our initial guess at the solution
+            {
+                for (int i1 = 0; i1 < myp.N1; i1++)
+                {
+                    for (int j1 = 0; j1 < myp.N2; j1++)
+                    {
+                        orig[k * N + i1 * myp.N2 + j1] = rules.calculated_reactions[k][i1 * myp.N2 + j1];
+                    }
+                }
+            }
+
+            // dx = maxdx;
+            int it;
+            double maxdx = (F2).cwiseAbs().maxCoeff(&it);
+            if (maxdx < 0.0001 * lambda)
+            {
+                cout << maxdx << endl;
+                cont = false;
+            }
+            iter++;
+        }
+    }
+    cout << "non-linear system solved" << endl;
+    // once it is complete, update the field
+    Eigen::VectorXcd Fx = CalculateRHS_2PS(rules.calculated_reactions, transformed1.calculated_reactions, transformed3.calculated_reactions);
+    int ik;
+    double xx = Fx.cwiseAbs().maxCoeff(&ik);
+    cout << "max diff: " << xx << " at " << ik << endl;
+
+    reverse_transform.Calculate_Results(rules.calculated_reactions);
+
+    // GetMaximas(fields, myp);
+
+    Eigen::VectorXcd w0 = CalculateWeight_2PS(reverse_transform.calculated_reactions);
+
+    OLD.pop_back();
+    OLD.push_back(w0);
+    std::rotate(OLD.rbegin(), OLD.rbegin() + 1, OLD.rend());
+
+    // for(int j = 0 ; j < OLD.size() ; j++)
+    // cout << OLD[j][1] << ",";
+    // cout << endl;
+
+    reverse_transform.GetMaximas();
+    reverse_transform.GetMaximasIndex();
+    reverse_transform.GetMinimas();
+    reverse_transform.GetMinimasIndex();
+    cout << endl;
+
+    set_field(reverse_transform.calculated_reactions);
+
+    // after the code has finished working,
+
+    // the current field configuration is in fields
+    // we need a starting vector to solve, for which we will choose the
+}
+
 void CHCF::UpdateWithNewtonCalcJ()
 {
     typedef complex<double> cd;
@@ -1284,7 +2241,7 @@ void CHCF::UpdateWithNewtonCalcJ()
 
                 int rel = k2a - (k1a * (1 + k1a - 2 * (1 + myp.N1 / 2))) / 2.;
                 // int id = i1 + myp.N1 * j1;
-                rules.calculated_reactions[k][i1 * myp.N2 + j1] = transformed1.calculated_reactions[k][i1 * myp.N2 + j1] * 1. / (1. + dtalpha * diffusion * temp1 * (SQR(k1) + SQR(k2)));
+                rules.calculated_reactions[k][i1 * myp.N2 + j1] = transformed1.calculated_reactions[k][i1 * myp.N2 + j1] * 1. / (1. + dtalpha * diffusion[k] * temp1 * (SQR(k1) + SQR(k2)));
             }
         }
     }
@@ -1400,7 +2357,7 @@ void CHCF::UpdateWithNewtonCalcJ()
                     int rel = k2a - (k1a * (1 + k1a - 2 * (1 + myp.N1 / 2))) / 2.;
                     int id = i1 * myp.N1 + j1;
 
-                    complex<double> w = -1.0 - dtalpha * diffusion * temp1 * (SQR(k1) + SQR(k2));
+                    complex<double> w = -1.0 - dtalpha * diffusion[ifn] * temp1 * (SQR(k1) + SQR(k2));
 
                     coeffs.push_back(Trip(ifn * totN + id, ifn * totN + id, w));
                 }
@@ -1446,7 +2403,7 @@ void CHCF::UpdateWithNewtonCalcJ()
                         int rel = k2a - (k1a * (1 + k1a - 2 * (1 + myp.N1 / 2))) / 2.;
                         int id = i1 * myp.N1 + j1;
 
-                        complex<double> w = -dtalpha * diffusion * temp1 * epsilon_couplings(ifn, ifn2) * (SQR(k1) + SQR(k2));
+                        complex<double> w = -dtalpha * diffusion[ifn] * temp1 * epsilon_couplings(ifn, ifn2) * (SQR(k1) + SQR(k2));
 
                         coeffs.push_back(Trip(ifn * totN + id, ifn2 * totN + id, w));
 

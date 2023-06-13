@@ -372,12 +372,12 @@ struct CHC : public CH<complex<double>>
     vector1<bool> phase_separators;
 
     matrix<double> epsilon_couplingsSQR;
-    double diffusion;
-    double epsilon;
-    double c0;
-    double c1;
-    double cons1,cons2,cons3,cons4;
-    double cons3s;
+    vector1<double> diffusion;
+    vector1<double> epsilon;
+    vector1<double> c0;
+    vector1<double> c1;
+    vector1<double> cons1,cons2,cons3,cons4;
+    vector1<double> cons3s;
     double temp1;
 
     double alpha;
@@ -399,21 +399,25 @@ struct CHC : public CH<complex<double>>
 
     void set_phase_separators(vector1<bool> &ps) {phase_separators = ps;}
     void set_interaction(double val, int i, int j);
-    void set_diffusion(double diff) {diffusion = diff; cout << "diffusion set to: " << diff << endl;}
-    void set_epsilon(double epss) {epsilon = epss;
+    void set_diffusion(double diff,int i) {diffusion[i] = diff; cout << "diffusion set to: " << diff << endl;}
+    void set_epsilon(double epss, int i) {epsilon[i] = epss;
         cout << "epsilon set to: " << epss << endl;
     }
-    void set_c0_c1(double c00, double c11, double nu1 = 1.0) {c0 =  c00; c1 = c11;
+    void set_c0_c1(double c00, double c11, int i, double nu1 = 1.0) {
+        if(!phase_separators[i]) error("trying to set phase separation parameters for non-phase separating model");
+        c0[i] =  c00; c1[i] = c11;
         double nu = nu1;
-        cons1 = 4 * nu;
-        cons2 = (-6 * c0 * nu - 6 * c1 * nu);
-        cons3 = (2 * c0 * c0 * nu + 8 * c0 * c1 * nu + 2 * c1 * c1 * nu);
-        cons4 = -2 * c0 * c0 * c1 * nu - 2 * c0 * c1 * c1 * nu;
-        cons3s = cons3-1;
+        cons1[i] = 4 * nu;
+        cons2[i] = (-6 * c0[i] * nu - 6 * c1[i] * nu);
+        cons3[i] = (2 * c0[i] * c0[i] * nu + 8 * c0[i] * c1[i] * nu + 2 * c1[i] * c1[i] * nu);
+        cons4[i] = -2 * c0[i] * c0[i] * c1[i] * nu - 2 * c0[i] * c1[i] * c1[i] * nu;
+        cons3s[i] = cons3[i] - 1;
         cout << "c0 set to: " << c00 << endl;
         cout << "c1 set to: " << c11 << endl;
     }
-    void set_temp1(double temp11) {temp1 = temp11;
+    void set_temp1(double temp11)
+    {
+        temp1 = temp11;
         cout << "temp set to: " << temp1 << endl;
     }
 
@@ -431,17 +435,17 @@ struct CHC : public CH<complex<double>>
         matrix<double> dmat(field_no,field_no);
 
         for(int i = 0 ; i < field_no ; i++) {
-            dmat(i, i) += - diffusion *temp1 *(SQR(k1) + SQR(k2));
+            dmat(i, i) += - diffusion[i] *temp1 *(SQR(k1) + SQR(k2));
         }
 
         for(int i = 0 ; i < field_no ; i++) {
             for(int j  = 0 ; j < field_no ; j++) {
-                dmat(i, j) += -diffusion * temp1 * (SQR(k1) + SQR(k2)) *epsilon_couplings(i, j);
+                dmat(i, j) += -diffusion[i] * temp1 * (SQR(k1) + SQR(k2)) *epsilon_couplings(i, j);
             }
         }
         for(int i = 0  ; i < field_no ; i++) {
         if(phase_separators[i])
-        dmat(i, i) += -diffusion * cons3s * temp1 * (SQR(k1) + SQR(k2)) - diffusion * SQR(epsilon) * SQR(temp1) * SQR(SQR(k1) + SQR(k2));
+        dmat(i, i) += -diffusion[i] * cons3s[i] * temp1 * (SQR(k1) + SQR(k2)) - diffusion[i] * SQR(epsilon[i]) * SQR(temp1) * SQR(SQR(k1) + SQR(k2));
         }
         return dmat;
     }

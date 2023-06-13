@@ -320,7 +320,7 @@ public:
     void operator()(T **a, T **fields, int j, const CH_builder &p) {
         T **b;
         int Ng = p.get_total();
-        b = new T *[p.number_of_fields];
+        b = new T *[no_chem];
 
         int end = p.get_total();
         for (int k = 0; k < end; k++)

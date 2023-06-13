@@ -128,6 +128,11 @@ int main(int argc, char **argv)
 
     CHCF a(p);
 
+    vector1<bool> ps(nof);
+    ps[0]=true;
+
+    a.set_phase_separators(ps);
+
     for(int i = 0 ; i < nof ; i++) {
         for(int j = i+1  ; j < nof ; j++) {
             //cout << i << " " << j << endl;
@@ -135,9 +140,11 @@ int main(int argc, char **argv)
         }
     }
 
-    a.set_diffusion(phasesepsparams[0]);
-    a.set_epsilon(phasesepsparams[1]);
-    a.set_c0_c1(phasesepsparams[2],phasesepsparams[3]),0.1;
+    for(int i = 0 ; i < nof ; i++)
+    a.set_diffusion(phasesepsparams[0],i);
+
+    a.set_epsilon(phasesepsparams[1],0);
+    a.set_c0_c1(phasesepsparams[2],phasesepsparams[3],0,1);
     double L = phasesepsparams[4];
     double temp1 = SQR(2. * pii / L);
     a.set_temp1(temp1);

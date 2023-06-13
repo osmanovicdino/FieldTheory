@@ -1,7 +1,17 @@
 #ifndef CAHNHILLIARDCOMBO_CPP
 #define CAHNHILLIARDCOMBO_CPP
 
-CHC::CHC(const CH_builder &p) : CH(p), phase_separators(vector1<bool>(p.number_of_fields)), epsilon_couplings(matrix<double>(p.number_of_fields, p.number_of_fields)),
+CHC::CHC(const CH_builder &p) : CH(p), phase_separators(vector1<bool>(p.number_of_fields)),
+                                diffusion(vector1<double>(p.number_of_fields)),
+                                epsilon(vector1<double>(p.number_of_fields)),
+                                c0(vector1<double>(p.number_of_fields)),
+                                c1(vector1<double>(p.number_of_fields)),
+                                cons1(vector1<double>(p.number_of_fields)),
+                                cons2(vector1<double>(p.number_of_fields)),
+                                cons3(vector1<double>(p.number_of_fields)),
+                                cons4(vector1<double>(p.number_of_fields)),
+                                cons3s(vector1<double>(p.number_of_fields)),
+                                epsilon_couplings(matrix<double>(p.number_of_fields, p.number_of_fields)),
                                 epsilon_couplingsSQR(matrix<double>(p.number_of_fields, p.number_of_fields)),
                                 inverses(vector<matrix<double>>((1 + p.N1 / 2) * (1 + p.N2 / 4))),
                                 baremat(vector<matrix<double>>((1 + p.N1 / 2) * (1 + p.N2 / 4))),
@@ -64,7 +74,7 @@ void CHC::calculate_non_linear_weight(complex<double>**input) {
         if(phase_separators[i]) {
         for (int j = 0; j < totp; j++)
         {
-            weigs.calculated_reactions[i][j] = cons1 * CUB(input[i][j]) + cons2 * SQR(input[i][j]) + cons4;
+            weigs.calculated_reactions[i][j] = cons1[i] * CUB(input[i][j]) + cons2[i] * SQR(input[i][j]) + cons4[i];
         }
         }
         else{
@@ -128,10 +138,13 @@ void CHC::calculate_non_linear_weightSQR(complex<double> **input)
     //         weigs.calculated_reactions[i][j] += 0.25 * CUB(input[i][j]);
 
     // }
-
-    for (int j = 0; j < totp; j++)
+    for (int i = 0; i < myp.number_of_fields; i++)
     {
-        weigs.calculated_reactions[0][j] += cons1 * CUB(input[0][j]) + cons2 * SQR(input[0][j]) + cons4;
+        if(phase_separators[i])
+        for (int j = 0; j < totp; j++)
+        {
+            weigs.calculated_reactions[i][j] += cons1[i] * CUB(input[i][j]) + cons2[i] * SQR(input[i][j]) + cons4[i];
+        }
     }
 
     // for (int i = 0; i < myp.number_of_fields; i++)
@@ -350,7 +363,7 @@ void CHC::calculate_initial_weight(int cut_offf=100) {
 
 
             for(int k = 0 ; k < nof ; k++) {
-                InitWeight.calculated_reactions[k][i * myp.N2 + j] = (v[k] - diffusion * tempor * temp1 * transformed2.calculated_reactions[k][i * myp.N2 + j]);
+                InitWeight.calculated_reactions[k][i * myp.N2 + j] = (v[k] - diffusion[k] * tempor * temp1 * transformed2.calculated_reactions[k][i * myp.N2 + j]);
                 //oldweightFT.calculated_reactions[k][i * myp.N2 + j] = (1- alpha) * (-v[k] - diffusion * tempor * temp1 * transformed2.calculated_reactions[k][i * myp.N2 + j]);
             }
             //upd1[i * myp.N2 + j] = -2*alpha*dt*diffusion*tempor*temp1*transformed2.calculated_reactions[]
@@ -447,7 +460,7 @@ void CHC::calculate_initial_weightSQR()
 
             for (int k = 0; k < nof; k++)
             {
-                InitWeight.calculated_reactions[k][i * myp.N2 + j] = (v[k] - diffusion * tempor * temp1 * transformed2.calculated_reactions[k][i * myp.N2 + j]);
+                InitWeight.calculated_reactions[k][i * myp.N2 + j] = (v[k] - diffusion[k] * tempor * temp1 * transformed2.calculated_reactions[k][i * myp.N2 + j]);
                 // oldweightFT.calculated_reactions[k][i * myp.N2 + j] = (1- alpha) * (-v[k] - diffusion * tempor * temp1 * transformed2.calculated_reactions[k][i * myp.N2 + j]);
             }
             // upd1[i * myp.N2 + j] = -2*alpha*dt*diffusion*tempor*temp1*transformed2.calculated_reactions[]
@@ -462,9 +475,8 @@ void CHC::Update() {
 
     chems.Calculate_Results(fields); //calculate chemistry
 
-
-
     transformed3.Calculate_Results(chems.calculated_reactions);
+
     // string ftschem = "ftchem";
     // outfunc(transformed3.calculated_reactions[0], ftschem, myp);
     //     pausel();
@@ -473,6 +485,8 @@ void CHC::Update() {
 
     transformed1.Calculate_Results(fields); // calculate FT of fields
     calculate_non_linear_weight(fields);
+
+
     
     
     int totp = myp.get_total();
@@ -516,7 +530,7 @@ void CHC::Update() {
             // vector1<complex<double> > v(nof);
 
 
-            double fac =  diffusion * tempor * temp1 ;
+            double fac =  tempor * temp1 ;
             vector1<complex<double> > v(nof);
             vector1<complex<double> > v2(nof);
             vector1<complex<double> > v3(nof);
@@ -533,10 +547,10 @@ void CHC::Update() {
 
             for (int k = 0; k < nof; k++)
             {
-                v[k] = -((1-alpha) + (alpha) * dt) * fac * (transformed2.calculated_reactions[k][i * myp.N2 + j]) 
+                v[k] = -((1-alpha) + (alpha) * dt) * diffusion[k]*fac * (transformed2.calculated_reactions[k][i * myp.N2 + j]) 
                 + transformed1.calculated_reactions[k][i * myp.N2 + j]//oldfieldFT.calculated_reactions[k][i * myp.N2 + j] 
                 - (1-alpha)*v2[k] 
-                + ((1-alpha) /* -  0.5*(alpha) * dt */) * fac * oldfieldNLW.calculated_reactions[k][i * myp.N2 + j] 
+                + ((1-alpha) /* -  0.5*(alpha) * dt */) *diffusion[k] * fac * oldfieldNLW.calculated_reactions[k][i * myp.N2 + j] 
                 - 0.0*2 * alpha * dt * InitWeight.calculated_reactions[k][i * myp.N2 + j] //zeroed because of the initial conditions we set
                 + dt * transformed3.calculated_reactions[k][i * myp.N2 + j];
             }
@@ -659,7 +673,7 @@ void CHC::UpdateNoise(Q &func, GenNoise<complex<double>> &mynoise, vector1<doubl
 
             // vector1<complex<double> > v(nof);
 
-            double fac = diffusion * tempor * temp1;
+            double fac = tempor * temp1;
             vector1<complex<double>> v(nof);
             vector1<complex<double>> v2(nof);
             vector1<complex<double>> v3(nof);
@@ -673,8 +687,8 @@ void CHC::UpdateNoise(Q &func, GenNoise<complex<double>> &mynoise, vector1<doubl
 
             for (int k = 0; k < nof; k++)
             {
-                v[k] = -((1 - alpha) + (alpha)*dt) * fac * (transformed2.calculated_reactions[k][i * myp.N2 + j]) + transformed1.calculated_reactions[k][i * myp.N2 + j]                                                       // oldfieldFT.calculated_reactions[k][i * myp.N2 + j]
-                       - (1 - alpha) * v2[k] + ((1 - alpha) /* -  0.5*(alpha) * dt */) * fac * oldfieldNLW.calculated_reactions[k][i * myp.N2 + j] - 0.0 * 2 * alpha * dt * InitWeight.calculated_reactions[k][i * myp.N2 + j] // zeroed because of the initial conditions we set
+                v[k] = -((1 - alpha) + (alpha)*dt) * diffusion[k] * fac * (transformed2.calculated_reactions[k][i * myp.N2 + j]) + transformed1.calculated_reactions[k][i * myp.N2 + j]                                                       // oldfieldFT.calculated_reactions[k][i * myp.N2 + j]
+                       - (1 - alpha) * v2[k] + ((1 - alpha) /* -  0.5*(alpha) * dt */) * diffusion[k] * fac * oldfieldNLW.calculated_reactions[k][i * myp.N2 + j] - 0.0 * 2 * alpha * dt * InitWeight.calculated_reactions[k][i * myp.N2 + j] // zeroed because of the initial conditions we set
                        + dt * transformed3.calculated_reactions[k][i * myp.N2 + j];
             }
 
@@ -809,7 +823,7 @@ void CHC::UpdateSQR()
 
             // vector1<complex<double> > v(nof);
 
-            double fac = diffusion * tempor * temp1;
+            double fac = tempor * temp1;
             vector1<complex<double>> v(nof);
             vector1<complex<double>> v2(nof);
             vector1<complex<double>> v3(nof);
@@ -823,8 +837,8 @@ void CHC::UpdateSQR()
 
             for (int k = 0; k < nof; k++)
             {
-                v[k] = -((1 - alpha) + (alpha)*dt) * fac * (transformed2.calculated_reactions[k][i * myp.N2 + j]) + transformed1.calculated_reactions[k][i * myp.N2 + j]                                                       // oldfieldFT.calculated_reactions[k][i * myp.N2 + j]
-                       - (1 - alpha) * v2[k] + ((1 - alpha) /* -  0.5*(alpha) * dt */) * fac * oldfieldNLW.calculated_reactions[k][i * myp.N2 + j] /* - 0.0 * 2 * alpha * dt * InitWeight.calculated_reactions[k][i * myp.N2 + j]  */// zeroed because of the initial conditions we set
+                v[k] = -((1 - alpha) + (alpha)*dt) * diffusion[k] * fac * (transformed2.calculated_reactions[k][i * myp.N2 + j]) + transformed1.calculated_reactions[k][i * myp.N2 + j]                                                              // oldfieldFT.calculated_reactions[k][i * myp.N2 + j]
+                       - (1 - alpha) * v2[k] + ((1 - alpha) /* -  0.5*(alpha) * dt */) * diffusion[k] * fac * oldfieldNLW.calculated_reactions[k][i * myp.N2 + j] /* - 0.0 * 2 * alpha * dt * InitWeight.calculated_reactions[k][i * myp.N2 + j]  */ // zeroed because of the initial conditions we set
                        + dt * transformed3.calculated_reactions[k][i * myp.N2 + j];
             }
 
@@ -918,7 +932,7 @@ void CHC::UpdateSQR()
                         int rel = k2a - (k1a * (1 + k1a - 2 * (1 + myp.N1 / 2))) / 2.;
 
                         double tempor = SQR(k1) + SQR(k2);
-                        double fac = diffusion * tempor * temp1;
+                        vector1<double> fac =  (tempor * temp1) * diffusion;
                         vector1<complex<double>> v(nof);
                         vector1<complex<double>> v2(nof);
                         vector1<complex<double>> v3(nof);
@@ -939,14 +953,14 @@ void CHC::UpdateSQR()
 
                         for (int k = 0; k < nof; k++)
                         {
-                            vtemp1[k] = -((1 - alpha) + (alpha)*dt) * fac * (transformed2.calculated_reactions[k][i * myp.N2 + j]);
+                            vtemp1[k] = -((1 - alpha) + (alpha)*dt) * fac[k] * (transformed2.calculated_reactions[k][i * myp.N2 + j]);
                             vtemp2[k] = + transformed1.calculated_reactions[k][i * myp.N2 + j]; // oldfieldFT.calculated_reactions[k][i * myp.N2 + j]
                             vtemp3[k] = - (1 - alpha) * v2[k];
-                            vtemp4[k]= + ((1 - alpha)) * fac * oldfieldNLW.calculated_reactions[k][i * myp.N2 + j];
+                            vtemp4[k] = +((1 - alpha)) * fac[k] * oldfieldNLW.calculated_reactions[k][i * myp.N2 + j];
                             vtemp5[k] = + dt * transformed3.calculated_reactions[k][i * myp.N2 + j];
-                            vtemp6[k] = -((1 - alpha) + (alpha)*dt) * fac * (transformed2.calculated_reactions[k][i * myp.N2 + j]) + transformed1.calculated_reactions[k][i * myp.N2 + j]                                                              // oldfieldFT.calculated_reactions[k][i * myp.N2 + j]
-                                               - (1 - alpha) * v2[k] + ((1 - alpha) /* -  0.5*(alpha) * dt */) * fac * oldfieldNLW.calculated_reactions[k][i * myp.N2 + j] /* - 0.0 * 2 * alpha * dt * InitWeight.calculated_reactions[k][i * myp.N2 + j]  */ // zeroed because of the initial conditions we set
-                                               + dt * transformed3.calculated_reactions[k][i * myp.N2 + j];
+                            vtemp6[k] = -((1 - alpha) + (alpha)*dt) * fac[k] * (transformed2.calculated_reactions[k][i * myp.N2 + j]) + transformed1.calculated_reactions[k][i * myp.N2 + j]                                                              // oldfieldFT.calculated_reactions[k][i * myp.N2 + j]
+                                        - (1 - alpha) * v2[k] + ((1 - alpha) /* -  0.5*(alpha) * dt */) * fac[k] * oldfieldNLW.calculated_reactions[k][i * myp.N2 + j] /* - 0.0 * 2 * alpha * dt * InitWeight.calculated_reactions[k][i * myp.N2 + j]  */ // zeroed because of the initial conditions we set
+                                        + dt * transformed3.calculated_reactions[k][i * myp.N2 + j];
                         }
                         v3 = inverses[rel] * vtemp1;
 

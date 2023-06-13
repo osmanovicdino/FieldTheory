@@ -35,10 +35,10 @@ else
    echo "did not read file correctly"
 fi
 dirwemake="chemistry${SGE_TASK_ID}"
-ftdir="CSS"
+ftdir="Waves"
 mkdir /u/scratch/d/dinoo/${ftdir}/${dirwemake}
 cp ~/FieldTheory/Code/mainFractionalDiffusionNormalChem.cpp /u/scratch/d/dinoo/${ftdir}/${dirwemake}
-cp ~/FieldTheory/Code/InitialConditions/Cond2/${wt} /u/scratch/d/dinoo/${ftdir}/${dirwemake}/res.csv
+cp ~/FieldTheory/Code/InitialConditions/Cond4/${wt} /u/scratch/d/dinoo/${ftdir}/${dirwemake}/res.csv
 g++ ~/FieldTheory/Code/mainFractionalDiffusionNormalChem.cpp -lm -lfftw3 -L/usr/local/lib/lfftw3.a -std=c++17 -o /u/scratch/d/dinoo/${ftdir}/${dirwemake}/angron
 cd /u/scratch/d/dinoo/${ftdir}/${dirwemake}
 ./angron 'res.csv' > log

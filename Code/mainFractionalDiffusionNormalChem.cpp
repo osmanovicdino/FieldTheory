@@ -66,18 +66,33 @@ int main(int argc, char **argv)
     bool err1;
     matrix<double> mat1 = importcsv(importstring, T, err1);
 
+
     int n = mat1(0, 0);
 
-    vector1<double> phasesepsparams(8);
+    vector1<bool> ps(n);
 
-    for (int i = 0; i < 8; i++)
-        phasesepsparams[i] = mat1(1, i);
+    for(int i = 0 ; i < n ; i++) {
+        ps[i] = (bool)mat1(1,i);
+    }
+
+
+    vector1<double> simparams(4);
+    for (int i = 0; i < 5; i++)
+        simparams[i] = mat1(2, i);
+
+
+    matrix<double> phasesepsparams(n,5);
+
+    for(int j = 0 ; j < n ; j++ )
+        for (int i = 0; i < 5; i++)
+            phasesepsparams(j,i) = mat1(3+j, i);
+
 
     vector1<double> epsi((n) * (n - 1) / 2);
 
     for (int i = 0; i < (n) * (n - 1) / 2; i++)
     {
-        epsi[i] = mat1(2, i);
+        epsi[i] = mat1(3+n, i);
     }
 
     int k = 0;
@@ -95,7 +110,8 @@ int main(int argc, char **argv)
     vector1<double> init(n);
 
     for (int i = 0; i < n; i++)
-        init[i] = mat1(3, i);
+        init[i] = mat1(4+n, i);
+
 
     // if (argc == 5)
     // {
@@ -132,36 +148,54 @@ int main(int argc, char **argv)
              a.set_interaction(epsa(i,j), i, j);
         }
     }
-    vector1<bool> ps(n);
-    ps[0] = true;
+
     //ps[1] = true;
 
 
     a.set_phase_separators(ps);
 
-    double nuc = 1.0/0.36;
-    a.set_diffusion(phasesepsparams[0]);
-    a.set_epsilon(phasesepsparams[1]);
-    a.set_c0_c1(phasesepsparams[2],phasesepsparams[3],nuc);
-    double L = phasesepsparams[4];
+    // double nuc = 2.77778;
+    for(int i = 0 ; i < n ; i++) {
+        
+        if(ps[i]) {
+        a.set_diffusion(phasesepsparams(i,0), 0);
+        a.set_epsilon(phasesepsparams(i,1), 0);
+        a.set_c0_c1(phasesepsparams(i,2), phasesepsparams(i,3), 0, phasesepsparams(i,4));
+        }
+        else{
+        a.set_diffusion(phasesepsparams(i, 0), 0);
+        }
+    }
+
+
+
+
+    // nuc = 1*0.563958;
+    // a.set_diffusion(phasesepsparams[0], 1);
+    // a.set_epsilon(0.664,1);
+    // a.set_c0_c1(0.395,3.,1,nuc);
+
+    // a.set_diffusion(phasesepsparams[0], 1);
+    double L = simparams[0];
     double temp1 = SQR(2. * pii / L);
     a.set_temp1(temp1);
 
-    a.set_alpha(phasesepsparams[5]);
-    a.set_dt(phasesepsparams[6]);
+    a.set_alpha(simparams[1]);
+    a.set_dt(simparams[2]);
 
-    double rate_multiplier = phasesepsparams[7];
-    
+
+    double rate_multiplier = simparams[3];
 
     FWCC my_chemsitry(p);
     NoWeight<myc, myc> nw;
-    for (int j = 4; j < mat1.getnrows(); j++)
+    for (int j = 5+n; j < mat1.getnrows(); j++)
     {
         int no_chem = mat1(j, 0);
 
+
         if (no_chem == 0)
         {
-            my_chemsitry.add_method(nw, j - 4);
+            my_chemsitry.add_method(nw, j - (5+n));
         }
         else
         {
@@ -178,29 +212,34 @@ int main(int argc, char **argv)
 
                     jpow[k - (i * (nof + 1) + 2)] = (int)mat1(j, k);
                 }
+                // cout << jpow << endl;
 
                 GenericChemistry<myc> c6_0(rate_multiplier*mat1(j, i * (nof + 1) + 1), jpow);
                 c6.add_chemical_reaction(c6_0, i);
-                // double tot1 = 1.0;
-                // for (int k = 0; k < nof; k++)
-                // {
-                //     tot1 *= Power(init[k], jpow[k]);
-                //     // cout << tot1 << ",";
-                // }
-                // // cout << endl;
+                double tot1 = 1.0;
+                for (int k = 0; k < nof; k++)
+                {
+                    tot1 *= Power(init[k], jpow[k]);
+                    
+                }
 
-                // tot += mat1(j, i * (nof + 1) + 1) * tot1;
+                // cout << mat1(j, i * (nof + 1) + 1) <<","<< tot1 << "," <<mat1(j, i * (nof + 1) + 1) * tot1 << endl;
 
-                // cout << endl;
+                tot += mat1(j, i * (nof + 1) + 1) * tot1;
+                
+                
             }
-            //cout << tot << endl;
+            // cout << tot << endl;
+            
 
-            my_chemsitry.add_method(c6, j - 4);
+            my_chemsitry.add_method(c6, j - (5+n));
         }
     }
+    // pausel();
     a.set_chems(my_chemsitry);
 
-    // pausel();
+
+
 
     
 
@@ -343,7 +382,7 @@ int main(int argc, char **argv)
     cout << "all fields set" << endl;
 
     // auto start = std::chrono::high_resolution_clock::now();
-    int runtime = 5001;
+    int runtime = 20001;
     int every = 10;
 
     int tf = ceil((double)runtime / (double)every);
@@ -353,7 +392,7 @@ int main(int argc, char **argv)
         ++number_of_digits;
         tf /= 10;
     } while (tf);
-
+    vector1<bool> ps2(nof,true);
     // auto start = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < runtime; i++)
     {
@@ -376,7 +415,7 @@ int main(int argc, char **argv)
             string s2 = "_i=" + ss.str();
             string su = s1.substr(0, s1.size() - 4);
             cout << su + s2 << endl;
-            a.print_some_results(su + s2,ps);
+            a.print_some_results(su + s2,ps2);
         }
         cout << i << endl;
         cout << "begin" << endl;

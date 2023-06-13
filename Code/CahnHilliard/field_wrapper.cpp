@@ -158,6 +158,7 @@ void Field_Wrapper<T, Q>::Calculate_Results(Q **fields)
 
     for (int i = 0; i < params.number_of_fields; i++)
         {
+        
         chems[i]->operator()(calculated_reactions, fields, i, params);
         }
 
