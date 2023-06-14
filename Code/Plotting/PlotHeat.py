@@ -49,7 +49,7 @@ def graph(filename):
         mat = numpy.array(x).astype("float")
         fig = plt.figure()
         plt.imshow(mat)
-        #plt.clim(0., 1.)
+        plt.clim(0., 10.)
         #plt.colorbar()
         plt.savefig(outputfilename, format='png')
         plt.close(fig)
