@@ -158,12 +158,12 @@ int main(int argc, char **argv)
     for(int i = 0 ; i < n ; i++) {
         
         if(ps[i]) {
-        a.set_diffusion(phasesepsparams(i,0), 0);
-        a.set_epsilon(phasesepsparams(i,1), 0);
-        a.set_c0_c1(phasesepsparams(i,2), phasesepsparams(i,3), 0, phasesepsparams(i,4));
+        a.set_diffusion(phasesepsparams(i,0), i);
+        a.set_epsilon(phasesepsparams(i,1), i);
+        a.set_c0_c1(phasesepsparams(i,2), phasesepsparams(i,3), i, phasesepsparams(i,4));
         }
         else{
-        a.set_diffusion(phasesepsparams(i, 0), 0);
+        a.set_diffusion(phasesepsparams(i, 0), i);
         }
     }
 
@@ -185,6 +185,9 @@ int main(int argc, char **argv)
 
 
     double rate_multiplier = simparams[3];
+
+    cout << simparams << endl;
+    pausel();
 
     FWCC my_chemsitry(p);
     NoWeight<myc, myc> nw;
