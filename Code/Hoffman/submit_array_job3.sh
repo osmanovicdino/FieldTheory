@@ -8,7 +8,7 @@
 #$ -l h_rt=3:00:00,h_data=2G
 ## Modify the parallel environment
 ## and the number of cores as needed:
-#$ -t 1-38:1
+#$ -t 1-22:1
 
 # echo job info on joblog:
 echo "Job $JOB_ID started on:   " `hostname -s`
@@ -38,7 +38,7 @@ dirwemake="chemistry${SGE_TASK_ID}"
 ftdir="Waves"
 mkdir /u/scratch/d/dinoo/${ftdir}/${dirwemake}
 cp ~/FieldTheory/Code/mainFractionalDiffusionNormalChem.cpp /u/scratch/d/dinoo/${ftdir}/${dirwemake}
-cp ~/FieldTheory/Code/InitialConditions/Cond4/${wt} /u/scratch/d/dinoo/${ftdir}/${dirwemake}/res.csv
+cp ~/FieldTheory/Code/InitialConditions/Cond5/${wt} /u/scratch/d/dinoo/${ftdir}/${dirwemake}/res.csv
 g++ ~/FieldTheory/Code/mainFractionalDiffusionNormalChem.cpp -lm -lfftw3 -L/usr/local/lib/lfftw3.a -std=c++17 -o /u/scratch/d/dinoo/${ftdir}/${dirwemake}/angron
 cd /u/scratch/d/dinoo/${ftdir}/${dirwemake}
 ./angron 'res.csv' > log
