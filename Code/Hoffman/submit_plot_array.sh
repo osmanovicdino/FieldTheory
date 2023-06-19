@@ -34,6 +34,8 @@ export OMP_NUM_THREADS=1
 num=`ls field1*.csv | wc -l`
 if test $num -ge 100;
 then
+    for file in field0*.csv; do python3 ~/FieldTheory/Code/Plotting/PlotDirectory.py "$file"; done
+    ffmpeg -pattern_type glob -i 'field0*.png' -s 1920x1080 -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2" test.mp4
     for file in field1*.csv; do python3 ~/FieldTheory/Code/Plotting/PlotDirectory.py "$file"; done
     ffmpeg -pattern_type glob -i 'field1*.png' -s 1920x1080 -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2" test2.mp4
 fi
