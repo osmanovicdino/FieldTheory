@@ -176,7 +176,7 @@ int main(int argc, char **argv)
     // a.set_c0_c1(0.395,3.,1,nuc);
 
     // a.set_diffusion(phasesepsparams[0], 1);
-    double L = simparams[0];
+    double L = 5*simparams[0];
     double temp1 = SQR(2. * pii / L);
     a.set_temp1(temp1);
 
@@ -186,8 +186,7 @@ int main(int argc, char **argv)
 
     double rate_multiplier = simparams[3];
 
-    cout << simparams << endl;
-    pausel();
+
 
     FWCC my_chemsitry(p);
     NoWeight<myc, myc> nw;
@@ -385,7 +384,7 @@ int main(int argc, char **argv)
     cout << "all fields set" << endl;
 
     // auto start = std::chrono::high_resolution_clock::now();
-    int runtime = 20001;
+    int runtime = 50001;
     int every = 10;
 
     int tf = ceil((double)runtime / (double)every);
