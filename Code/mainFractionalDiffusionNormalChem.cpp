@@ -176,7 +176,7 @@ int main(int argc, char **argv)
     // a.set_c0_c1(0.395,3.,1,nuc);
 
     // a.set_diffusion(phasesepsparams[0], 1);
-    double L = 5*simparams[0];
+    double L = simparams[0];
     double temp1 = SQR(2. * pii / L);
     a.set_temp1(temp1);
 
@@ -354,28 +354,36 @@ int main(int argc, char **argv)
         }
     } */
 
-    // for (int lk = 0; lk < nof; lk++)
-    // {  
-    //     if(lk!=0 && lk!=5) {
-    //     double x1 = init[lk];
-    //     for (int i = 0; i < p.N1; i++)
-    //     {
-    //         for (int j = 0; j < p.N2; j++)
-    //         {
-    //             double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
-    //             v[lk](i, j) = x1 + gt * x1 * r1;
-    //         }
-    //     }
-    //     }
+    for (int lk = 0; lk < nof; lk++)
+    {  
+        if(lk!=0 && lk!=5) {
+        double x1 = init[lk];
+        for (int i = 0; i < p.N1; i++)
+        {
+            for (int j = 0; j < p.N2; j++)
+            {
+                double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
+                v[lk](i, j) = x1 + gt * x1 * r1;
+            }
+        }
+        }
         
-    // }
+    }
+
+    // string importstring1 = "/home/dino/External/Waves/chemistry19/field0res_i=3078_real.csv";
+    // matrix<double> mat3 = importcsv(importstring1, T, err1);
+
+    // string importstring2="/home/dino/External/Waves/chemistry19/field1res_i=3078_real.csv";
+    // matrix<double> mat4 = importcsv(importstring2, T, err1);
 
     for (int lk = 0; lk < nof; lk++)
     {
         a.set_field(v[lk], lk);
     }
+    // a.set_field(mat3, 0);
+    // a.set_field(mat4, 1);
 
-    a.calculate_initial_weight(SQR(200));
+    a.calculate_initial_weight(SQR(128));
 
 
     cout << "calc" << endl;
@@ -384,7 +392,7 @@ int main(int argc, char **argv)
     cout << "all fields set" << endl;
 
     // auto start = std::chrono::high_resolution_clock::now();
-    int runtime = 50001;
+    int runtime = 500001;
     int every = 10;
 
     int tf = ceil((double)runtime / (double)every);
