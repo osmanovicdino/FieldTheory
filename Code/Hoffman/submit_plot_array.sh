@@ -5,10 +5,10 @@
 #$ -o joblog.$JOB_ID
 #$ -j y
 ## Edit the line below as needed:
-#$ -l h_rt=2:00:00,h_data=8G
+#$ -l h_rt=3:00:00,h_data=8G
 ## Modify the parallel environment
 ## and the number of cores as needed:
-#$ -t 1-38:1
+#$ -t 1-17:1
 
 # echo job info on joblog:
 echo "Job $JOB_ID started on:   " `hostname -s`
