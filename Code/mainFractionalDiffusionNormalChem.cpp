@@ -383,7 +383,7 @@ int main(int argc, char **argv)
     // a.set_field(mat3, 0);
     // a.set_field(mat4, 1);
 
-    a.calculate_initial_weight(SQR(128));
+    a.calculate_initial_weight(SQR(200));
 
 
     cout << "calc" << endl;
