@@ -29,7 +29,7 @@ module load ffmpeg
 ##/usr/bin/time -v hostname
 
 dirwemake="chemistry${SGE_TASK_ID}"
-cd /u/scratch/d/dinoo/Waves/${dirwemake}
+cd /u/scratch/d/dinoo/WavesSingle/${dirwemake}
 export OMP_NUM_THREADS=1
 num=`ls field1*.csv | wc -l`
 if test $num -ge 100;
