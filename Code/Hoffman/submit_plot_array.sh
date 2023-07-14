@@ -8,7 +8,7 @@
 #$ -l h_rt=3:00:00,h_data=8G
 ## Modify the parallel environment
 ## and the number of cores as needed:
-#$ -t 1-30:1
+#$ -t 1-45:1
 
 # echo job info on joblog:
 echo "Job $JOB_ID started on:   " `hostname -s`
@@ -36,8 +36,8 @@ if test $num -ge 100;
 then
     for file in field0*.csv; do python3 ~/FieldTheory/Code/Plotting/PlotDirectory.py "$file"; done
     ffmpeg -pattern_type glob -i 'field0*.png' -s 1920x1080 -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2" test.mp4
-    for file in field1*.csv; do python3 ~/FieldTheory/Code/Plotting/PlotDirectory.py "$file"; done
-    ffmpeg -pattern_type glob -i 'field1*.png' -s 1920x1080 -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2" test2.mp4
+    # for file in field1*.csv; do python3 ~/FieldTheory/Code/Plotting/PlotDirectory.py "$file"; done
+    # ffmpeg -pattern_type glob -i 'field1*.png' -s 1920x1080 -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2" test2.mp4
 fi
 # echo job info on joblog:
 echo "Job $JOB_ID ended on:   " `hostname -s`
