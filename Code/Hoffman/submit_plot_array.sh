@@ -32,7 +32,7 @@ dirwemake="chemistry${SGE_TASK_ID}"
 cd /u/scratch/d/dinoo/WavesPhaseDiagram/${dirwemake}
 export OMP_NUM_THREADS=1
 num=`ls field1*.csv | wc -l`
-if test $num -ge 100;
+if test $num -ge 1;
 then
     for file in field0*.csv; do python3 ~/FieldTheory/Code/Plotting/PlotDirectory.py "$file"; done
     ffmpeg -pattern_type glob -i 'field0*.png' -s 1920x1080 -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2" test.mp4
