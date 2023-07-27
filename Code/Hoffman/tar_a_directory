@@ -26,7 +26,6 @@ module load fftw/3.3.9
 ##echo '/usr/bin/time -v hostname'
 ##/usr/bin/time -v hostname
 cd /u/scratch/d/dinoo/WavesSingleCont2
-ls -d */ >alldir.dat
 filename=alldir.dat
 # filename=~/FieldTheory/Code/Hoffman/allfiles.dat
 if [ -e ${filename}   ]; then
