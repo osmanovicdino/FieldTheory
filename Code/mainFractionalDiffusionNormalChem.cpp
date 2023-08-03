@@ -263,6 +263,7 @@ int main(int argc, char **argv)
         double x1 = init[lk];
         for (int i = 0; i < p.N1; i++)
         {
+            
             for (int j = 0; j < p.N2; j++)
             {
                 double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
@@ -392,8 +393,8 @@ int main(int argc, char **argv)
     cout << "all fields set" << endl;
 
     // auto start = std::chrono::high_resolution_clock::now();
-    int runtime = 50000;
-    int every = 10;
+    int runtime = 1000;
+    int every = 1;
 
     int tf = ceil((double)runtime / (double)every);
     int number_of_digits = 0;
