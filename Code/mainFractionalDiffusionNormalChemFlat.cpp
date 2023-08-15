@@ -140,7 +140,7 @@ int main(int argc, char **argv)
     p.N1 = 256;
     p.N2 = 256;
 
-    CHC<myc> a(p);
+    CHC<double> a(p);
 
     for(int i = 0 ; i < nof ; i++) {
         for(int j = i+1  ; j < nof ; j++) {
@@ -186,10 +186,10 @@ int main(int argc, char **argv)
 
     double rate_multiplier = simparams[3];
 
+    
 
-
-    FWCC my_chemsitry(p);
-    NoWeight<myc, myc> nw;
+    Field_Wrapper<double,double> my_chemsitry(p);
+    NoWeight<double,double> nw;
     for (int j = 5+n; j < mat1.getnrows(); j++)
     {
         int no_chem = mat1(j, 0);
@@ -201,7 +201,7 @@ int main(int argc, char **argv)
         }
         else
         {
-            MultipleReactions<myc> c6(no_chem);
+            MultipleReactions<double> c6(no_chem);
 
             double tot = 0.0;
 
@@ -216,7 +216,7 @@ int main(int argc, char **argv)
                 }
                 // cout << jpow << endl;
 
-                GenericChemistry<myc> c6_0(rate_multiplier*mat1(j, i * (nof + 1) + 1), jpow);
+                GenericChemistry<double> c6_0(rate_multiplier*mat1(j, i * (nof + 1) + 1), jpow);
                 c6.add_chemical_reaction(c6_0, i);
                 double tot1 = 1.0;
                 for (int k = 0; k < nof; k++)
@@ -248,11 +248,11 @@ int main(int argc, char **argv)
 
     a.setup_matrices();
 
-    vector<matrix<myc>> v;
+    vector<matrix<double>> v;
 
     for (int j = 0; j < nof; j++)
     {
-        matrix<myc> field1(p.N1, p.N2);
+        matrix<double> field1(p.N1, p.N2);
         v.push_back(field1);
     }
 
@@ -384,7 +384,7 @@ int main(int argc, char **argv)
     // a.set_field(mat3, 0);
     // a.set_field(mat4, 1);
 
-    a.calculate_initial_weight(SQR(100));
+    a.calculate_initial_weight(SQR(256));
 
 
     cout << "calc" << endl;
@@ -393,7 +393,7 @@ int main(int argc, char **argv)
     cout << "all fields set" << endl;
 
     // auto start = std::chrono::high_resolution_clock::now();
-    int runtime = 51000;
+    int runtime = 11000;
     int every = 10;
 
     int tf = ceil((double)runtime / (double)every);
@@ -408,7 +408,7 @@ int main(int argc, char **argv)
     for (int i = 0; i < runtime; i++)
     {
 
-        if (i % every == 0 && i >49000 )
+        if (i % every == 0 && i > 0 )
         {
             // stringstream strep1;
             // stringstream strep2;

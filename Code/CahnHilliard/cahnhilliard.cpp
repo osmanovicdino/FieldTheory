@@ -18,6 +18,9 @@ CH<T>::CH(const CH_builder &p) : myp(p), chems(Field_Wrapper<T, T>(p)),
             fields[i][j] = 0.0;
         }
     }
+
+    cout << "dim: " << myp.dimension << endl;
+
     if(myp.dimension == 2) {
         for(int i = 0  ; i < myp.number_of_fields ; i++) {
             if constexpr (std::is_same_v<T, double>) {
@@ -44,6 +47,16 @@ CH<T>::CH(const CH_builder &p) : myp(p), chems(Field_Wrapper<T, T>(p)),
     else{
         for (int i = 0; i < myp.number_of_fields; i++)
         {
+            if constexpr (std::is_same_v<T, double>)
+            {
+                CosineWeightForward fw;
+                transformed1.add_method(fw, i);
+                transformed2.add_method(fw, i);
+                transformed3.add_method(fw, i);
+                CosineWeightBackward fw2;
+                reverse_transform.add_method(fw2, i);
+            }
+            else if constexpr (std::is_same_v<T, complex<double>>) {
                 cout << "current 3D rules only supported for periodic boundary conditions" << endl;
                 FourierWeightForward3D fw;
                 transformed1.add_method(fw, i);
@@ -51,7 +64,10 @@ CH<T>::CH(const CH_builder &p) : myp(p), chems(Field_Wrapper<T, T>(p)),
                 transformed3.add_method(fw, i);
                 FourierWeightBackward3D fw2;
                 reverse_transform.add_method(fw2, i);
-            
+            }
+            else{
+                
+            }
 
         }
     }
@@ -86,8 +102,8 @@ void CH<T>::set_field(T **orig) { // only set the field to real values
             {
                 for (int j = 0; j < myp.N2; j++)
                 {
-                    fields[k][i * myp.N2 + j] = {orig[k][i * myp.N2 + j].real(), 0.};
-                    
+                    //fields[k][i * myp.N2 + j] = {orig[k][i * myp.N2 + j].real(), 0.};
+                    fields[k][i * myp.N2 + j] = T(orig[k][i * myp.N2 + j]);
                 }
             }
         }
@@ -101,7 +117,8 @@ void CH<T>::set_field(T **orig) { // only set the field to real values
                 {
                     for (int lk = 0; lk < myp.N3; lk++)
                     {
-                        fields[k][i * myp.N2 * myp.N3 + j * myp.N3 + lk] = {orig[k][i * myp.N2 * myp.N3 + j * myp.N3 + lk].real(), 0.};
+                        //fields[k][i * myp.N2 * myp.N3 + j * myp.N3 + lk] = {orig[k][i * myp.N2 * myp.N3 + j * myp.N3 + lk].real(), 0.};
+                        fields[k][i * myp.N2 + j] = T(orig[k][i * myp.N2 + j]);
                     }
                 }
             }
@@ -116,7 +133,7 @@ void CH<T>::set_field(T *orig, int k)
 int totp = myp.get_total();
 
     for(int i  = 0 ; i < totp ; i++)            
-        fields[k][i] = {orig[i].real(), 0.};
+        fields[k][i] = T(orig[i]);
             
         
     

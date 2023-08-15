@@ -53,7 +53,7 @@ void operator()(T **a, T **fields, int j, const CH_builder &p)
     if(useshifts) {
         for (int i = 0; i < end; i++)
         {
-            double tot = 1.0;
+            T tot = 1.0;
             for (int k = 0; k < n; k++)
             {
                 if (pows[k] == 0)
@@ -61,7 +61,8 @@ void operator()(T **a, T **fields, int j, const CH_builder &p)
                 }
                 else
                 {
-                    tot *= Power(fields[k][i].real()+shifts[k], pows[k]);
+                    //tot *= Power(fields[k][i].real()+shifts[k], pows[k]);
+                    tot *= Power(fields[k][i] + shifts[k], pows[k]);
                 }
             }
 
@@ -71,13 +72,14 @@ void operator()(T **a, T **fields, int j, const CH_builder &p)
     else{
         for (int i = 0; i < end; i++)
         {
-            double tot = 1.0;
+            T tot = 1.0;
             for(int k = 0  ; k < n ; k++) {
                 if(pows[k]==0) {
 
                 }
                 else{
-                tot *= Power(fields[k][i].real(),pows[k]);
+                //tot *= Power(fields[k][i].real(),pows[k]);
+                    tot *= Power(fields[k][i], pows[k]);
                 }
             }
 

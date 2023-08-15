@@ -271,11 +271,27 @@ T Power(T a, int b) { //number to an integer power
     return 0;
 }
 
-
-	
-
-
-
+template <>
+complex<double> Power(complex<double> a, int b)
+{ // number to an integer power
+    if (b < 0)
+    {
+        cout << "b is: " << b << endl;
+        error("b must be >= 0");
+        return 0;
+    }
+    if (b == 0)
+        return 1;
+    if (b % 2 == 0)
+    {
+        return Power(a * a, b / 2);
+    }
+    else if (b % 2 == 1)
+    {
+        return a * Power(a * a, b / 2);
+    }
+    return 0;
+}
 
 #endif	/* BASIC_H */
 

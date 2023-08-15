@@ -365,7 +365,8 @@ struct CHFracDt : public CH<complex <double> > {
 
 };
 typedef complex<double> cd;
-struct CHC : public CH<complex<double>>
+template<typename T>
+struct CHC : public CH<T>
 {
     matrix<double> epsilon_couplings;
 
@@ -383,11 +384,11 @@ struct CHC : public CH<complex<double>>
     double alpha;
     double dt;
 
-    Field_Wrapper<complex<double>, complex<double>> oldfieldFT;
-    Field_Wrapper<complex<double>, complex<double>> oldfieldNLW;
+    Field_Wrapper<T, T> oldfieldFT;
+    Field_Wrapper<T, T> oldfieldNLW;
     //Field_Wrapper<complex<double>, complex<double>> oldweightFT;
 
-    Field_Wrapper<complex<double>, complex<double>> InitWeight;
+    Field_Wrapper<T, T> InitWeight;
     
 
     vector<matrix<double> > inverses; //inverse of each update matrix for each value of k1,k2
@@ -429,9 +430,12 @@ struct CHC : public CH<complex<double>>
     }
 
     void setup_matrices();
+    
+    double getk(int k1, int k2, int N1, int N2, int &rel);
+
 
     matrix<double> create_D_mat_split(double k1, double k2) {
-        int field_no = myp.number_of_fields;
+        int field_no = (this->myp).number_of_fields;
         matrix<double> dmat(field_no,field_no);
 
         for(int i = 0 ; i < field_no ; i++) {
@@ -450,9 +454,9 @@ struct CHC : public CH<complex<double>>
         return dmat;
     }
 
-    void calculate_non_linear_weight(complex<double> **);
+    void calculate_non_linear_weight(T **);
 
-    void calculate_non_linear_weightSQR(complex<double> **);
+    void calculate_non_linear_weightSQR(T **);
 
     void calculate_initial_weight(int);
     void calculate_initial_weightSQR();
@@ -460,7 +464,7 @@ struct CHC : public CH<complex<double>>
     void Update();
 
     template <class Q>
-    void UpdateNoise(Q &func,GenNoise<complex<double> > &,vector1< double>&);
+    void UpdateNoise(Q &func,GenNoise<T> &,vector1< double>&);
 
     void UpdateSQR();
 
