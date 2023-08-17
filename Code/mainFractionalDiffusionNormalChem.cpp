@@ -256,6 +256,8 @@ int main(int argc, char **argv)
         v.push_back(field1);
     }
 
+    
+
     double gt=0.6;
 
     for (int lk = 0; lk < nof; lk++)
@@ -377,10 +379,10 @@ int main(int argc, char **argv)
     // string importstring2 = "/home/dino/External/WavesChemistryRepeat4/chemistry32/field1res_i=5099_real.csv";
     // matrix<double> mat4 = importcsv(importstring2, T, err1);
 
-    // // for (int lk = 0; lk < nof; lk++)
-    // // {
-    // //     a.set_field(v[lk], lk);
-    // // }
+    for (int lk = 0; lk < nof; lk++)
+    {
+        a.set_field(v[lk], lk);
+    }
     // a.set_field(mat3, 0);
     // a.set_field(mat4, 1);
 
