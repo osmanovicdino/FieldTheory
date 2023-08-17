@@ -263,10 +263,10 @@ int main(int argc, char **argv)
         double x1 = init[lk];
         for (int i = 0; i < p.N1; i++)
         {
-            double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
+            
             for (int j = 0; j < p.N2; j++)
             {
-                
+                double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
                 v[lk](i, j) = x1 + gt * x1 * r1;
             }
         }
@@ -371,16 +371,16 @@ int main(int argc, char **argv)
         
     // }
 
-    // string importstring1 = "/home/dino/External/Waves/chemistry19/field0res_i=3078_real.csv";
+    // string importstring1 = "/home/dino/External/WavesChemistryRepeat4/chemistry32/field0res_i=5099_real.csv";
     // matrix<double> mat3 = importcsv(importstring1, T, err1);
 
-    // string importstring2="/home/dino/External/Waves/chemistry19/field1res_i=3078_real.csv";
+    // string importstring2 = "/home/dino/External/WavesChemistryRepeat4/chemistry32/field1res_i=5099_real.csv";
     // matrix<double> mat4 = importcsv(importstring2, T, err1);
 
-    for (int lk = 0; lk < nof; lk++)
-    {
-        a.set_field(v[lk], lk);
-    }
+    // // for (int lk = 0; lk < nof; lk++)
+    // // {
+    // //     a.set_field(v[lk], lk);
+    // // }
     // a.set_field(mat3, 0);
     // a.set_field(mat4, 1);
 
@@ -408,7 +408,7 @@ int main(int argc, char **argv)
     for (int i = 0; i < runtime; i++)
     {
 
-        if (i % every == 0 && i >49000 )
+        if (i % every == 0 && i >00000 )
         {
             // stringstream strep1;
             // stringstream strep2;
