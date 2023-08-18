@@ -94,6 +94,7 @@ void CH<T>::set_field(const matrix<T> &mymat, int k)
     }
 }
 
+
 template<class T>
 void CH<T>::set_field(T **orig) { // only set the field to real values
     if(myp.dimension ==2) {
@@ -126,17 +127,28 @@ void CH<T>::set_field(T **orig) { // only set the field to real values
     }
 }
 
-template <class T>
-void CH<T>::set_field(T *orig, int k)
+
+template <>
+void CH<complex<double>>::set_field(complex<double> *orig, int k)
 { // only set the field to real values
 
 int totp = myp.get_total();
 
     for(int i  = 0 ; i < totp ; i++)            
-        fields[k][i] = T(orig[i]);
+        fields[k][i] = orig[i].real();
             
         
     
+}
+
+template <class T>
+void CH<T>::set_field(T *orig, int k)
+{ // only set the field to real values
+
+    int totp = myp.get_total();
+
+    for (int i = 0; i < totp; i++)
+        fields[k][i] = T(orig[i]);
 }
 
 template <class T>

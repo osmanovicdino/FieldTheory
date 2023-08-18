@@ -109,6 +109,42 @@ virtual void Update();
 
 };
 
+template <>
+void CH<complex<double>>::set_field(complex<double> **orig)
+{
+if (myp.dimension == 2)
+{
+    for (int k = 0; k < myp.number_of_fields; k++)
+    {
+        for (int i = 0; i < myp.N1; i++)
+        {
+            for (int j = 0; j < myp.N2; j++)
+            {
+                fields[k][i * myp.N2 + j] = {orig[k][i * myp.N2 + j].real(), 0.};
+                // fields[k][i * myp.N2 + j] = {orig[k][i * myp.N2 + j],0.};
+            }
+        }
+    }
+}
+else
+{
+    for (int k = 0; k < myp.number_of_fields; k++)
+    {
+        for (int i = 0; i < myp.N1; i++)
+        {
+            for (int j = 0; j < myp.N2; j++)
+            {
+                for (int lk = 0; lk < myp.N3; lk++)
+                {
+                    fields[k][i * myp.N2 * myp.N3 + j * myp.N3 + lk] = {orig[k][i * myp.N2 * myp.N3 + j * myp.N3 + lk].real(), 0.};
+                    // fields[k][i * myp.N2 + j] = orig[k][i * myp.N2 + j].real();
+                }
+            }
+        }
+    }
+}
+}
+
 struct CHN : public CH<complex<double> > { //define new cahn hilliard method for those things which have order parameter dependent mobility 
     //double **fields;
 
@@ -138,6 +174,7 @@ struct CHWithNoise : public CH<complex<double>>
 
     void Update();
 };
+
 
 struct CHSubFrac : public CH<complex<double>>
 {
