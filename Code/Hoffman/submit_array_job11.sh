@@ -35,7 +35,7 @@ else
    echo "did not read file correctly"
 fi
 dirwemake="chemistry${SGE_TASK_ID}"
-ftdir="WavesChemistryRepeat5"
+ftdir="WavesChemistryRepeat6"
 mkdir /u/scratch/d/dinoo/${ftdir}/${dirwemake}
 cp ~/FieldTheory/Code/mainFractionalDiffusionNormalChem.cpp /u/scratch/d/dinoo/${ftdir}/${dirwemake}
 cp ~/FieldTheory/Code/InitialConditions/Cond9/${wt} /u/scratch/d/dinoo/${ftdir}/${dirwemake}/res.csv
