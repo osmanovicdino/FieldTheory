@@ -410,7 +410,7 @@ int main(int argc, char **argv)
     for (int i = 0; i < runtime; i++)
     {
 
-        if (i % every == 0 && i >10000 )
+        if (i % every == 0 && i >0000 )
         {
             // stringstream strep1;
             // stringstream strep2;
