@@ -395,7 +395,7 @@ int main(int argc, char **argv)
     cout << "all fields set" << endl;
 
     // auto start = std::chrono::high_resolution_clock::now();
-    int runtime = 51000;
+    int runtime = 1000;
     int every = 10;
 
     int tf = ceil((double)runtime / (double)every);
@@ -410,7 +410,7 @@ int main(int argc, char **argv)
     for (int i = 0; i < runtime; i++)
     {
 
-        if (i % every == 0 && i >49000 )
+        if (i % every == 0 && i >10000 )
         {
             // stringstream strep1;
             // stringstream strep2;
