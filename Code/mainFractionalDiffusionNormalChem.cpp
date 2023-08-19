@@ -395,7 +395,7 @@ int main(int argc, char **argv)
     cout << "all fields set" << endl;
 
     // auto start = std::chrono::high_resolution_clock::now();
-    int runtime = 1000;
+    int runtime = 11000;
     int every = 10;
 
     int tf = ceil((double)runtime / (double)every);
