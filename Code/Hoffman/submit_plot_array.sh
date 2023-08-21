@@ -8,7 +8,7 @@
 #$ -l h_rt=3:00:00,h_data=8G
 ## Modify the parallel environment
 ## and the number of cores as needed:
-#$ -t 1-110:1
+#$ -t 61-96:1
 
 # echo job info on joblog:
 echo "Job $JOB_ID started on:   " `hostname -s`
@@ -29,9 +29,9 @@ module load ffmpeg
 ##/usr/bin/time -v hostname
 
 dirwemake="chemistry${SGE_TASK_ID}"
-cd /u/scratch/d/dinoo/WavesPhaseDiagram2/${dirwemake}
+cd /u/scratch/d/dinoo/WavesChemistryRepeat7/${dirwemake}
 export OMP_NUM_THREADS=1
-num=`ls field1*.csv | wc -l`
+num=`ls field0*.csv | wc -l`
 if test $num -ge 1;
 then
     for file in field0*.csv; do python3 ~/FieldTheory/Code/Plotting/PlotDirectory.py "$file"; done
