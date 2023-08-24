@@ -8,7 +8,7 @@
 #$ -l h_rt=3:00:00,h_data=8G
 ## Modify the parallel environment
 ## and the number of cores as needed:
-#$ -t 61-96:1
+#$ -t 1-140:1
 
 # echo job info on joblog:
 echo "Job $JOB_ID started on:   " `hostname -s`
@@ -29,7 +29,7 @@ module load ffmpeg
 ##/usr/bin/time -v hostname
 
 dirwemake="chemistry${SGE_TASK_ID}"
-cd /u/scratch/d/dinoo/WavesChemistryRepeat7/${dirwemake}
+cd /u/scratch/d/dinoo/WavesChemistryRepeat8/${dirwemake}
 export OMP_NUM_THREADS=1
 num=`ls field0*.csv | wc -l`
 if test $num -ge 1;
