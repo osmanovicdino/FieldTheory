@@ -137,8 +137,8 @@ int main(int argc, char **argv)
     CH_builder p;
     int nof = n;
     p.number_of_fields = nof;
-    p.N1 = 1024;
-    p.N2 = 1024;
+    p.N1 = 256;
+    p.N2 = 256;
 
     CHC<myc> a(p);
 
@@ -265,7 +265,8 @@ int main(int argc, char **argv)
         double x1 = init[lk];
         for (int i = 0; i < p.N1; i++)
         {
-            
+           // double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
+
             for (int j = 0; j < p.N2; j++)
             {
                 double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
@@ -386,7 +387,7 @@ int main(int argc, char **argv)
     // a.set_field(mat3, 0);
     // a.set_field(mat4, 1);
 
-    a.calculate_initial_weight(SQR(256));
+    a.calculate_initial_weight(SQR(100));
 
 
     cout << "calc" << endl;
@@ -395,7 +396,7 @@ int main(int argc, char **argv)
     cout << "all fields set" << endl;
 
     // auto start = std::chrono::high_resolution_clock::now();
-    int runtime = 11000;
+    int runtime = 101000;
     int every = 10;
 
     int tf = ceil((double)runtime / (double)every);
