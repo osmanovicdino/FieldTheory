@@ -176,12 +176,12 @@ int main(int argc, char **argv)
     // a.set_c0_c1(0.395,3.,1,nuc);
 
     // a.set_diffusion(phasesepsparams[0], 1);
-    double L = simparams[0];
+    double L = (5./4.)*simparams[0];
     double temp1 = SQR(2. * pii / L);
     a.set_temp1(temp1);
 
     a.set_alpha(simparams[1]);
-    a.set_dt(simparams[2]);
+    a.set_dt(0.1*simparams[2]);
 
 
     double rate_multiplier = simparams[3];
@@ -395,7 +395,7 @@ int main(int argc, char **argv)
 
     // auto start = std::chrono::high_resolution_clock::now();
     int runtime = 100000;
-    int every = 10;
+    int every = 100;
 
     int tf = ceil((double)runtime / (double)every);
     int number_of_digits = 0;
@@ -409,7 +409,7 @@ int main(int argc, char **argv)
     for (int i = 0; i < runtime; i++)
     {
 
-        if (i % every == 0 && i > 90000 )
+        if (i % every == 0 && i > 00000 )
         {
             // stringstream strep1;
             // stringstream strep2;
