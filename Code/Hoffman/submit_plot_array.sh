@@ -29,12 +29,12 @@ module load ffmpeg
 ##/usr/bin/time -v hostname
 
 dirwemake="chemistry${SGE_TASK_ID}"
-cd /u/scratch/d/dinoo/WavesChemistryRepeat8/${dirwemake}
+cd /u/scratch/d/dinoo/WavesChemistryRepeat11/${dirwemake}
 export OMP_NUM_THREADS=1
-num=`ls field0*.csv | wc -l`
+num=`ls field*.csv | wc -l`
 if test $num -ge 1;
 then
-    for file in field0*.csv; do python3 ~/FieldTheory/Code/Plotting/PlotDirectory.py "$file"; done
+    for file in field*.csv; do python3 ~/FieldTheory/Code/Plotting/PlotDirectory.py "$file"; done
     ffmpeg -pattern_type glob -i 'field0*.png' -s 1920x1080 -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2" test.mp4
     # for file in field1*.csv; do python3 ~/FieldTheory/Code/Plotting/PlotDirectory.py "$file"; done
     # ffmpeg -pattern_type glob -i 'field1*.png' -s 1920x1080 -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2" test2.mp4
