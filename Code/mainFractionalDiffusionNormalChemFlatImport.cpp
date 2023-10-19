@@ -50,12 +50,21 @@ int main(int argc, char **argv)
 {
     srand(time(NULL));
     string importstring;
+    string importstring1;
+    string importstring2;
 
-    if (argc == 2)
+
+    if (argc == 4)
     {
         stringstream ss;
         ss << argv[1];
         importstring = ss.str();
+        stringstream ss2,ss3;
+        ss2 << argv[2];
+        ss3 << argv[3];
+        
+        importstring1 = ss2.str();
+        importstring2 = ss3.str();
     }
     else
     {
@@ -258,8 +267,8 @@ int main(int argc, char **argv)
 
     double gt=0.6;
 
-    string importstring1 = "/home/dino/Documents/Chemistry/SubDiffusionMath/Simulations_Ne/Sweep_2PS_2D_L=40_Long/field0res_chem=6_i=09999.csv";
-    string importstring2 = "/home/dino/Documents/Chemistry/SubDiffusionMath/Simulations_Ne/Sweep_2PS_2D_L=40_Long/field1res_chem=6_i=09999.csv";
+    // string importstring1 = "/home/dino/Documents/Chemistry/SubDiffusionMath/Simulations_Ne/Sweep_2PS_2D_L=40_Long/field0res_chem=6_i=09999.csv";
+    // string importstring2 = "/home/dino/Documents/Chemistry/SubDiffusionMath/Simulations_Ne/Sweep_2PS_2D_L=40_Long/field1res_chem=6_i=09999.csv";
     matrix<double> mati1 = importcsv(importstring1, T, err1);
     matrix<double> mati2 = importcsv(importstring2, T, err1);
 
@@ -399,8 +408,8 @@ int main(int argc, char **argv)
     cout << "all fields set" << endl;
 
     // auto start = std::chrono::high_resolution_clock::now();
-    int runtime = 1000000;
-    int every = 1000;
+    int runtime = 100000;
+    int every = 100;
 
     int tf = ceil((double)runtime / (double)every);
     int number_of_digits = 0;
