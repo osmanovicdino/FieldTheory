@@ -442,13 +442,24 @@ int main(int argc, char **argv)
 
     
 
-    double eps = 1E-6;
+    double eps = 1.E-012;
+    
+    cout << eps << endl;
 
-    b.set_field(v[0] + eps * perturb1, 0);
-    b.set_field(v[1] + eps * perturb2, 1);
+    matrix<double> perturbn1(perturb1);
 
-    double dis2 = 0.;
-    double dis3 = 0.;
+    matrix<double> perturbn2(perturb2);
+
+    perturbn1 *= eps;
+    perturbn2 *= eps;
+    perturbn1 += v[0];
+    perturbn2 += v[1];
+
+    b.set_field(perturbn1, 0);
+    b.set_field(perturbn2, 1);
+
+    double dis2 = 0;
+    double dis3 = 0;
     for (int i1 = 0; i1 < p.N1; i1++)
     {
         for (int j1 = 0; j1 < p.N2; j1++)
@@ -459,6 +470,8 @@ int main(int argc, char **argv)
             dis3 += SQR(perturb2(i1, j1));
         }
     }
+    cout << fixed;
+    cout << std::scientific << dis2 << endl;
     cout << "original distance " << sqrt(dis2) << endl;
     cout << dis3 << endl;
 
@@ -475,7 +488,7 @@ int main(int argc, char **argv)
     cout << "all fields set" << endl;
 
     // auto start = std::chrono::high_resolution_clock::now();
-    int runtime = 100000;
+    int runtime = 1000000;
     int every = 1;
 
     int tf = ceil((double)runtime / (double)every);
