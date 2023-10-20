@@ -379,6 +379,7 @@ void CHC<T>::calculate_initial_weight(int cut_offf) {
             double tempor = getk(i, j, this->myp.N1, this->myp.N2, rel);
             if (tempor > cut_off)
             {
+               // cout << tempor << endl;
                 this->transformed1.calculated_reactions[fn][i * this->myp.N2 + j] = 0.; // cut off the high frequency modes
                     
                     }
@@ -431,10 +432,10 @@ void CHC<T>::calculate_initial_weight(int cut_offf) {
 //             }
 //         }
 //     }
-
     this->reverse_transform.Calculate_Results(this->transformed1.calculated_reactions);
 
     this->set_field(this->reverse_transform.calculated_reactions);
+
 
     // outfunc(fields[0], "fi1", myp);
     // outfunc(fields[1], "fi2", myp);
