@@ -137,8 +137,8 @@ int main(int argc, char **argv)
     CH_builder p;
     int nof = n;
     p.number_of_fields = nof;
-    p.N1 = 1024;
-    p.N2 = 1024;
+    p.N1 = 256;
+    p.N2 = 256;
 
     CHC<double> a(p);
 
