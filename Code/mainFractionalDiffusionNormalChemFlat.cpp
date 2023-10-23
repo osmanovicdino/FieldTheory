@@ -137,8 +137,8 @@ int main(int argc, char **argv)
     CH_builder p;
     int nof = n;
     p.number_of_fields = nof;
-    p.N1 = 256;
-    p.N2 = 256;
+    p.N1 = 1024;
+    p.N2 = 1024;
 
     CHC<double> a(p);
 
@@ -396,7 +396,7 @@ int main(int argc, char **argv)
 
     // auto start = std::chrono::high_resolution_clock::now();
     int runtime = 2000000;
-    int every = 1000;
+    int every = 10;
 
     int tf = ceil((double)runtime / (double)every);
     int number_of_digits = 0;
@@ -451,7 +451,7 @@ int main(int argc, char **argv)
     for (int i = 0; i < runtime; i++)
     {
 
-        if (i % every == 0 && i > 200000)
+        if (i % every == 0 && i > 600000)
         {
 
             for(int j = 0 ; j < p.N1-1 ; j++) {
