@@ -395,8 +395,8 @@ int main(int argc, char **argv)
     cout << "all fields set" << endl;
 
     // auto start = std::chrono::high_resolution_clock::now();
-    int runtime = 2000000;
-    int every = 10;
+    int runtime = 700000;
+    int every = 100;
 
     int tf = ceil((double)runtime / (double)every);
     int number_of_digits = 0;
@@ -408,64 +408,12 @@ int main(int argc, char **argv)
     vector1<bool> ps2(nof, true);
     
     
-    // auto start = std::chrono::high_resolution_clock::now();
-    // for (int i = 0; i < runtime; i++)
-    // {
-
-    //     if (i % every == 0 && i > 200000 )
-    //     {
-    //         // stringstream strep1;
-    //         // stringstream strep2;
-    //         // stringstream strep3;
-    //         // stringstream strep4;
-
-    //         // strep1 << dens;
-    //         // strep4 << c0;
-    //         // strep2 << c1;
-    //         // strep3 <<  surf;
-    //         string s1 = importstring;
-    //         // string s1 = "denp=" + strep1.str() + "c0=" + strep4.str() + "_c1=" + strep2.str() + "_surf=" + strep3.str();
-    //         stringstream ss;
-    //         ss << setw(number_of_digits) << setfill('0') << i / every;
-    //         string s2 = "_i=" + ss.str();
-    //         string su = s1.substr(0, s1.size() - 4);
-    //         cout << su + s2 << endl;
-    //         a.print_some_results(su + s2,ps2);
-    //     }
-    //     cout << i << endl;
-    //     cout << "begin" << endl;
-    //     a.Update();
-    //     bool chck = true;
-    //     a.check_field(chck);
-    //     if (!chck)
-    //         break;
-    // }
-
-    
-    ofstream myfile;
-    ofstream myfile2;
-    string fil1 = string("field0") + importstring;
-    string fil2 = string("field1") + importstring;
-    myfile.open(fil1.c_str());
-    myfile2.open(fil2.c_str());
+    // // auto start = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < runtime; i++)
     {
 
-        if (i % every == 0 && i > 600000)
+        if (i % every == 0 && i > 600000 )
         {
-
-            for(int j = 0 ; j < p.N1-1 ; j++) {
-                // cout << a.fields[0][j * p.N1] << endl;
-                myfile << a.fields[0][j*p.N1] <<",";
-            }
-            myfile << a.fields[0][p.N1*p.N1-1] << endl;
-
-            for (int j = 0; j < p.N1 - 1; j++) {
-                myfile2 << a.fields[1][j * p.N1] << ",";
-            }
-            myfile2 << a.fields[1][p.N1 * p.N1 - 1] << endl;
-
-            // pausel();
             // stringstream strep1;
             // stringstream strep2;
             // stringstream strep3;
@@ -475,14 +423,14 @@ int main(int argc, char **argv)
             // strep4 << c0;
             // strep2 << c1;
             // strep3 <<  surf;
-            // string s1 = importstring;
-            // // // string s1 = "denp=" + strep1.str() + "c0=" + strep4.str() + "_c1=" + strep2.str() + "_surf=" + strep3.str();
-            // stringstream ss;
-            // ss << setw(number_of_digits) << setfill('0') << i / every;
-            // string s2 = "_i=" + ss.str();
-            // string su = s1.substr(0, s1.size() - 4);
-            // cout << su + s2 << endl;
-            // a.print_some_results(su + s2,ps2);
+            string s1 = importstring;
+            // string s1 = "denp=" + strep1.str() + "c0=" + strep4.str() + "_c1=" + strep2.str() + "_surf=" + strep3.str();
+            stringstream ss;
+            ss << setw(number_of_digits) << setfill('0') << i / every;
+            string s2 = "_i=" + ss.str();
+            string su = s1.substr(0, s1.size() - 4);
+            cout << su + s2 << endl;
+            a.print_some_results(su + s2,ps2);
         }
         cout << i << endl;
         cout << "begin" << endl;
@@ -492,5 +440,57 @@ int main(int argc, char **argv)
         if (!chck)
             break;
     }
+
+    
+    // ofstream myfile;
+    // ofstream myfile2;
+    // string fil1 = string("field0") + importstring;
+    // string fil2 = string("field1") + importstring;
+    // myfile.open(fil1.c_str());
+    // myfile2.open(fil2.c_str());
+    // for (int i = 0; i < runtime; i++)
+    // {
+
+    //     if (i % every == 0 && i > 00000)
+    //     {
+
+    //         for(int j = 0 ; j < p.N1-1 ; j++) {
+    //             // cout << a.fields[0][j * p.N1] << endl;
+    //             myfile << a.fields[0][j*p.N1] <<",";
+    //         }
+    //         myfile << a.fields[0][p.N1*p.N1-1] << endl;
+
+    //         for (int j = 0; j < p.N1 - 1; j++) {
+    //             myfile2 << a.fields[1][j * p.N1] << ",";
+    //         }
+    //         myfile2 << a.fields[1][p.N1 * p.N1 - 1] << endl;
+
+    //         // pausel();
+    //         // stringstream strep1;
+    //         // stringstream strep2;
+    //         // stringstream strep3;
+    //         // stringstream strep4;
+
+    //         // strep1 << dens;
+    //         // strep4 << c0;
+    //         // strep2 << c1;
+    //         // strep3 <<  surf;
+    //         // string s1 = importstring;
+    //         // // // string s1 = "denp=" + strep1.str() + "c0=" + strep4.str() + "_c1=" + strep2.str() + "_surf=" + strep3.str();
+    //         // stringstream ss;
+    //         // ss << setw(number_of_digits) << setfill('0') << i / every;
+    //         // string s2 = "_i=" + ss.str();
+    //         // string su = s1.substr(0, s1.size() - 4);
+    //         // cout << su + s2 << endl;
+    //         // a.print_some_results(su + s2,ps2);
+    //     }
+    //     cout << i << endl;
+    //     cout << "begin" << endl;
+    //     a.Update();
+    //     bool chck = true;
+    //     a.check_field(chck);
+    //     if (!chck)
+    //         break;
+    // }
     
 }
