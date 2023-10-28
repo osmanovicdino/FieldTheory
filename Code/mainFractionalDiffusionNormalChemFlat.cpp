@@ -263,11 +263,11 @@ int main(int argc, char **argv)
         double x1 = init[lk];
         for (int i = 0; i < p.N1; i++)
         {
-            double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
+            //double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
 
             for (int j = 0; j < p.N2; j++)
             {
-            //    double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
+                double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
 
                 v[lk](i, j) = x1 + gt * x1 * r1;
             }
