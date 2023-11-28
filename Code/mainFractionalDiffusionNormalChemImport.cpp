@@ -287,8 +287,8 @@ int main(int argc, char **argv)
     cout << "all fields set" << endl;
 
     // auto start = std::chrono::high_resolution_clock::now();
-    int runtime = 5001;
-    int every = 10;
+    int runtime = 500001;
+    int every = 100;
 
     int tf = ceil((double)runtime / (double)every);
     int number_of_digits = 0;
