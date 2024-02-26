@@ -38,7 +38,7 @@ dirwemake="chemistry${SGE_TASK_ID}"
 ftdir="1DCheck"
 mkdir /u/scratch/d/dinoo/${ftdir}/${dirwemake}
 cp ~/FieldTheory/Code/mainFractionalDiffusionNormalChemFlat1Dnew.cpp /u/scratch/d/dinoo/${ftdir}/${dirwemake}
-cp ~/FieldTheory/Code/InitialConditions/Cond15/${wt} /u/scratch/d/dinoo/${ftdir}/${dirwemake}/res.csv
+cp ~/FieldTheory/Code/InitialConditions/Cond17/${wt} /u/scratch/d/dinoo/${ftdir}/${dirwemake}/res.csv
 g++ ~/FieldTheory/Code/mainFractionalDiffusionNormalChemFlat1Dnew.cpp -lm -lfftw3 -L/usr/local/lib/lfftw3.a -std=c++17 -o /u/scratch/d/dinoo/${ftdir}/${dirwemake}/angron
 cd /u/scratch/d/dinoo/${ftdir}/${dirwemake}
 ./angron 'res.csv' > log
