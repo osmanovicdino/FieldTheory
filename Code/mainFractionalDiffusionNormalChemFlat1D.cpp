@@ -256,23 +256,57 @@ int main(int argc, char **argv)
         v.push_back(field1);
     }
 
-    double gt=0.6;
+    bool err2;
+    matrix<double> tempfield1 = importcsv("sf1.csv",T,err2);
 
-    for (int lk = 0; lk < nof; lk++)
-    {
-        double x1 = init[lk];
+    bool err3;
+    matrix<double> tempfield2 = importcsv("sf2.csv", T, err2);
+
+    //     double x1 = init[lk];
         for (int i = 0; i < p.N1; i++)
         {
-            double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
+           // double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
 
             for (int j = 0; j < p.N2; j++)
             {
                 //double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
 
-                v[lk](i, j) = x1 + gt * x1 * r1;
+                v[0](i, j) = tempfield1(i,0);
             }
         }
-    }
+
+        for (int i = 0; i < p.N1; i++)
+        {
+            // double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
+
+            for (int j = 0; j < p.N2; j++)
+            {
+                // double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
+
+                v[1](i, j) = tempfield2(i, 0);
+            }
+        }
+
+    // double gt=0.6;
+
+    // for (int lk = 0; lk < nof; lk++)
+    // {
+    //     double x1 = init[lk];
+    //     for (int i = 0; i < p.N1; i++)
+    //     {
+    //         double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
+
+    //         for (int j = 0; j < p.N2; j++)
+    //         {
+    //             //double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
+
+    //             v[lk](i, j) = x1 + gt * x1 * r1;
+    //         }
+    //     }
+    // }
+
+
+
     /* 
 
     {

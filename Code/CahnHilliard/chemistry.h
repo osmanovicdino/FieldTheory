@@ -436,6 +436,59 @@ public:
     }
 };
 
+template <class T>
+class FitzHughNagumo : public Weight<T,T>
+{
+private:
+double kf;
+double alpha;
+double delta;
+double k1;
+double k2;
+int which;
+
+public:
+    FitzHughNagumo(double kff, double alphaa, double deltaa, int whichh) {
+        kf = kff;
+        alpha = alphaa;
+        delta = deltaa;
+
+        k1=(kf/delta)*(alpha-delta);
+        k2=(kf/delta)*(1- delta - alpha);
+        which = whichh;
+    }
+
+    void operator()(T **a, T **fields, int j, const CH_builder &p)
+    {
+        // as there is crosstalk here it is required for you to be careful
+        int end = p.get_total();
+
+        for (int i = 0; i < end; i++)
+        {
+            // a[j][i] = -rate1 * fields[val1][i] * fields[val3][i] + rate2 * fields[val1][i] * fields[val2][i];
+            if(fields[which][i]<delta) {
+                a[j][i] = -k1 * fields[which][i];
+            }
+            else if (fields[which][i] < 1. - delta)
+            {
+                a[j][i] = kf * (fields[which][i] - alpha);
+
+            }
+            else{
+                a[j][i] = k2 * (1. - fields[which][i]);
+
+            }
+        }
+    }
+
+    void print() { cout << "Piecewise FHN\n k: " << kf << " a: " << alpha  << " delta: " << delta << endl; }
+
+    FitzHughNagumo *clone() const
+    {
+        return new FitzHughNagumo(*this);
+    }
+};
+
 //is there anything unique to Chemistry in reaction wrapper?
 
 

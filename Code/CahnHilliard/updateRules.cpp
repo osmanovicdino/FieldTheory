@@ -38,6 +38,110 @@ struct NoRule : updateRules<T,T1,T2,T3> { // don't perform any update
 };
 
 template <class T>
+struct NormalDiffusion1D : updateRules<T, T, T, T>
+{
+    // double **calculated;
+
+    double dt;
+    double Di;
+    double *upd1;
+    double temp1;
+
+    NormalDiffusion1D(const CH_builder &params, double dtt, double Dii, double temp11) : updateRules<T, T, T, T>(params)
+    {
+        Di = Dii;
+        dt = dtt;
+        temp1 = temp11;
+        upd1 = (double *)fftw_malloc(params.N1  * sizeof(double));
+
+        for (int i = 0; i < params.N1; i++)
+        {
+
+                double k1;
+                if (i <= params.N1 / 2)
+                {
+                    k1 = i;
+                }
+                else
+                {
+                    k1 = (i - params.N1);
+                }
+
+
+                double tempor = SQR(k1);
+
+                upd1[i] = 1. / (1. + dt * Di * temp1 * tempor);
+            
+        }
+    }
+
+    NormalDiffusion1D(const NormalDiffusion1D &a) : updateRules<T, T, T, T>(a.par)
+    {
+        Di = a.Di;
+        dt = a.dt;
+        temp1 = a.temp1;
+        upd1 = (double *)fftw_malloc(a.par.N1 * sizeof(double));
+        for (int i = 0; i < a.par.N1; i++)
+        {
+
+                upd1[i ] = a.upd1[i ];
+            
+        }
+    }
+
+    NormalDiffusion1D &operator=(const NormalDiffusion1D &a)
+    {
+        fftw_free(upd1);
+
+        this->setpar(a.par);
+        Di = a.Di;
+        dt = a.dt;
+        temp1 = a.temp1;
+        upd1 = (double *)fftw_malloc(a.par.N1 * sizeof(double));
+        for (int i = 0; i < a.par.N1; i++)
+        {
+            
+                upd1[i] = a.upd1[i];
+            
+        }
+        return *this;
+    }
+
+    ~NormalDiffusion1D()
+    {
+        fftw_free(upd1);
+    }
+
+    void operator()(T **res, T **f, T **w, T **r, int j, const CH_builder &p)
+    {
+        int end = p.get_total();
+        for (int i = 0; i < end; i++)
+        {
+            res[j][i] = upd1[i] * f[j][i] + dt * upd1[i] * r[j][i];
+        }
+    }
+
+    // void trylower(T **res, T **f, T **w, T **r, int j, const CH_builder &p)
+    // {
+    //     int end = p.get_total();
+    //     for (int i = 0; i < end; i++)
+    //     {
+    //         res[j][i] = upd1[i] * f[j][i] + dt * upd1[i] * r[j][i];
+    //     }
+    // }
+
+    NormalDiffusion1D *clone() const
+    {
+        return new NormalDiffusion1D(*this);
+    }
+
+    void print()
+    {
+        cout << "Normal Diffusion 1D" << endl;
+    }
+};
+
+template <class T>
 struct NormalDiffusion : updateRules<T,T,T,T> {
 //double **calculated;
 
@@ -279,6 +383,107 @@ struct NormalDiffusion3D : updateRules<T, T, T, T>
     }
 };
 
+template <class T>
+struct DiffusionWithInteraction1D : updateRules<T, T, T, T>
+{
+    // double **calculated;
+
+    double dt;
+    double Di;
+    double *upd1;
+    double *upd2;
+    double temp1;
+
+    DiffusionWithInteraction1D(const CH_builder &params, double dtt, double Dii, double temp11) : updateRules<T, T, T, T>(params)
+    {
+        Di = Dii;
+        dt = dtt;
+        temp1 = temp11;
+        upd1 = (double *)fftw_malloc(params.N1  * sizeof(double));
+        upd2 = (double *)fftw_malloc(params.N1  * sizeof(double));
+
+        for (int i = 0; i < params.N1; i++)
+        {
+
+                double k1;
+                if (i <= params.N1 / 2)
+                {
+                    k1 = i;
+                }
+                else
+                {
+                    k1 = (i - params.N1);
+                }
+ 
+
+                double tempor = SQR(k1);
+
+                upd1[i ] = dt * Di * temp1 * tempor;
+                upd2[i ] = 1. / (1. + dt * Di * temp1 * tempor);
+            
+        }
+    }
+
+    DiffusionWithInteraction1D(const DiffusionWithInteraction1D &a) : updateRules<T, T, T, T>(a.par)
+    {
+        Di = a.Di;
+        dt = a.dt;
+        temp1 = a.temp1;
+        upd1 = (double *)fftw_malloc(a.par.N1 * sizeof(double));
+        upd2 = (double *)fftw_malloc(a.par.N1 * sizeof(double));
+        for (int i = 0; i < a.par.N1; i++)
+        {
+                upd1[i ] = a.upd1[i ];
+                upd2[i ] = a.upd2[i ];
+            
+        }
+    }
+
+    DiffusionWithInteraction1D &operator=(const DiffusionWithInteraction1D &a)
+    {
+        fftw_free(upd1);
+        fftw_free(upd2);
+        this->setpar(a.par);
+        Di = a.Di;
+        dt = a.dt;
+        temp1 = a.temp1;
+        upd1 = (double *)fftw_malloc(a.par.N1 );
+        upd2 = (double *)fftw_malloc(a.par.N1 );
+        for (int i = 0; i < a.par.N1; i++)
+        {
+                upd1[i ] = a.upd1[i ];
+                upd2[i ] = a.upd2[i ];
+            
+        }
+
+        return *this;
+    }
+
+    ~DiffusionWithInteraction1D()
+    {
+        fftw_free(upd1);
+        fftw_free(upd2);
+    }
+
+    void operator()(T **res, T **f, T **w, T **r, int j, const CH_builder &p)
+    {
+        int end = p.get_total();
+        for (int i = 0; i < end; i++)
+        {
+            res[j][i] = upd2[i] * f[j][i] - upd2[i] * upd1[i] * w[j][i] + dt * upd2[i] * r[j][i];
+        }
+    }
+
+    DiffusionWithInteraction1D *clone() const
+    {
+        return new DiffusionWithInteraction1D(*this);
+    }
+    void print()
+    {
+        cout << "Diffusion With Interaction" << endl;
+    }
+};
+
 template<class T>
 struct DiffusionWithInteraction : updateRules<T,T,T,T>
 {
@@ -517,6 +722,154 @@ struct DiffusionWithInteraction3D : updateRules<T, T, T, T>
     void print()
     {
         cout << "Diffusion With Interaction" << endl;
+    }
+};
+
+template <class T>
+struct DiffusionWithSurfaceTension1D : updateRules<T, T, T, T>
+{
+    double dt;
+    double Di;
+    double *upd1;
+    double *upd2;
+    double temp1;
+    double eps;
+
+    DiffusionWithSurfaceTension1D(const CH_builder &params, double dtt, double Dii, double temp11, double epss) : updateRules<T, T, T, T>(params)
+    {
+        Di = Dii;
+        dt = dtt;
+        temp1 = temp11;
+        eps = epss;
+        upd1 = (double *)fftw_malloc(params.N1 * sizeof(double));
+        upd2 = (double *)fftw_malloc(params.N1 * sizeof(double));
+
+        for (int i = 0; i < params.N1; i++)
+        {
+
+
+                double k1;
+                if (i <= params.N1 / 2)
+                {
+                    k1 = i;
+                }
+                else
+                {
+                    k1 = (i - params.N1);
+                }
+
+
+                double tempor = SQR(k1);
+
+                upd1[i ] = dt * Di * temp1 * tempor;
+                upd2[i ] = 1. / (1. + dt * Di * SQR(eps) * SQR(temp1) * SQR(tempor));
+            
+        }
+        // for (int i = 0; i < params.N1; i++)
+        // {
+        //     for (int j = 0; j < params.N2; j++)
+        //     {
+        //         double tempor = i * i + j * j;
+        //         upd2[i * params.N2 + j] = 1./(1.+dt * Di * SQR(eps) * SQR(temp1) * SQR(tempor));
+
+        //         // if (upd2[i * params.N2 + j] > 1950.) {
+        //         //     cout << 1. / (1. + dt * Di * SQR(eps) * SQR(temp1) * SQR(i * i + j * j)) << endl;
+        //         //     cout << Di << endl;
+        //         //     cout << dt << endl;
+        //         //     cout << eps << endl;
+        //         //     cout << temp1 << endl;
+        //         //     cout << i << endl;
+        //         //     cout << j << endl;
+        //         //     cout << SQR(i*i+j*j) << endl;
+        //         //     pausel();
+        //         // }
+        //     }
+        // }
+    }
+
+    DiffusionWithSurfaceTension1D(const DiffusionWithSurfaceTension1D &a) : updateRules<T, T, T, T>(a.par)
+    {
+        Di = a.Di;
+        dt = a.dt;
+        temp1 = a.temp1;
+        eps = a.eps;
+        upd1 = (double *)fftw_malloc(a.par.N1 * sizeof(double));
+        upd2 = (double *)fftw_malloc(a.par.N1 * sizeof(double));
+        for (int i = 0; i < a.par.N1; i++)
+        {
+
+                upd1[i ] = a.upd1[i];
+            
+        }
+        for (int i = 0; i < a.par.N1; i++)
+        {
+
+                upd2[i ] = a.upd2[i ];
+            
+        }
+    }
+
+    DiffusionWithSurfaceTension1D &operator=(const DiffusionWithSurfaceTension1D &a)
+    {
+        // cout << "called = " << endl;
+        fftw_free(upd1);
+        fftw_free(upd2);
+        this->setpar(a.par);
+        Di = a.Di;
+        dt = a.dt;
+        temp1 = a.temp1;
+        eps = a.eps;
+        upd1 = (double *)fftw_malloc(a.par.N1  * sizeof(double));
+        upd2 = (double *)fftw_malloc(a.par.N1  * sizeof(double));
+        for (int i = 0; i < a.par.N1; i++)
+        {
+
+                upd1[i ] = a.upd1[i ];
+            
+        }
+        for (int i = 0; i < a.par.N1; i++)
+        {
+
+                upd2[i ] = a.upd2[i ];
+            
+        }
+
+        return *this;
+    }
+
+    ~DiffusionWithSurfaceTension1D()
+    {
+        fftw_free(upd1);
+        fftw_free(upd2);
+    }
+
+    void operator()(T **res, T **f, T **w, T **r, int j, const CH_builder &p)
+    {
+
+        int end = p.get_total();
+        for (int i = 0; i < end; i++)
+        {
+            res[j][i] = upd2[i] * f[j][i] - upd2[i] * upd1[i] * w[j][i] + dt * upd2[i] * r[j][i];
+            // if(res[j][i]>3000.) {
+            //     cout << i << endl;
+            //     cout << upd2[i] << endl;
+            //     cout << upd1[i] << endl;
+            //     cout << f[j][i] << endl;
+
+            //     cout << w[j][i] << endl;
+            //     cout << r[j][i] << endl;
+            //     pausel();
+            // }
+        }
+    }
+
+    DiffusionWithSurfaceTension1D *clone() const
+    {
+        return new DiffusionWithSurfaceTension1D(*this);
+    }
+    void print()
+    {
+        cout << "Diffusion With Surface Tension" << endl;
     }
 };
 

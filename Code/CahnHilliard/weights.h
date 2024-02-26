@@ -592,6 +592,54 @@ private:
     }
 };
 
+class FourierWeightForward1D : public Weight<complex<double>, complex<double>>
+{
+private:
+public:
+    void operator()(complex<double> **a, complex<double> **fields, int j, const CH_builder &p)
+    {
+
+        fftw_plan p2(fftw_plan_dft_1d(p.N1, reinterpret_cast<fftw_complex *>(fields[j]), reinterpret_cast<fftw_complex *>(a[j]), FFTW_FORWARD, FFTW_ESTIMATE));
+
+        fftw_execute(p2);
+        double corr = 1. / (p.N1);
+        int end = p.get_total();
+        for (int i = 0; i < end; i++)
+        {
+            a[j][i] *= corr;
+        }
+
+        fftw_destroy_plan(p2);
+        // fftw_cleanup();
+    }
+    FourierWeightForward1D *clone() const
+    {
+        return new FourierWeightForward1D(*this);
+    }
+    void print() { cout << "FourierWeightForwards" << endl; }
+};
+
+class FourierWeightBackward1D : public Weight<complex<double>, complex<double>>
+{
+private:
+public:
+    void operator()(complex<double> **a, complex<double> **fields, int j, const CH_builder &p)
+    {
+        fftw_plan p2;
+
+        p2 = fftw_plan_dft_1d(p.N1, reinterpret_cast<fftw_complex *>(fields[j]), reinterpret_cast<fftw_complex *>(a[j]), FFTW_BACKWARD, FFTW_ESTIMATE);
+
+        fftw_execute(p2);
+
+        fftw_destroy_plan(p2);
+    }
+    FourierWeightBackward1D *clone() const
+    {
+        return new FourierWeightBackward1D(*this);
+    }
+    void print() { cout << "FourierWeightForwards" << endl; }
+};
+
 class FourierWeightForward2D : public Weight<complex<double>, complex<double> >
 {
 private:
@@ -752,6 +800,55 @@ public:
     FourierWeightBackward2D_c2r *clone() const
     {
         return new FourierWeightBackward2D_c2r(*this);
+    }
+    void print() { cout << "FourierWeightBackwards" << endl; }
+};
+
+class CosineWeightForward1D : public Weight<double, double>
+{
+private:
+public:
+    void operator()(double **a, double **fields, int j, const CH_builder &p)
+    {
+        fftw_plan p2;
+
+        p2 = fftw_plan_r2r_1d(p.N1, fields[j], a[j], FFTW_REDFT10, 1);
+
+        fftw_execute(p2);
+        double corr = 1. / (p.N1 * 2.);
+        int end = p.get_total();
+        for (int i = 0; i < end; i++)
+        {
+            a[j][i] *= corr;
+        }
+
+        fftw_destroy_plan(p2);
+    }
+    CosineWeightForward1D *clone() const
+    {
+        return new CosineWeightForward1D(*this);
+    }
+    void print() { cout << "FourierWeightForwards" << endl; }
+};
+
+class CosineWeightBackward1D : public Weight<double, double>
+{
+private:
+public:
+    void operator()(double **a, double **fields, int j, const CH_builder &p)
+    {
+        fftw_plan p2;
+
+        p2 = fftw_plan_r2r_1d(p.N1, fields[j], a[j], FFTW_REDFT01, 1);
+
+        fftw_execute(p2);
+
+
+        fftw_destroy_plan(p2);
+    }
+    CosineWeightBackward1D *clone() const
+    {
+        return new CosineWeightBackward1D(*this);
     }
     void print() { cout << "FourierWeightBackwards" << endl; }
 };

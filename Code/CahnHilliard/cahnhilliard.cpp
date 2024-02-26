@@ -21,7 +21,36 @@ CH<T>::CH(const CH_builder &p) : myp(p), chems(Field_Wrapper<T, T>(p)),
 
     cout << "dim: " << myp.dimension << endl;
 
-    if(myp.dimension == 2) {
+    if (myp.dimension == 1)
+    {
+        for (int i = 0; i < myp.number_of_fields; i++)
+        {
+            if constexpr (std::is_same_v<T, double>)
+            {
+                CosineWeightForward1D fw;
+                transformed1.add_method(fw, i);
+                transformed2.add_method(fw, i);
+                transformed3.add_method(fw, i);
+                CosineWeightBackward1D fw2;
+                reverse_transform.add_method(fw2, i);
+            }
+            else if constexpr (std::is_same_v<T, complex<double>>)
+            {
+                FourierWeightForward1D fw;
+                transformed1.add_method(fw, i);
+                transformed2.add_method(fw, i);
+                transformed3.add_method(fw, i);
+                FourierWeightBackward1D fw2;
+                reverse_transform.add_method(fw2, i);
+            }
+            else
+            {
+                cout << "will neeed to specify your own functional rules for custom types" << endl;
+            }
+        }
+    }
+
+    else if(myp.dimension == 2) {
         for(int i = 0  ; i < myp.number_of_fields ; i++) {
             if constexpr (std::is_same_v<T, double>) {
                 CosineWeightForward fw;
@@ -44,7 +73,8 @@ CH<T>::CH(const CH_builder &p) : myp(p), chems(Field_Wrapper<T, T>(p)),
             }
         }
     }
-    else{
+    else if (myp.dimension == 3)
+    {
         for (int i = 0; i < myp.number_of_fields; i++)
         {
             if constexpr (std::is_same_v<T, double>)
@@ -71,7 +101,9 @@ CH<T>::CH(const CH_builder &p) : myp(p), chems(Field_Wrapper<T, T>(p)),
 
         }
     }
-
+    else{
+        error("higher dimensions than 3 are not programmed right now");
+    }
 }
 
 template <class T>
@@ -88,16 +120,32 @@ template <class T>
 void CH<T>::set_field(const matrix<T> &mymat, int k)
 {
     for(int i =  0 ;  i < myp.N1 ; i++) {
+       
         for(int j = 0  ; j < myp.N2 ; j++) {
             fields[k][i*myp.N2+j] =  mymat.gpcons(i,j);
+            
         }
+
     }
 }
 
 
 template<class T>
 void CH<T>::set_field(T **orig) { // only set the field to real values
-    if(myp.dimension ==2) {
+    if (myp.dimension == 1)
+    {
+        for (int k = 0; k < myp.number_of_fields; k++)
+        {
+            for (int i = 0; i < myp.N1; i++)
+            {
+
+                    // fields[k][i * myp.N2 + j] = {orig[k][i * myp.N2 + j].real(), 0.};
+                    fields[k][i ] = T(orig[k][i ]);
+                
+            }
+        }
+    }
+    else if(myp.dimension ==2) {
         for(int k = 0 ; k < myp.number_of_fields ; k++) {
             for (int i = 0; i < myp.N1; i++)
             {
@@ -109,7 +157,7 @@ void CH<T>::set_field(T **orig) { // only set the field to real values
             }
         }
     }
-    else{
+    else if(myp.dimension==3){
         for (int k = 0; k < myp.number_of_fields; k++)
         {
             for (int i = 0; i < myp.N1; i++)
@@ -124,6 +172,9 @@ void CH<T>::set_field(T **orig) { // only set the field to real values
                 }
             }
         }
+    }
+    else{
+
     }
 }
 
@@ -159,7 +210,30 @@ void CH<T>::high_k_correct(int cut_offf) {
 
     // cut off form
     int cut_off = cut_offf;
-    if(myp.dimension==2)
+    if (myp.dimension == 1) for (int fn = 0; fn < nof; fn++)
+    {
+        for (int i = 0; i < myp.N1; i++)
+        {
+
+                int k1;
+                if (i <= myp.N1 / 2)
+                {
+                    k1 = i;
+                }
+                else
+                {
+                    k1 = (i - myp.N1);
+                }
+
+                double tempor = SQR(k1);
+                if (tempor > cut_off)
+                {
+                    transformed1.calculated_reactions[fn][i ] = 0.; // cut off the high frequency modes
+                }
+            
+        }
+    }
+    else if(myp.dimension==2)
     for (int fn = 0; fn < nof; fn++)
     {
         for (int i = 0; i < myp.N1; i++)
@@ -233,6 +307,9 @@ void CH<T>::high_k_correct(int cut_offf) {
                 }
             }
         }
+    }
+    else{
+
     }
 
 

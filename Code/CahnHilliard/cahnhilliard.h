@@ -401,6 +401,9 @@ struct CHFracDt : public CH<complex <double> > {
 
 
 };
+
+
+
 typedef complex<double> cd;
 template<typename T>
 struct CHC : public CH<T>
@@ -469,7 +472,32 @@ struct CHC : public CH<T>
     void setup_matrices();
     
     double getk(int k1, int k2, int N1, int N2, int &rel);
+    double getk(int k1, int N1, int &rel);
 
+    matrix<double> create_D_mat_split(double k1)
+    {
+        int field_no = (this->myp).number_of_fields;
+        matrix<double> dmat(field_no, field_no);
+
+        for (int i = 0; i < field_no; i++)
+        {
+            dmat(i, i) += -diffusion[i] * temp1 * (SQR(k1) );
+        }
+
+        for (int i = 0; i < field_no; i++)
+        {
+            for (int j = 0; j < field_no; j++)
+            {
+                dmat(i, j) += -diffusion[i] * temp1 * (SQR(k1) ) * epsilon_couplings(i, j);
+            }
+        }
+        for (int i = 0; i < field_no; i++)
+        {
+            if (phase_separators[i])
+                dmat(i, i) += -diffusion[i] * cons3s[i] * temp1 * (SQR(k1)) - diffusion[i] * SQR(epsilon[i]) * SQR(temp1) * SQR(SQR(k1));
+        }
+        return dmat;
+    }
 
     matrix<double> create_D_mat_split(double k1, double k2) {
         int field_no = (this->myp).number_of_fields;
@@ -510,7 +538,7 @@ struct CHC : public CH<T>
 
 
 
-struct CHD : public CH<complex<double>>
+struct CHD : public CH<double>
 {
     matrix<double> epsilon_couplings;
 
@@ -589,19 +617,19 @@ struct CHD : public CH<complex<double>>
          dmat(1, 1) = 1 + dt * temp1 * (SQR(k1) + SQR(k2)) * ml4 - dt * SQR(epsilon) * SQR(temp1) * SQR(SQR(k1) + SQR(k2)) * sl4;
 
 
-         for (int i = 0; i < field_no; i++)
-         {
-             for (int j = 0; j < field_no; j++)
-             {
-                 dmat(i, j) += dt * diffusion_matrix(i, i) * temp1 * (SQR(k1) + SQR(k2)) * epsilon_couplings(i, j);
-             }
-        }
+        //  for (int i = 0; i < field_no; i++)
+        //  {
+        //      for (int j = 0; j < field_no; j++)
+        //      {
+        //          dmat(i, j) += dt * diffusion_matrix(i, i) * temp1 * (SQR(k1) + SQR(k2)) * epsilon_couplings(i, j);
+        //      }
+        // }
 
 
 
-        for(int i = 2 ; i < field_no ; i++) {
-            dmat(i, i) += 1. + dt* diffusion_matrix(i, i) * temp1 * (SQR(k1) + SQR(k2));
-        }
+        // for(int i = 2 ; i < field_no ; i++) {
+        //     dmat(i, i) += 1. + dt* diffusion_matrix(i, i) * temp1 * (SQR(k1) + SQR(k2));
+        // }
 
 
 
@@ -623,18 +651,18 @@ struct CHD : public CH<complex<double>>
                 {
                     k1 = i1;
                 }
-                else
-                {
-                    k1 = (i1 - myp.N1);
-                }
+                // else
+                // {
+                //     k1 = (i1 - myp.N1);
+                // }
                 if (j <= myp.N2 / 2)
                 {
                     k2 = j;
                 }
-                else
-                {
-                    k2 = (j - myp.N2);
-                }
+                // else
+                // {
+                //     k2 = (j - myp.N2);
+                // }
 
                 // double tempor = SQR(k1) + SQR(k2);
                 if (SQR(k1) + SQR(k2) > SQR(cut_off_k[i]))
@@ -652,7 +680,7 @@ struct CHD : public CH<complex<double>>
     set_field(reverse_transform.calculated_reactions);
     }
 
-    void calculate_non_linear_weight(complex<double> **);
+    void calculate_non_linear_weight(double **);
 
     void Update();
 

@@ -10,7 +10,7 @@ struct CH_builder
     int N2;
     int N3;
 
-    int get_total() const { if(dimension==2) return N1*N2; else return N1*N2*N3; }
+    int get_total() const { if(dimension==1) return N1; else if(dimension==2) return N1*N2; else return N1*N2*N3; }
 };
 
 void outfunc(double *a, string s, const CH_builder &p)

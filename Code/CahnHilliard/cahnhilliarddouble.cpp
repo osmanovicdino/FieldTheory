@@ -1,8 +1,8 @@
 #ifndef CAHNHILLIARDDOUBLE_CPP
 #define CAHNHILLIARDDOUBLE_CPP
 
-CHD::CHD(const CH_builder &p) : CH(p), inverses(vector<matrix<double>>((1 + p.N1 / 2) * (1 + p.N2 / 4))),
-                                baremat(vector<matrix<double>>((1 + p.N1 / 2) * (1 + p.N2 / 4)))
+CHD::CHD(const CH_builder &p) : CH(p), inverses(vector<matrix<double>>(p.N1 * p.N2)),
+                                baremat(vector<matrix<double>>(p.N1 * p.N2))
 {
 
 }
@@ -13,9 +13,9 @@ void CHD::setup_matrices()
     //matrix<double> identitymatrix(myp.number_of_fields, myp.number_of_fields);
 
     int iter = 0;
-    for (int k1 = 0; k1 <= myp.N1 / 2; k1++)
+    for (int k1 = 0; k1 < myp.N1 ; k1++)
     {
-        for (int k2 = k1; k2 <= myp.N2 / 2; k2++)
+        for (int k2 = 0; k2 < myp.N2 ; k2++)
         {
             
             matrix<double> temp = create_D_mat_split(k1, k2);
@@ -27,10 +27,10 @@ void CHD::setup_matrices()
             to_invert.inverse();
 
             inverses[iter] = to_invert;
-
             iter++;
         }
     }
+
 }
 
 void CHD::set_interaction_and_diffusion(double x12, double x13, double x23, matrix<double> D1) {
@@ -82,16 +82,19 @@ void CHD::set_interaction_and_diffusion(double x12, double x13, double x23, matr
     ml3 = (diffusion2/diffusion1)*ml2;
     ml4 = diffusion2*(2 * (1 / (2. * y0) - 1 / (2. * (-1 + x0 + y0)) - chi_23));
 
-    sl2 = diffusion1*0.5*(chi_12 - chi_13 - chi_23);
+    double interfacewidth12 = 0.03;
+
+    sl2 = interfacewidth12 * diffusion1 * 0.5 * (chi_12 - chi_13 - chi_23);
     sl1 = -diffusion1*chi_13;
     sl4 = -diffusion2*chi_23;
-    sl3 = diffusion2 * 0.5 * (chi_12 - chi_13 - chi_23);
+    sl3 = interfacewidth12 * diffusion2 * 0.5 * (chi_12 - chi_13 - chi_23);
 
     // cout << ml1 << "," << ml2 << endl;
     // cout << ml3 << "," << ml4 << endl;
     // cout << endl;
     // cout << sl1 << "," << sl2 << endl;
     // cout << sl3 << "," << sl4 << endl;
+    // pausel();
 }
 
 // void CHD::set_diffusion(double D1, double D2) {
@@ -99,7 +102,7 @@ void CHD::set_interaction_and_diffusion(double x12, double x13, double x23, matr
 //     diffusion2 = D2;
 // }
 
-void CHD::calculate_non_linear_weight(complex<double> **input)
+void CHD::calculate_non_linear_weight(double **input)
 {
     int totp = myp.get_total();
     int nof = myp.number_of_fields;
@@ -156,22 +159,24 @@ void CHD::Update()
         {
 
             double k1, k2;
-            if (i <= myp.N1 / 2)
-            {
-                k1 = i;
-            }
-            else
-            {
-                k1 = (i - myp.N1);
-            }
-            if (j <= myp.N2 / 2)
-            {
-                k2 = j;
-            }
-            else
-            {
-                k2 = (j - myp.N2);
-            }
+            k1=i;
+            k2=j;
+            // if (i <= myp.N1 / 2)
+            // {
+            //     k1 = i;
+            // }
+            // else
+            // {
+            //     k1 = (i - myp.N1);
+            // }
+            // if (j <= myp.N2 / 2)
+            // {
+            //     k2 = j;
+            // }
+            // else
+            // {
+            //     k2 = (j - myp.N2);
+            // }
 
             // take absolute values of k1 and k2
             int k1a = abs(k1);
@@ -181,17 +186,17 @@ void CHD::Update()
                 k1a = k2a;
                 k2a = abs(k1);
             }
-            int rel = k2a - (k1a * (1 + k1a - 2 * (1 + myp.N1 / 2))) / 2.;
-
+            //int rel = k2a - (k1a * (1 + k1a - 2 * (1 + myp.N1 / 2))) / 2.;
+            int rel = i * myp.N2 + k2;
             double tempor = SQR(k1) + SQR(k2);
 
             // vector1<complex<double> > v(nof);
 
             // double fac1 = diffusion1 * tempor * temp1;
             // double fac2 = diffusion2 * tempor * temp1;
-            vector1<complex<double>> v(nof);
-            vector1<complex<double>> v2(nof);
-            vector1<complex<double>> v3(nof);
+            vector1<double> v(nof);
+            vector1<double> v2(nof);
+            vector1<double> v3(nof);
 
             for (int k = 0; k < nof; k++)
             {
@@ -302,42 +307,44 @@ void CHD::Update_With_Chem()
         {
 
             double k1, k2;
-            if (i <= myp.N1 / 2)
-            {
-                k1 = i;
-            }
-            else
-            {
-                k1 = (i - myp.N1);
-            }
-            if (j <= myp.N2 / 2)
-            {
-                k2 = j;
-            }
-            else
-            {
-                k2 = (j - myp.N2);
-            }
+            k1 = i;
+            k2 = j;
+            // if (i <= myp.N1 / 2)
+            // {
+            //     k1 = i;
+            // }
+            // else
+            // {
+            //     k1 = (i - myp.N1);
+            // }
+            // if (j <= myp.N2 / 2)
+            // {
+            //     k2 = j;
+            // }
+            // else
+            // {
+            //     k2 = (j - myp.N2);
+            // }
 
             // take absolute values of k1 and k2
             int k1a = abs(k1);
             int k2a = abs(k2);
-            if (k2a < k1a)
-            {
-                k1a = k2a;
-                k2a = abs(k1);
-            }
-            int rel = k2a - (k1a * (1 + k1a - 2 * (1 + myp.N1 / 2))) / 2.;
+            // if (k2a < k1a)
+            // {
+            //     k1a = k2a;
+            //     k2a = abs(k1);
+            // }
+            // int rel = k2a - (k1a * (1 + k1a - 2 * (1 + myp.N1 / 2))) / 2.;
 
             double tempor = SQR(k1) + SQR(k2);
-
+            int rel = i*myp.N2+j; 
             // vector1<complex<double> > v(nof);
 
             // double fac1 = diffusion1 * tempor * temp1;
             // double fac2 = diffusion2 * tempor * temp1;
-            vector1<complex<double>> v(nof);
-            vector1<complex<double>> v2(nof);
-            vector1<complex<double>> v3(nof);
+            vector1<double> v(nof);
+            vector1<double> v2(nof);
+            vector1<double> v3(nof);
 
             for (int k = 0; k < nof; k++)
             {

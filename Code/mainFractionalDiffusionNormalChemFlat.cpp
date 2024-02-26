@@ -137,8 +137,8 @@ int main(int argc, char **argv)
     CH_builder p;
     int nof = n;
     p.number_of_fields = nof;
-    p.N1 = 256;
-    p.N2 = 256;
+    p.N1 = 512;
+    p.N2 = 512;
 
     CHC<double> a(p);
 
@@ -269,7 +269,7 @@ int main(int argc, char **argv)
             {
                 double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
 
-                v[lk](i, j) = x1 + gt * x1 * r1;
+                v[lk](i, j) = x1 + gt * r1;
             }
         }
     }
@@ -395,8 +395,8 @@ int main(int argc, char **argv)
     cout << "all fields set" << endl;
 
     // auto start = std::chrono::high_resolution_clock::now();
-    int runtime = 1000000;
-    int every = 100;
+    int runtime = 2000;
+    int every = 10;
 
     int tf = ceil((double)runtime / (double)every);
     int number_of_digits = 0;
@@ -412,7 +412,7 @@ int main(int argc, char **argv)
     for (int i = 0; i < runtime; i++)
     {
 
-        if (i % every == 0 && i > 900000 )
+        if (i % every == 0 && i > 0 )
         {
             // stringstream strep1;
             // stringstream strep2;
