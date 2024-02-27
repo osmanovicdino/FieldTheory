@@ -1,0 +1,395 @@
+In file included from CahnHilliard/field_wrapper.h:119,
+                 from CahnHilliard/cahnhilliard.h:12,
+                 from mainFractionalDiffusionNormalChemFlat1Dnew.cpp:43:
+CahnHilliard/rule_wrapper.cpp:169: warning: ignoring ‘#pragma omp parallel’ [-Wunknown-pragmas]
+  169 |     #pragma omp parallel for
+      | 
+In file included from mainFractionalDiffusionNormalChemFlat1Dnew.cpp:42:
+DataStructures/matrix2.cpp: In function ‘int FFT2D(matrix<COMPLEX>&, int, int, int)’:
+DataStructures/matrix2.cpp:1681:12: warning: unused variable ‘twopm’ [-Wunused-variable]
+ 1681 |     int m, twopm;
+      |            ^~~~~
+In file included from CahnHilliard/cahnhilliard.h:8,
+                 from mainFractionalDiffusionNormalChemFlat1Dnew.cpp:43:
+CahnHilliard/weights.h: In member function ‘void CosineWeightBackwardGradient::multiplythrough(double*, const CH_builder&)’:
+CahnHilliard/weights.h:934:22: warning: suggest parentheses around assignment used as truth value [-Wparentheses]
+  934 |         else if( dir = 1) {
+      |                  ~~~~^~~
+CahnHilliard/weights.h: In member function ‘void FourierWeightBackwardGradient2D::multiplythrough(std::complex<double>*, const CH_builder&)’:
+CahnHilliard/weights.h:1044:22: warning: suggest parentheses around assignment used as truth value [-Wparentheses]
+ 1044 |         else if (dir = 1)
+      |                  ~~~~^~~
+In file included from CahnHilliard/field_wrapper.h:116,
+                 from CahnHilliard/cahnhilliard.h:12,
+                 from mainFractionalDiffusionNormalChemFlat1Dnew.cpp:43:
+CahnHilliard/updateRules.cpp: In constructor ‘MultiPhase::MultiPhase(const CH_builder&)’:
+CahnHilliard/updateRules.cpp:1452:20: warning: ‘MultiPhase::surface_width’ will be initialized after [-Wreorder]
+ 1452 |     matrix<double> surface_width;
+      |                    ^~~~~~~~~~~~~
+CahnHilliard/updateRules.cpp:1446:21: warning:   ‘vector1<double> MultiPhase::Di’ [-Wreorder]
+ 1446 |     vector1<double> Di; //vector of diffusion constants
+      |                     ^~
+CahnHilliard/updateRules.cpp:1456:5: warning:   when initialized here [-Wreorder]
+ 1456 |     MultiPhase(const CH_builder &params) : updateRules(params), surface_width(matrix<double>(1,1)), Di(vector1<double>(1)), Chi(matrix<double>(1, 1))
+      |     ^~~~~~~~~~
+CahnHilliard/updateRules.cpp:1446:21: warning: ‘MultiPhase::Di’ will be initialized after [-Wreorder]
+ 1446 |     vector1<double> Di; //vector of diffusion constants
+      |                     ^~
+CahnHilliard/updateRules.cpp:1445:20: warning:   ‘matrix<double> MultiPhase::Chi’ [-Wreorder]
+ 1445 |     matrix<double> Chi;
+      |                    ^~~
+CahnHilliard/updateRules.cpp:1456:5: warning:   when initialized here [-Wreorder]
+ 1456 |     MultiPhase(const CH_builder &params) : updateRules(params), surface_width(matrix<double>(1,1)), Di(vector1<double>(1)), Chi(matrix<double>(1, 1))
+      |     ^~~~~~~~~~
+CahnHilliard/updateRules.cpp: In constructor ‘MultiPhase::MultiPhase(const CH_builder&, int, double, vector1<double>, double, matrix<double>, matrix<double>)’:
+CahnHilliard/updateRules.cpp:1446:21: warning: ‘MultiPhase::Di’ will be initialized after [-Wreorder]
+ 1446 |     vector1<double> Di; //vector of diffusion constants
+      |                     ^~
+CahnHilliard/updateRules.cpp:1445:20: warning:   ‘matrix<double> MultiPhase::Chi’ [-Wreorder]
+ 1445 |     matrix<double> Chi;
+      |                    ^~~
+CahnHilliard/updateRules.cpp:1477:5: warning:   when initialized here [-Wreorder]
+ 1477 |     MultiPhase(const CH_builder &params, int no_phaa, double dtt, vector1<double> Dii, double temp11, matrix<double> surface_widthh, matrix<double> Chii) : updateRules(params), Di(Dii), Chi(Chii), surface_width(surface_widthh)
+      |     ^~~~~~~~~~
+CahnHilliard/updateRules.cpp: In copy constructor ‘MultiPhase::MultiPhase(const MultiPhase&)’:
+CahnHilliard/updateRules.cpp:1446:21: warning: ‘MultiPhase::Di’ will be initialized after [-Wreorder]
+ 1446 |     vector1<double> Di; //vector of diffusion constants
+      |                     ^~
+CahnHilliard/updateRules.cpp:1445:20: warning:   ‘matrix<double> MultiPhase::Chi’ [-Wreorder]
+ 1445 |     matrix<double> Chi;
+      |                    ^~~
+CahnHilliard/updateRules.cpp:1569:5: warning:   when initialized here [-Wreorder]
+ 1569 |     MultiPhase(const MultiPhase &a) : updateRules(a.par), Di(a.Di), Chi(a.Chi), surface_width(a.surface_width)
+      |     ^~~~~~~~~~
+CahnHilliard/updateRules.cpp: In constructor ‘MultiPhaseKR::MultiPhaseKR(const CH_builder&)’:
+CahnHilliard/updateRules.cpp:1808:20: warning: ‘MultiPhaseKR::surface_width’ will be initialized after [-Wreorder]
+ 1808 |     matrix<double> surface_width;
+      |                    ^~~~~~~~~~~~~
+CahnHilliard/updateRules.cpp:1794:21: warning:   ‘vector1<double> MultiPhaseKR::Di’ [-Wreorder]
+ 1794 |     vector1<double> Di; //vector of diffusion constants
+      |                     ^~
+CahnHilliard/updateRules.cpp:1810:5: warning:   when initialized here [-Wreorder]
+ 1810 |     MultiPhaseKR(const CH_builder &params) : updateRules(params), revk1(params), revk2(params), realspace1(params), realspace2(params), revf1(params), revf2(params), surface_width(matrix<double>(1, 1)), Di(vector1<double>(1)), Chi(matrix<double>(1, 1))
+      |     ^~~~~~~~~~~~
+CahnHilliard/updateRules.cpp:1794:21: warning: ‘MultiPhaseKR::Di’ will be initialized after [-Wreorder]
+ 1794 |     vector1<double> Di; //vector of diffusion constants
+      |                     ^~
+CahnHilliard/updateRules.cpp:1793:20: warning:   ‘matrix<double> MultiPhaseKR::Chi’ [-Wreorder]
+ 1793 |     matrix<double> Chi;
+      |                    ^~~
+CahnHilliard/updateRules.cpp:1810:5: warning:   when initialized here [-Wreorder]
+ 1810 |     MultiPhaseKR(const CH_builder &params) : updateRules(params), revk1(params), revk2(params), realspace1(params), realspace2(params), revf1(params), revf2(params), surface_width(matrix<double>(1, 1)), Di(vector1<double>(1)), Chi(matrix<double>(1, 1))
+      |     ^~~~~~~~~~~~
+CahnHilliard/updateRules.cpp: In constructor ‘MultiPhaseKR::MultiPhaseKR(const CH_builder&, int, double, vector1<double>, double, matrix<double>, matrix<double>)’:
+CahnHilliard/updateRules.cpp:1803:54: warning: ‘MultiPhaseKR::revf2’ will be initialized after [-Wreorder]
+ 1803 |     Field_Wrapper<complex<double>, complex<double> > revf2;
+      |                                                      ^~~~~
+CahnHilliard/updateRules.cpp:1799:54: warning:   ‘Field_Wrapper<std::complex<double>, std::complex<double> > MultiPhaseKR::realspace1’ [-Wreorder]
+ 1799 |     Field_Wrapper<complex<double>, complex<double> > realspace1;
+      |                                                      ^~~~~~~~~~
+CahnHilliard/updateRules.cpp:1823:5: warning:   when initialized here [-Wreorder]
+ 1823 |     MultiPhaseKR(const CH_builder &params, int no_phaa, double dtt, vector1<double> Dii, double temp11, matrix<double> surface_widthh, matrix<double> Chii) : updateRules(params), revk1(params), revk2(params), revf1(params), revf2(params), realspace1(params), realspace2(params), Di(Dii), Chi(Chii), surface_width(surface_widthh)
+      |     ^~~~~~~~~~~~
+CahnHilliard/updateRules.cpp:1800:54: warning: ‘MultiPhaseKR::realspace2’ will be initialized after [-Wreorder]
+ 1800 |     Field_Wrapper<complex<double>, complex<double> > realspace2; //do not calculate with this one
+      |                                                      ^~~~~~~~~~
+CahnHilliard/updateRules.cpp:1794:21: warning:   ‘vector1<double> MultiPhaseKR::Di’ [-Wreorder]
+ 1794 |     vector1<double> Di; //vector of diffusion constants
+      |                     ^~
+CahnHilliard/updateRules.cpp:1823:5: warning:   when initialized here [-Wreorder]
+ 1823 |     MultiPhaseKR(const CH_builder &params, int no_phaa, double dtt, vector1<double> Dii, double temp11, matrix<double> surface_widthh, matrix<double> Chii) : updateRules(params), revk1(params), revk2(params), revf1(params), revf2(params), realspace1(params), realspace2(params), Di(Dii), Chi(Chii), surface_width(surface_widthh)
+      |     ^~~~~~~~~~~~
+CahnHilliard/updateRules.cpp:1794:21: warning: ‘MultiPhaseKR::Di’ will be initialized after [-Wreorder]
+ 1794 |     vector1<double> Di; //vector of diffusion constants
+      |                     ^~
+CahnHilliard/updateRules.cpp:1793:20: warning:   ‘matrix<double> MultiPhaseKR::Chi’ [-Wreorder]
+ 1793 |     matrix<double> Chi;
+      |                    ^~~
+CahnHilliard/updateRules.cpp:1823:5: warning:   when initialized here [-Wreorder]
+ 1823 |     MultiPhaseKR(const CH_builder &params, int no_phaa, double dtt, vector1<double> Dii, double temp11, matrix<double> surface_widthh, matrix<double> Chii) : updateRules(params), revk1(params), revk2(params), revf1(params), revf2(params), realspace1(params), realspace2(params), Di(Dii), Chi(Chii), surface_width(surface_widthh)
+      |     ^~~~~~~~~~~~
+In file included from CahnHilliard/field_wrapper.h:116,
+                 from CahnHilliard/cahnhilliard.h:12,
+                 from mainFractionalDiffusionNormalChemFlat1Dnew.cpp:43:
+CahnHilliard/updateRules.cpp:1866:13: warning: unused variable ‘nr’ [-Wunused-variable]
+ 1866 |         int nr = Chi.getnrows() - 1;
+      |             ^~
+CahnHilliard/updateRules.cpp:1867:13: warning: unused variable ‘nc’ [-Wunused-variable]
+ 1867 |         int nc = Chi.getncols() - 1;
+      |             ^~
+In file included from CahnHilliard/field_wrapper.h:116,
+                 from CahnHilliard/cahnhilliard.h:12,
+                 from mainFractionalDiffusionNormalChemFlat1Dnew.cpp:43:
+CahnHilliard/updateRules.cpp: In copy constructor ‘MultiPhaseKR::MultiPhaseKR(const MultiPhaseKR&)’:
+CahnHilliard/updateRules.cpp:1794:21: warning: ‘MultiPhaseKR::Di’ will be initialized after [-Wreorder]
+ 1794 |     vector1<double> Di; //vector of diffusion constants
+      |                     ^~
+CahnHilliard/updateRules.cpp:1793:20: warning:   ‘matrix<double> MultiPhaseKR::Chi’ [-Wreorder]
+ 1793 |     matrix<double> Chi;
+      |                    ^~~
+In file included from CahnHilliard/field_wrapper.h:116,
+                 from CahnHilliard/cahnhilliard.h:12,
+                 from mainFractionalDiffusionNormalChemFlat1Dnew.cpp:43:
+CahnHilliard/updateRules.cpp:1890:5: warning:   when initialized here [-Wreorder]
+ 1890 |     MultiPhaseKR(const MultiPhaseKR &a) : updateRules(a.par), Di(a.Di), Chi(a.Chi), revk1(a.revk1), revk2(a.revk2), revf1(a.revf1), revf2(a.revf2), realspace1(a.realspace1), realspace2(a.realspace2), surface_width(a.surface_width)
+      |     ^~~~~~~~~~~~
+In file included from CahnHilliard/field_wrapper.h:116,
+                 from CahnHilliard/cahnhilliard.h:12,
+                 from mainFractionalDiffusionNormalChemFlat1Dnew.cpp:43:
+CahnHilliard/updateRules.cpp:1803:54: warning: ‘MultiPhaseKR::revf2’ will be initialized after [-Wreorder]
+ 1803 |     Field_Wrapper<complex<double>, complex<double> > revf2;
+      |                                                      ^~~~~
+CahnHilliard/updateRules.cpp:1799:54: warning:   ‘Field_Wrapper<std::complex<double>, std::complex<double> > MultiPhaseKR::realspace1’ [-Wreorder]
+ 1799 |     Field_Wrapper<complex<double>, complex<double> > realspace1;
+      |                                                      ^~~~~~~~~~
+In file included from CahnHilliard/field_wrapper.h:116,
+                 from CahnHilliard/cahnhilliard.h:12,
+                 from mainFractionalDiffusionNormalChemFlat1Dnew.cpp:43:
+CahnHilliard/updateRules.cpp:1890:5: warning:   when initialized here [-Wreorder]
+ 1890 |     MultiPhaseKR(const MultiPhaseKR &a) : updateRules(a.par), Di(a.Di), Chi(a.Chi), revk1(a.revk1), revk2(a.revk2), revf1(a.revf1), revf2(a.revf2), realspace1(a.realspace1), realspace2(a.realspace2), surface_width(a.surface_width)
+      |     ^~~~~~~~~~~~
+CahnHilliard/updateRules.cpp: In constructor ‘MultiPhaseKR_Update::MultiPhaseKR_Update(const CH_builder&)’:
+CahnHilliard/updateRules.cpp:2113:21: warning: ‘MultiPhaseKR_Update::Di’ will be initialized after [-Wreorder]
+ 2113 |     vector1<double> Di; //vector of diffusion constants
+      |                     ^~
+CahnHilliard/updateRules.cpp:2112:20: warning:   ‘matrix<double> MultiPhaseKR_Update::Chi’ [-Wreorder]
+ 2112 |     matrix<double> Chi;
+      |                    ^~~
+CahnHilliard/updateRules.cpp:2122:5: warning:   when initialized here [-Wreorder]
+ 2122 |     MultiPhaseKR_Update(const CH_builder &params) : updateRules(params), Di(vector1<double>(1)), Chi(matrix<double>(1, 1))
+      |     ^~~~~~~~~~~~~~~~~~~
+CahnHilliard/updateRules.cpp: In constructor ‘MultiPhaseKR_Update::MultiPhaseKR_Update(const CH_builder&, int, double, vector1<double>, double, double, matrix<double>)’:
+CahnHilliard/updateRules.cpp:2113:21: warning: ‘MultiPhaseKR_Update::Di’ will be initialized after [-Wreorder]
+ 2113 |     vector1<double> Di; //vector of diffusion constants
+      |                     ^~
+CahnHilliard/updateRules.cpp:2112:20: warning:   ‘matrix<double> MultiPhaseKR_Update::Chi’ [-Wreorder]
+ 2112 |     matrix<double> Chi;
+      |                    ^~~
+CahnHilliard/updateRules.cpp:2143:5: warning:   when initialized here [-Wreorder]
+ 2143 |     MultiPhaseKR_Update(const CH_builder &params, int no_phaa, double dtt, vector1<double> Dii, double temp11, double surface_widthh, matrix<double> Chii) : updateRules(params),  Di(Dii), Chi(Chii)
+      |     ^~~~~~~~~~~~~~~~~~~
+CahnHilliard/updateRules.cpp: In copy constructor ‘MultiPhaseKR_Update::MultiPhaseKR_Update(const MultiPhaseKR_Update&)’:
+CahnHilliard/updateRules.cpp:2113:21: warning: ‘MultiPhaseKR_Update::Di’ will be initialized after [-Wreorder]
+ 2113 |     vector1<double> Di; //vector of diffusion constants
+      |                     ^~
+CahnHilliard/updateRules.cpp:2112:20: warning:   ‘matrix<double> MultiPhaseKR_Update::Chi’ [-Wreorder]
+ 2112 |     matrix<double> Chi;
+      |                    ^~~
+CahnHilliard/updateRules.cpp:2204:5: warning:   when initialized here [-Wreorder]
+ 2204 |     MultiPhaseKR_Update(const MultiPhaseKR_Update &a) : updateRules(a.par), Di(a.Di), Chi(a.Chi)
+      |     ^~~~~~~~~~~~~~~~~~~
+In file included from CahnHilliard/field_wrapper.h:117,
+                 from CahnHilliard/cahnhilliard.h:12,
+                 from mainFractionalDiffusionNormalChemFlat1Dnew.cpp:43:
+CahnHilliard/updateRulesFrac.cpp: In destructor ‘IntBundle::~IntBundle()’:
+CahnHilliard/updateRulesFrac.cpp:1716:9: warning: deleting object of abstract class type ‘updateRules<std::complex<double>, std::complex<double>, std::complex<double>, std::complex<double> >’ which has non-virtual destructor will cause undefined behavior [-Wdelete-non-virtual-dtor]
+ 1716 |         delete I;
+      |         ^~~~~~~~
+CahnHilliard/updateRulesFrac.cpp:1717:9: warning: deleting object of abstract class type ‘updateRules<std::complex<double>, std::complex<double>, std::complex<double>, std::complex<double> >’ which has non-virtual destructor will cause undefined behavior [-Wdelete-non-virtual-dtor]
+ 1717 |         delete A;
+      |         ^~~~~~~~
+CahnHilliard/updateRulesFrac.cpp:1718:9: warning: deleting object of abstract class type ‘updateRules<std::complex<double>, std::complex<double>, std::complex<double>, std::complex<double> >’ which has non-virtual destructor will cause undefined behavior [-Wdelete-non-virtual-dtor]
+ 1718 |         delete B;
+      |         ^~~~~~~~
+CahnHilliard/updateRulesFrac.cpp:1719:9: warning: deleting object of abstract class type ‘updateRules<std::complex<double>, std::complex<double>, std::complex<double>, std::complex<double> >’ which has non-virtual destructor will cause undefined behavior [-Wdelete-non-virtual-dtor]
+ 1719 |         delete C;
+      |         ^~~~~~~~
+CahnHilliard/updateRulesFrac.cpp: In destructor ‘SurfBundle::~SurfBundle()’:
+CahnHilliard/updateRulesFrac.cpp:1743:9: warning: deleting object of abstract class type ‘updateRules<std::complex<double>, std::complex<double>, std::complex<double>, std::complex<double> >’ which has non-virtual destructor will cause undefined behavior [-Wdelete-non-virtual-dtor]
+ 1743 |         delete I;
+      |         ^~~~~~~~
+CahnHilliard/updateRulesFrac.cpp:1744:9: warning: deleting object of abstract class type ‘updateRules<std::complex<double>, std::complex<double>, std::complex<double>, std::complex<double> >’ which has non-virtual destructor will cause undefined behavior [-Wdelete-non-virtual-dtor]
+ 1744 |         delete A;
+      |         ^~~~~~~~
+CahnHilliard/updateRulesFrac.cpp:1745:9: warning: deleting object of abstract class type ‘updateRules<std::complex<double>, std::complex<double>, std::complex<double>, std::complex<double> >’ which has non-virtual destructor will cause undefined behavior [-Wdelete-non-virtual-dtor]
+ 1745 |         delete B;
+      |         ^~~~~~~~
+CahnHilliard/updateRulesFrac.cpp:1746:9: warning: deleting object of abstract class type ‘updateRules<std::complex<double>, std::complex<double>, std::complex<double>, std::complex<double> >’ which has non-virtual destructor will cause undefined behavior [-Wdelete-non-virtual-dtor]
+ 1746 |         delete C;
+      |         ^~~~~~~~
+In file included from CahnHilliard/cahnhilliard.h:692,
+                 from mainFractionalDiffusionNormalChemFlat1Dnew.cpp:43:
+CahnHilliard/cahnhilliarddouble.cpp: In member function ‘virtual void CHD::Update()’:
+CahnHilliard/cahnhilliarddouble.cpp:153:9: warning: unused variable ‘totp’ [-Wunused-variable]
+  153 |     int totp = myp.get_total();
+      |         ^~~~
+In file included from CahnHilliard/cahnhilliard.h:692,
+                 from mainFractionalDiffusionNormalChemFlat1Dnew.cpp:43:
+CahnHilliard/cahnhilliarddouble.cpp: In member function ‘void CHD::Update_With_Chem()’:
+CahnHilliard/cahnhilliarddouble.cpp:330:17: warning: unused variable ‘k1a’ [-Wunused-variable]
+  330 |             int k1a = abs(k1);
+      |                 ^~~
+CahnHilliard/cahnhilliarddouble.cpp:331:17: warning: unused variable ‘k2a’ [-Wunused-variable]
+  331 |             int k2a = abs(k2);
+      |                 ^~~
+CahnHilliard/cahnhilliarddouble.cpp:301:9: warning: unused variable ‘totp’ [-Wunused-variable]
+  301 |     int totp = myp.get_total();
+      |         ^~~~
+mainFractionalDiffusionNormalChemFlat1Dnew.cpp: In function ‘int main(int, char**)’:
+mainFractionalDiffusionNormalChemFlat1Dnew.cpp:131:44: warning: typedef ‘ILB’ locally defined but not used [-Wunused-local-typedefs]
+  131 |     typedef InvasionLinearReversibleB<myc> ILB;
+      |                                            ^~~
+mainFractionalDiffusionNormalChemFlat1Dnew.cpp:132:44: warning: typedef ‘ILA’ locally defined but not used [-Wunused-local-typedefs]
+  132 |     typedef InvasionLinearReversibleA<myc> ILA;
+      |                                            ^~~
+mainFractionalDiffusionNormalChemFlat1Dnew.cpp:133:37: warning: typedef ‘FWCC’ locally defined but not used [-Wunused-local-typedefs]
+  133 |     typedef Field_Wrapper<myc, myc> FWCC;
+      |                                     ^~~~
+mainFractionalDiffusionNormalChemFlat1Dnew.cpp:134:47: warning: typedef ‘CPSS’ locally defined but not used [-Wunused-local-typedefs]
+  134 |     typedef CoupledPhaseSeparatingSystem<myc> CPSS;
+      |                                               ^~~~
+mainFractionalDiffusionNormalChemFlat1Dnew.cpp:135:46: warning: typedef ‘RWC’ locally defined but not used [-Wunused-local-typedefs]
+  135 |     typedef Rule_Wrapper<myc, myc, myc, myc> RWC;
+      |                                              ^~~
+In file included from CahnHilliard/field_wrapper.h:118,
+                 from CahnHilliard/cahnhilliard.h:12,
+                 from mainFractionalDiffusionNormalChemFlat1Dnew.cpp:43:
+CahnHilliard/field_wrapper.cpp: In instantiation of ‘Field_Wrapper<T, Q>::Field_Wrapper(const CH_builder&) [with T = std::complex<double>; Q = std::complex<double>]’:
+CahnHilliard/updateRules.cpp:1810:67:   required from here
+CahnHilliard/field_wrapper.cpp:57:9: warning: deleting object of polymorphic class type ‘NoWeight<std::complex<double>, std::complex<double> >’ which has non-virtual destructor might cause undefined behavior [-Wdelete-non-virtual-dtor]
+   57 |         delete chem1;
+      |         ^~~~~~~~~~~~
+CahnHilliard/field_wrapper.cpp: In instantiation of ‘Field_Wrapper<T, Q>::~Field_Wrapper() [with T = std::complex<double>; Q = std::complex<double>]’:
+CahnHilliard/updateRules.cpp:1810:67:   required from here
+CahnHilliard/field_wrapper.cpp:137:9: warning: deleting object of abstract class type ‘Weight<std::complex<double>, std::complex<double> >’ which has non-virtual destructor will cause undefined behavior [-Wdelete-non-virtual-dtor]
+  137 |         delete chems[i];
+      |         ^~~~~~~~~~~~~~~
+CahnHilliard/field_wrapper.cpp: In instantiation of ‘void Field_Wrapper<T, Q>::add_method(Weight<T, Q>&, int) [with T = std::complex<double>; Q = std::complex<double>]’:
+CahnHilliard/updateRules.cpp:1878:29:   required from here
+CahnHilliard/field_wrapper.cpp:148:5: warning: deleting object of abstract class type ‘Weight<std::complex<double>, std::complex<double> >’ which has non-virtual destructor will cause undefined behavior [-Wdelete-non-virtual-dtor]
+  148 |     delete chems[j];
+      |     ^~~~~~~~~~~~~~~
+CahnHilliard/field_wrapper.cpp: In instantiation of ‘Field_Wrapper<T, Q>& Field_Wrapper<T, Q>::operator=(const Field_Wrapper<T, Q>&) [with T = std::complex<double>; Q = std::complex<double>]’:
+CahnHilliard/updateRules.cpp:1927:19:   required from here
+CahnHilliard/field_wrapper.cpp:96:9: warning: deleting object of abstract class type ‘Weight<std::complex<double>, std::complex<double> >’ which has non-virtual destructor will cause undefined behavior [-Wdelete-non-virtual-dtor]
+   96 |         delete chems[i];
+      |         ^~~~~~~~~~~~~~~
+In file included from CahnHilliard/field_wrapper.h:119,
+                 from CahnHilliard/cahnhilliard.h:12,
+                 from mainFractionalDiffusionNormalChemFlat1Dnew.cpp:43:
+CahnHilliard/rule_wrapper.cpp: In instantiation of ‘Rule_Wrapper<T, T1, T2, T3>::~Rule_Wrapper() [with T = std::complex<double>; T1 = std::complex<double>; T2 = std::complex<double>; T3 = std::complex<double>]’:
+CahnHilliard/cahnhilliard.h:151:36:   required from here
+CahnHilliard/rule_wrapper.cpp:150:9: warning: deleting object of abstract class type ‘updateRules<std::complex<double>, std::complex<double>, std::complex<double>, std::complex<double> >’ which has non-virtual destructor will cause undefined behavior [-Wdelete-non-virtual-dtor]
+  150 |         delete chems[i];
+      |         ^~~~~~~~~~~~~~~
+CahnHilliard/rule_wrapper.cpp: In instantiation of ‘Rule_Wrapper<T, T1, T2, T3>& Rule_Wrapper<T, T1, T2, T3>::operator=(const Rule_Wrapper<T, T1, T2, T3>&) [with T = std::complex<double>; T1 = std::complex<double>; T2 = std::complex<double>; T3 = std::complex<double>]’:
+CahnHilliard/cahnhilliard.h:154:129:   required from here
+CahnHilliard/rule_wrapper.cpp:91:9: warning: deleting object of abstract class type ‘updateRules<std::complex<double>, std::complex<double>, std::complex<double>, std::complex<double> >’ which has non-virtual destructor will cause undefined behavior [-Wdelete-non-virtual-dtor]
+   91 |         delete chems[i];
+      |         ^~~~~~~~~~~~~~~
+In file included from CahnHilliard/field_wrapper.h:118,
+                 from CahnHilliard/cahnhilliard.h:12,
+                 from mainFractionalDiffusionNormalChemFlat1Dnew.cpp:43:
+CahnHilliard/field_wrapper.cpp: In instantiation of ‘Field_Wrapper<T, Q>::Field_Wrapper() [with T = std::complex<double>; Q = std::complex<double>]’:
+CahnHilliard/cahnhilliard.h:188:42:   required from here
+CahnHilliard/field_wrapper.cpp:27:5: warning: deleting object of polymorphic class type ‘NoWeight<std::complex<double>, std::complex<double> >’ which has non-virtual destructor might cause undefined behavior [-Wdelete-non-virtual-dtor]
+   27 |     delete chem1;
+      |     ^~~~~~~~~~~~
+In file included from mainFractionalDiffusionNormalChemFlat1Dnew.cpp:42:
+DataStructures/matrix2.cpp: In instantiation of ‘matrix<T> importcsv(std::string, T, bool&) [with T = double; std::string = std::__cxx11::basic_string<char>]’:
+mainFractionalDiffusionNormalChemFlat1Dnew.cpp:67:36:   required from here
+DataStructures/matrix2.cpp:1478:18: warning: comparison of integer expressions of different signedness: ‘int’ and ‘std::vector<double>::size_type’ {aka ‘long unsigned int’} [-Wsign-compare]
+ 1478 |             if(j > a[i].size()-1) {
+      |                ~~^~~~~~~~~~~~~~~
+In file included from mainFractionalDiffusionNormalChemFlat1Dnew.cpp:43:
+CahnHilliard/cahnhilliardcombo.cpp: In instantiation of ‘CHC<T>::CHC(const CH_builder&) [with T = double]’:
+mainFractionalDiffusionNormalChemFlat1Dnew.cpp:144:20:   required from here
+CahnHilliard/cahnhilliard.h:421:21: warning: ‘CHC<double>::cons3s’ will be initialized after [-Wreorder]
+  421 |     vector1<double> cons3s;
+      |                     ^~~~~~
+CahnHilliard/cahnhilliard.h:411:20: warning:   ‘matrix<double> CHC<double>::epsilon_couplings’ [-Wreorder]
+  411 |     matrix<double> epsilon_couplings;
+      |                    ^~~~~~~~~~~~~~~~~
+In file included from CahnHilliard/cahnhilliard.h:691,
+                 from mainFractionalDiffusionNormalChemFlat1Dnew.cpp:43:
+CahnHilliard/cahnhilliardcombo.cpp:5:1: warning:   when initialized here [-Wreorder]
+    5 | CHC<T>::CHC(const CH_builder &p) : CH<T>(p), phase_separators(vector1<bool>(p.number_of_fields)),
+      | ^~~~~~
+In file included from mainFractionalDiffusionNormalChemFlat1Dnew.cpp:43:
+CahnHilliard/cahnhilliard.h:435:29: warning: ‘CHC<double>::baremat’ will be initialized after [-Wreorder]
+  435 |     vector<matrix<double> > baremat; //each matrix for each value of k1,k2
+      |                             ^~~~~~~
+CahnHilliard/cahnhilliard.h:427:25: warning:   ‘Field_Wrapper<double, double> CHC<double>::oldfieldFT’ [-Wreorder]
+  427 |     Field_Wrapper<T, T> oldfieldFT;
+      |                         ^~~~~~~~~~
+In file included from CahnHilliard/cahnhilliard.h:691,
+                 from mainFractionalDiffusionNormalChemFlat1Dnew.cpp:43:
+CahnHilliard/cahnhilliardcombo.cpp:5:1: warning:   when initialized here [-Wreorder]
+    5 | CHC<T>::CHC(const CH_builder &p) : CH<T>(p), phase_separators(vector1<bool>(p.number_of_fields)),
+      | ^~~~~~
+In file included from CahnHilliard/field_wrapper.h:118,
+                 from CahnHilliard/cahnhilliard.h:12,
+                 from mainFractionalDiffusionNormalChemFlat1Dnew.cpp:43:
+CahnHilliard/field_wrapper.cpp: In instantiation of ‘Field_Wrapper<T, Q>::~Field_Wrapper() [with T = double; Q = double]’:
+CahnHilliard/cahnhilliard.h:409:8:   required from here
+CahnHilliard/field_wrapper.cpp:137:9: warning: deleting object of abstract class type ‘Weight<double, double>’ which has non-virtual destructor will cause undefined behavior [-Wdelete-non-virtual-dtor]
+  137 |         delete chems[i];
+      |         ^~~~~~~~~~~~~~~
+CahnHilliard/field_wrapper.cpp: In instantiation of ‘Field_Wrapper<T, Q>::Field_Wrapper(const CH_builder&) [with T = double; Q = double]’:
+mainFractionalDiffusionNormalChemFlat1Dnew.cpp:192:48:   required from here
+CahnHilliard/field_wrapper.cpp:57:9: warning: deleting object of polymorphic class type ‘NoWeight<double, double>’ which has non-virtual destructor might cause undefined behavior [-Wdelete-non-virtual-dtor]
+   57 |         delete chem1;
+      |         ^~~~~~~~~~~~
+CahnHilliard/field_wrapper.cpp: In instantiation of ‘void Field_Wrapper<T, Q>::add_method(Weight<T, Q>&, int) [with T = double; Q = double]’:
+mainFractionalDiffusionNormalChemFlat1Dnew.cpp:201:36:   required from here
+CahnHilliard/field_wrapper.cpp:148:5: warning: deleting object of abstract class type ‘Weight<double, double>’ which has non-virtual destructor will cause undefined behavior [-Wdelete-non-virtual-dtor]
+  148 |     delete chems[j];
+      |     ^~~~~~~~~~~~~~~
+In file included from CahnHilliard/cahnhilliard.h:9,
+                 from mainFractionalDiffusionNormalChemFlat1Dnew.cpp:43:
+CahnHilliard/chemistry.h: In instantiation of ‘MultipleReactions<T>::~MultipleReactions() [with T = double]’:
+mainFractionalDiffusionNormalChemFlat1Dnew.cpp:205:49:   required from here
+CahnHilliard/chemistry.h:316:13: warning: deleting object of abstract class type ‘Weight<double, double>’ which has non-virtual destructor will cause undefined behavior [-Wdelete-non-virtual-dtor]
+  316 |             delete multichem[i];
+      |             ^~~~~~~~~~~~~~~~~~~
+In file included from CahnHilliard/cahnhilliard.h:691,
+                 from mainFractionalDiffusionNormalChemFlat1Dnew.cpp:43:
+CahnHilliard/cahnhilliardcombo.cpp: In instantiation of ‘void CHC<T>::calculate_initial_weight(int) [with T = double]’:
+mainFractionalDiffusionNormalChemFlat1Dnew.cpp:401:31:   required from here
+CahnHilliard/cahnhilliardcombo.cpp:436:9: warning: unused variable ‘totp’ [-Wunused-variable]
+  436 |     int totp = this->myp.get_total();
+      |         ^~~~
+CahnHilliard/cahnhilliardcombo.cpp: In instantiation of ‘void CHC<T>::Update() [with T = double]’:
+mainFractionalDiffusionNormalChemFlat1Dnew.cpp:502:17:   required from here
+CahnHilliard/cahnhilliardcombo.cpp:776:9: warning: unused variable ‘totp’ [-Wunused-variable]
+  776 |     int totp = this->myp.get_total();
+      |         ^~~~
+In file included from CahnHilliard/field_wrapper.h:119,
+                 from CahnHilliard/cahnhilliard.h:12,
+                 from mainFractionalDiffusionNormalChemFlat1Dnew.cpp:43:
+CahnHilliard/rule_wrapper.cpp: In instantiation of ‘Rule_Wrapper<T, T1, T2, T3>::~Rule_Wrapper() [with T = double; T1 = double; T2 = double; T3 = double]’:
+CahnHilliard/cahnhilliard.cpp:8:37:   required from ‘CH<T>::CH(const CH_builder&) [with T = double]’
+CahnHilliard/cahnhilliarddouble.cpp:5:76:   required from here
+CahnHilliard/rule_wrapper.cpp:150:9: warning: deleting object of abstract class type ‘updateRules<double, double, double, double>’ which has non-virtual destructor will cause undefined behavior [-Wdelete-non-virtual-dtor]
+  150 |         delete chems[i];
+      |         ^~~~~~~~~~~~~~~
+In file included from CahnHilliard/field_wrapper.h:118,
+                 from CahnHilliard/cahnhilliard.h:12,
+                 from mainFractionalDiffusionNormalChemFlat1Dnew.cpp:43:
+CahnHilliard/field_wrapper.cpp: In instantiation of ‘Field_Wrapper<T, Q>& Field_Wrapper<T, Q>::operator=(const Field_Wrapper<T, Q>&) [with T = double; Q = double]’:
+CahnHilliard/cahnhilliard.h:93:54:   required from ‘void CH<T>::set_chems(const Field_Wrapper<T, T>&) [with T = double]’
+mainFractionalDiffusionNormalChemFlat1Dnew.cpp:242:16:   required from here
+CahnHilliard/field_wrapper.cpp:96:9: warning: deleting object of abstract class type ‘Weight<double, double>’ which has non-virtual destructor will cause undefined behavior [-Wdelete-non-virtual-dtor]
+   96 |         delete chems[i];
+      |         ^~~~~~~~~~~~~~~
+In file included from CahnHilliard/cahnhilliard.h:8,
+                 from mainFractionalDiffusionNormalChemFlat1Dnew.cpp:43:
+CahnHilliard/weights.h: In instantiation of ‘void CoupledPhaseSeparatingSystem<T>::operator()(T**, T**, int, const CH_builder&) [with T = std::complex<double>]’:
+CahnHilliard/weights.h:556:10:   required from here
+CahnHilliard/weights.h:559:15: warning: variable ‘totf’ set but not used [-Wunused-but-set-variable]
+  559 |             T totf = 0.0;
+      |               ^~~~
+CahnHilliard/weights.h: In instantiation of ‘void CoupledPhaseSeparatingSystem<T>::operator()(T**, T**, int, const CH_builder&) [with T = double]’:
+CahnHilliard/weights.h:556:10:   required from here
+CahnHilliard/weights.h:559:15: warning: unused variable ‘totf’ [-Wunused-variable]
+In file included from CahnHilliard/field_wrapper.h:118,
+                 from CahnHilliard/cahnhilliard.h:12,
+                 from mainFractionalDiffusionNormalChemFlat1Dnew.cpp:43:
+CahnHilliard/field_wrapper.cpp: In constructor ‘Field_Wrapper<T, Q>::Field_Wrapper(const CH_builder&) [with T = double; Q = double]’:
+CahnHilliard/field_wrapper.cpp:48:40: warning: ‘b’ may be used uninitialized [-Wmaybe-uninitialized]
+   48 |             calculated_reactions[i][j] = b;
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+mainFractionalDiffusionNormalChemFlat1Dnew.cpp: In function ‘int main(int, char**)’:
+mainFractionalDiffusionNormalChemFlat1Dnew.cpp:67:58: warning: ‘T’ may be used uninitialized [-Wmaybe-uninitialized]
+   67 |     matrix<double> mat1 = importcsv(importstring, T, err1);
+      |                                                          ^

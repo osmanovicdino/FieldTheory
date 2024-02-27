@@ -1041,7 +1041,7 @@ public:
                 }
             }
         }
-        else if (dir = 1)
+        else if (dir == 1)
         {
 
             for (int i = 0; i < p.N1; i++)

@@ -759,9 +759,9 @@ void CHC<T>::Update() {
 
     // string fieldss = "fields";
     // outfunc(fields[0], fieldss, myp);
-
+    cout << 1 << endl;
     this->chems.Calculate_Results(this->fields); // calculate chemistry
-
+    cout << 2 << endl;
     this->transformed3.Calculate_Results(this->chems.calculated_reactions);
 
     // string ftschem = "ftchem";
@@ -771,10 +771,16 @@ void CHC<T>::Update() {
     // pausel();
 
     this->transformed1.Calculate_Results(this->fields); // calculate FT of fields
+
+    cout << 3 << endl;
     calculate_non_linear_weight(this->fields);
+
+    cout << 4 << endl;
 
     int totp = this->myp.get_total();
     int nof = this->myp.number_of_fields;
+
+    cout << 5 << endl;
 
     if ((this->myp).dimension == 1)
     {
@@ -914,11 +920,15 @@ void CHC<T>::Update() {
 
     }
 
+    cout << 6 << endl;
+
     oldfieldFT.Calculate_Results(this->transformed1.calculated_reactions);
+    
+    cout << 7 << endl;
     oldfieldNLW.Calculate_Results(this->transformed2.calculated_reactions);
-
+    cout << 8 << endl;
     this->reverse_transform.Calculate_Results(this->rules.calculated_reactions);
-
+    cout << 9 << endl;
     GetMaximas(this->fields, this->myp);
     this->reverse_transform.GetMaximas();
     this->reverse_transform.GetMaximasIndex();
@@ -927,6 +937,7 @@ void CHC<T>::Update() {
     cout << endl;
 
     this->set_field(this->reverse_transform.calculated_reactions);
+    cout << 10 << endl;
 }
 
 // template<class Q, class T>
