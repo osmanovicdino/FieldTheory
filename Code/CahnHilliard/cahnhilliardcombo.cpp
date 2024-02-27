@@ -920,28 +920,28 @@ void CHC<T>::Update() {
 
     }
 
-    cout << 6 << endl;
+
 
     oldfieldFT.Calculate_Results(this->transformed1.calculated_reactions);
     
-    cout << 7 << endl;
+
     oldfieldNLW.Calculate_Results(this->transformed2.calculated_reactions);
-    cout << 8 << endl;
+
     this->reverse_transform.Calculate_Results(this->rules.calculated_reactions);
-    cout << 9 << endl;
+
     GetMaximas(this->fields, this->myp);
-    cout << 10 << endl;
+
     this->reverse_transform.GetMaximas();
-    cout << 11 << endl;
-    this->reverse_transform.GetMaximasIndex();
-    cout << 12 << endl;
+
+    // this->reverse_transform.GetMaximasIndex();
+
     this->reverse_transform.GetMinimas();
-    cout << 13 << endl;
-    this->reverse_transform.GetMinimasIndex();
+
+    // this->reverse_transform.GetMinimasIndex();
     cout << endl;
-    cout << 14 << endl;
+
     this->set_field(this->reverse_transform.calculated_reactions);
-    cout << 15 << endl;
+    
 }
 
 // template<class Q, class T>
