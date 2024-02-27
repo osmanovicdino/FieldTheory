@@ -759,9 +759,9 @@ void CHC<T>::Update() {
 
     // string fieldss = "fields";
     // outfunc(fields[0], fieldss, myp);
-    cout << 1 << endl;
+
     this->chems.Calculate_Results(this->fields); // calculate chemistry
-    cout << 2 << endl;
+
     this->transformed3.Calculate_Results(this->chems.calculated_reactions);
 
     // string ftschem = "ftchem";
@@ -772,15 +772,12 @@ void CHC<T>::Update() {
 
     this->transformed1.Calculate_Results(this->fields); // calculate FT of fields
 
-    cout << 3 << endl;
     calculate_non_linear_weight(this->fields);
 
-    cout << 4 << endl;
 
     int totp = this->myp.get_total();
     int nof = this->myp.number_of_fields;
 
-    cout << 5 << endl;
 
     if ((this->myp).dimension == 1)
     {
