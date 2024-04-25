@@ -137,8 +137,8 @@ int main(int argc, char **argv)
     CH_builder p;
     int nof = n;
     p.number_of_fields = nof;
-    p.N1 = 512;
-    p.N2 = 512;
+    p.N1 = 128;
+    p.N2 = 128;
 
     CHC<double> a(p);
 
@@ -395,8 +395,8 @@ int main(int argc, char **argv)
     cout << "all fields set" << endl;
 
     // auto start = std::chrono::high_resolution_clock::now();
-    int runtime = 2000;
-    int every = 10;
+    int runtime = 200000;
+    int every = 100;
 
     int tf = ceil((double)runtime / (double)every);
     int number_of_digits = 0;

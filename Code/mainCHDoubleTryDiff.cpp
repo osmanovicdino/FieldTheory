@@ -56,40 +56,40 @@ int main(int argc, char **argv)
     double x23;
     double den1;
     double den2;
-    int cutoff;
-    if (argc == 7)
-    {
-        x12=atof(argv[1]);
-        x13=atof(argv[2]);
-        x23=atof(argv[3]);
-        den1=atof(argv[4]);
-        den2=atof(argv[5]);
-        cutoff=atof(argv[6]);
-    }
-    else
-    {
-        error("no");
-    }
+    int cutoff=100;
+    // if (argc == 7)
+    // {
+    //     x12=atof(argv[1]);
+    //     x13=atof(argv[2]);
+    //     x23=atof(argv[3]);
+    //     den1=atof(argv[4]);
+    //     den2=atof(argv[5]);
+    //     cutoff=atof(argv[6]);
+    // }
+    // else
+    // {
+    //     //error("no");
+    // }
 
     CH_builder p;
     int nof = 2;
     p.number_of_fields = nof;
-    p.N1 = 1024;
-    p.N2 = 1024;
+    p.N1 = 512;
+    p.N2 = 512;
 
     CHD a(p);
 
     matrix<double> diffusionmatrix(2,2);
     diffusionmatrix(0,0)=1.;
     diffusionmatrix(1, 1) = 1.;
-    a.set_interaction_and_diffusion(-11.,0.75,0.75,diffusionmatrix);
-    
-    a.set_dt(0.0005);
+    a.set_interaction_and_diffusion(0., 0.2, 0.2, diffusionmatrix, 1., 1.,0.2,0.8, 0.54, 0.54);
 
-    double L = 50.;
+    a.set_dt(0.005);
+
+    double L = 100.;
     double temp1 = SQR(2. * pii / L);
     a.set_temp1(temp1);
-    a.set_epsilon(0.5);
+    a.set_epsilon(0.2);
 
     a.setup_matrices();
 
@@ -105,30 +105,75 @@ int main(int argc, char **argv)
     // init[0]=0.0;
     // init[1]=0.0;
 
-    double gt = 0.1;
-    double c1 = -0.2;
-    double c2 = -0.2;
-        
-        for (int i = 0; i < p.N1; i++)
-        {
-            for (int j = 0; j < p.N2; j++)
-            {
-                double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
-                //v[0](i, j) =0.2*(double)(p.N1-i)/(double)p.N1;
-                v[0](i, j) = c1 +gt *   r1; 
-            }
-        }
+    double gt = 0.7;
+    // double c1 = -1.05;//0.15;
+    // double c1f = -0.3;//0.55;
+    // double c2 = -1.05;//0.15;
+    // double c2f =-0.3;
 
-        for (int i = 0; i < p.N1; i++)
-        {
-            for (int j = 0; j < p.N2; j++)
-            {
-                double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
+    struct startingfunct {
+        double x1;
+        double L;
+        double c;
+        double a;
+        double t;
+        int pmax;
+        double operator()(double x) {
 
-                v[1](i, j) = c2 + gt * r1;
-                // //v[1](i, j) = 0.2 * (double)(i) / (double)p.N1;
-            }
+            double tot = 0.0;
+
+            for(int i = 0 ; i <= pmax ; i++)
+                tot += cos(x1 * i * pi / L) * cos(x * i * pi / L) * exp(-SQR(i)*SQR(pi)*t/SQR(L));
+
+            return -c + a*tot;
         }
+    };
+
+    startingfunct func1;
+    startingfunct func2;
+
+    func1.x1 = 0.1;
+    func1.L =  1.0;
+    func1.c = 0.;
+    func1.a = 0.2;
+    func1.t =0.1;
+    func1.pmax = 100;
+
+    func2.x1 = 0.9;
+    func2.L = 1.0;
+    func2.c = 0.0;
+    func2.a = 2.;
+    func2.t = 0.1;
+    func2.pmax = 100;
+
+    for (int i = 0; i < p.N1; i++)
+    {
+        for (int j = 0; j < p.N2; j++)
+        {
+            double r1 = gt*(2. * ((double)rand() / (double)RAND_MAX) - 1.);
+            double r2 = gt * (2. * ((double)rand() / (double)RAND_MAX) - 1.);
+            // v[0](i, j) = r1 + 0.5;
+            // v[1](i, j) = r2 + 0.5;
+
+            v[0](i, j) = (1+r1)* func1((double)j / (double)p.N1);
+            v[1](i, j) = (1+r2)* func2((double)j / (double)p.N1);
+            // cout << func1((double)j / (double)p.N1) << " " << func2((double)j / (double)p.N1) << endl;
+            // v[0](i, j) = c1 +gt *   r1;
+        }
+        //pausel();
+    }
+    
+
+    // for (int i = 0; i < p.N1; i++)
+    // {
+    //     for (int j = 0; j < p.N2; j++)
+    //     {
+    //         double r1 = gt*(2. * ((double)rand() / (double)RAND_MAX) - 1.);
+    //         v[1](i, j) =r1+c2f+(c2-c2f)*(double)j/(double)p.N1;
+    //         // v[1](i, j) = c2 + gt * r1;
+    //         // //v[1](i, j) = 0.2 * (double)(i) / (double)p.N1;
+    //     }
+    // }
 
 
     //double dens = -0.1;

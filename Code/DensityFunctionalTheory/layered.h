@@ -87,6 +87,8 @@ void neighboring3D(int i, int j, int k, int &im, int &ip, int &jm, int &jp, int 
     kp = i * Nx * Ny + j * Ny + kp1;
 }
 
+void update2D();
+
 void update3D();
 
 

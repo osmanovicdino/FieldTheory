@@ -557,6 +557,8 @@ struct CHD : public CH<double>
     double x0; // minima of the density for comp1
     double y0; //minima of the density for comp2
 
+    double a1,b1,c1,d1,e1,f1;
+
     double ml1;
     double ml2;
     double ml3;
@@ -604,8 +606,7 @@ struct CHD : public CH<double>
     CHD(const CH_builder &p);
     void setup_matrices();
 
-    void set_interaction_and_diffusion(double x12, double x13, double x23, matrix<double> D1);
-
+    void set_interaction_and_diffusion(double x12, double x13, double x23, matrix<double> D1, double, double, double, double, double, double);
 
     matrix<double> create_D_mat_split(double k1, double k2) {
         int field_no = myp.number_of_fields;
@@ -647,18 +648,18 @@ struct CHD : public CH<double>
             for (int j = 0; j < myp.N2; j++)
             {
                 double k1, k2;
-                if (i1 <= myp.N1 / 2)
-                {
+                // if (i1 <= myp.N1 / 2)
+                // {
                     k1 = i1;
-                }
+                // }
                 // else
                 // {
                 //     k1 = (i1 - myp.N1);
                 // }
-                if (j <= myp.N2 / 2)
-                {
+                // if (j <= myp.N2 / 2)
+                // {
                     k2 = j;
-                }
+                // }
                 // else
                 // {
                 //     k2 = (j - myp.N2);

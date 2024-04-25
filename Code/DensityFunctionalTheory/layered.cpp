@@ -26,6 +26,105 @@ layered::layered() : density1(vector1<double>(128 * 128 * 128)), density2(vector
     dimension = 3;
 }
 
+void layered::update2D()
+{
+    vector1<double> d1(Nx * Ny);
+    vector1<double> d2(Nx * Ny);
+    for (int i = 0; i < Nx; i++)
+    {
+        for (int j = 0; j < Ny; j++)
+        {
+
+                int im, ip, jm, jp;
+                neighboring2D(i, j, im, ip, jm, jp);
+
+                double cxm1 = density1[im];
+                double cxp1 = density1[ip];
+
+                double cym1 = density1[jm];
+                double cyp1 = density1[jp];
+
+                double cxm2 = density2[im];
+                double cxp2 = density2[ip];
+
+                double cym2 = density2[jm];
+                double cyp2 = density2[jp];
+
+
+                double c1 = density1[i * Ny + j];
+                double c2 = density2[i * Ny + j];
+
+                d1[ i * Ny + j ] = (cxm1 + cxp1 - 2 * c1) / (dx * dx) + (cym1 + cyp1 - 2 * c1) / (dy * dy) ;
+
+                d2[ i * Ny + j ] = (cxm2 + cxp2 - 2 * c2) / (dx * dx) + (cym2 + cyp2 - 2 * c2) / (dy * dy) ;
+        }
+    }
+    
+
+    vector1<double> upd1(Nx * Ny);
+    vector1<double> upd2(Nx * Ny);
+
+    for (int i = 0; i < Nx * Ny; i++)
+    {
+
+        double c1 = density1[i];
+        double c2 = density2[i];
+
+        upd1[i] = (1. / na) - (1. / nc) + (log(c1) / na) - (log(1 - c1 - c2) / nc) + chi13 - 2 * chi13 * c1 - (chi13 + chi23 - chi12) * c2 - l13 * chi13 * d1[i] - 0.5 * (-l12 * chi12 + l13 * chi13 + l23 * chi23) * d2[i];
+        upd2[i] = (1. / nb) - (1. / nc) + (log(c2) / nb) - (log(1 - c1 - c2) / nc) + chi23 - 2 * chi23 * c2 - (chi13 + chi23 - chi12) * c1 - l23 * chi23 * d2[i] - 0.5 * (-l12 * chi12 + l13 * chi13 + l23 * chi23) * d1[i];
+    }
+
+    double lambda1 = trap(upd1, dx * dy) / (dx * dy  * Nx * Ny);
+    double lambda2 = trap(upd2, dx * dy) / (dx * dy  * Nx * Ny);
+
+    // find the maximally negative value
+    double mindt = 10.;
+    for (int i = 0; i < Nx * Ny * Nz; i++)
+    {
+        if (upd1[i] - lambda1 > 0)
+        {
+            // cout << upd1[i] - lambda1 << endl;
+            double dt = density1[i] / (upd1[i] - lambda1);
+            if (dt < mindt)
+            {
+
+                mindt = dt;
+            }
+        }
+
+        if (upd2[i] - lambda2 > 0)
+        {
+            // cout << upd2[i] - lambda2 << endl;
+            double dt = density2[i] / (upd2[i] - lambda2);
+            if (dt < mindt)
+            {
+
+                mindt = dt;
+            }
+        }
+
+        double dtx = (-1 + density1[i] + density2[i]) / (upd1[i] + upd2[i] - lambda1 - lambda2);
+
+        if (dtx > 0)
+        {
+            if (dtx < mindt)
+            {
+
+                mindt = dtx;
+            }
+        }
+    }
+
+    double dt2 = 0.7 * mindt;
+    // cout << dt2 << endl;
+
+    for (int i = 0; i < Nx * Ny * Nz; i++)
+    {
+        density1[i] = density1[i] - dt2 * (upd1[i] - lambda1);
+        density2[i] = density2[i] - dt2 * (upd2[i] - lambda2);
+    }
+}
+
 void layered::update3D()
 {
     vector1<double> d1(Nx * Ny * Nz);
@@ -85,6 +184,7 @@ void layered::update3D()
     double lambda2 = trap(upd2, dx * dy * dz) / (dx * dy * dz * Nx * Ny * Nz);
 
     // find the maximally negative value
+    /*
     double mindt = 10.;
     for (int i = 0; i < Nx * Ny * Nz; i++)
     {
@@ -121,7 +221,10 @@ void layered::update3D()
         }
     }
 
-    
+    cout << mindt << endl;
+    */
+
+    double mindt = 0.005;
 
     double dt2 = 0.7 * mindt;
     //cout << dt2 << endl;
