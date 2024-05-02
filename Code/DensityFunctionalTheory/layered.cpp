@@ -229,11 +229,47 @@ void layered::update3D()
     double dt2 = 0.7 * mindt;
     //cout << dt2 << endl;
 
+    
+
+    for (int i = 0; i < Nx * Ny * Nz; i++)
+    {
+        double g1 = density1[i] - dt2 * (upd1[i] - lambda1);
+        double g2 = density2[i] - dt2 * (upd2[i] - lambda2);
+        if(g1<0. )
+        {
+            dt2 = 0.9 * density1[i] / (upd1[i] - lambda1);
+        }
+        else if(g2 < 0.)
+        {
+            dt2 = 0.9 * density2[i] / (upd2[i] - lambda2);
+        }
+        else if(g1 + g2  > 1.) 
+        {
+            if ((upd1[i] - lambda1) < -(upd2[i] - lambda2)) {
+                dt2 = 0.9 * (density1[i] + density2[i] - 1) / (upd1[i] - lambda1 + upd2[i] - lambda2);
+            }
+            else{
+
+            }
+        }
+        else
+        {
+
+        }
+    }
+    cout << mindt << " " << dt2 << endl;
+
     for (int i = 0; i < Nx * Ny * Nz; i++)
     {
         density1[i] = density1[i] - dt2 * (upd1[i] - lambda1);
         density2[i] = density2[i] - dt2 * (upd2[i] - lambda2);
+
+        if(density1[i] <0 || density2[i] <0 || density1[i]+density2[i]>1.) {
+            cout << "something went wrong" << endl;
+            pausel();
+        }
     }
+
 }
 
 #endif /* MIPS_H */
