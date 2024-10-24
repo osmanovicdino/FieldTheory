@@ -1739,7 +1739,7 @@ void IsingPolymer::iteratefield(matrix<double> &field, double dt, double &fen, d
 	outfunc(field,"t1");
 	outfunc(convolocal,"t2");
 	outfunc(den,"p1");
-	pausel();
+	//pausel();
 	
 
 	field = field+stepsize*(-field+convolocal);

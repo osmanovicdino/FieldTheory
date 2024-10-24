@@ -52,9 +52,9 @@ int main(int argc, char **argv)
     string importstring;
     string importstring1;
     string importstring2;
-
-
-    if (argc == 4)
+    double val;
+    int iter;
+    if (argc == 6)
     {
         stringstream ss;
         ss << argv[1];
@@ -62,7 +62,8 @@ int main(int argc, char **argv)
         stringstream ss2,ss3;
         ss2 << argv[2];
         ss3 << argv[3];
-        
+        val = atof(argv[4]);
+        iter = atof(argv[5]);
         importstring1 = ss2.str();
         importstring2 = ss3.str();
     }
@@ -263,34 +264,20 @@ int main(int argc, char **argv)
     a.setup_matrices();
     b.setup_matrices();
 
-    vector<matrix<double>> v;
+    // vector<matrix<double>> v;
 
-    for (int j = 0; j < nof; j++)
-    {
-        matrix<double> field1(p.N1, p.N2);
-        v.push_back(field1);
-    }
+    // for (int j = 0; j < nof; j++)
+    // {
+    //     matrix<double> field1(p.N1, p.N2);//1.E-012double)RAND_MAX) - 1.);
 
-    double gt=0.6;
+    //         for (int j = 0; j < p.N2; j++)
+    //         {
+    //            //double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
 
-    // string importstring1 = "/home/dino/Documents/Chemistry/SubDiffusionMath/Simulations_Ne/Sweep_2PS_2D_L=40_Long/field0res_chem=6_i=09999.csv";
-    // string importstring2 = "/home/dino/Documents/Chemistry/SubDiffusionMath/Simulations_Ne/Sweep_2PS_2D_L=40_Long/field1res_chem=6_i=09999.csv";
-    matrix<double> mati1 = importcsv(importstring1, T, err1);
-    matrix<double> mati2 = importcsv(importstring2, T, err1);
-
-
-        for (int i = 0; i < p.N1; i++)
-        {
-            double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
-
-            for (int j = 0; j < p.N2; j++)
-            {
-               //double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
-
-                v[0](i, j) = mati1(i,j);
-                v[1](i, j) = mati2(i,j);
-            }
-        }
+    //             v[0](i, j) = mati1(i,j);
+    //             v[1](i, j) = mati2(i,j);
+    //         }
+    //     }
     
     /* 
 
@@ -393,17 +380,17 @@ int main(int argc, char **argv)
     // }
 
     // string importstring1 = "/home/dino/External/Waves/chemistry19/field0res_i=3078_real.csv";
-    // matrix<double> mat3 = importcsv(importstring1, T, err1);
+    matrix<double> mat3 = importcsv(importstring1, T, err1);
 
     // string importstring2="/home/dino/External/Waves/chemistry19/field1res_i=3078_real.csv";
-    // matrix<double> mat4 = importcsv(importstring2, T, err1);
+    matrix<double> mat4 = importcsv(importstring2, T, err1);
 
-    for (int lk = 0; lk < nof; lk++)
-    {
-        a.set_field(v[lk], lk);
-    }
-    // a.set_field(mat3, 0);
-    // a.set_field(mat4, 1);
+    // for (int lk = 0; lk < nof; lk++)
+    // {
+    //     a.set_field(v[lk], lk);
+    // }
+    a.set_field(mat3, 0);
+    a.set_field(mat4, 1);
 
     matrix<double> perturb1(256,256);
     matrix<double> perturb2(256,256);
@@ -422,6 +409,9 @@ int main(int argc, char **argv)
         }
     }
 
+
+
+
     double rescale = 0.0;
 
     for (int i = 0; i < p.N1; i++)
@@ -429,7 +419,7 @@ int main(int argc, char **argv)
 
         for (int j = 0; j < p.N2; j++)
         {
-            // double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
+            // double r1  = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
             rescale += perturb1(i, j) * perturb1(i, j);
             rescale += perturb2(i, j) * perturb2(i, j);
         }
@@ -442,7 +432,7 @@ int main(int argc, char **argv)
 
     
 
-    double eps = 1.E-012;
+    double eps = val;
     
     cout << eps << endl;
 
@@ -452,8 +442,8 @@ int main(int argc, char **argv)
 
     perturbn1 *= eps;
     perturbn2 *= eps;
-    perturbn1 += v[0];
-    perturbn2 += v[1];
+    perturbn1 += mat3;
+    perturbn2 += mat4;
 
     b.set_field(perturbn1, 0);
     b.set_field(perturbn2, 1);
@@ -475,7 +465,7 @@ int main(int argc, char **argv)
     cout << "original distance " << sqrt(dis2) << endl;
     cout << dis3 << endl;
 
-    pausel();
+    // pausel();
 
 
     a.calculate_initial_weight(SQR(512));
@@ -503,7 +493,11 @@ int main(int argc, char **argv)
     ofstream myfileLya;
     string s1 = importstring;
     string su = s1.substr(0, s1.size() - 4);
-    myfileLya.open( (su+string("Lyapunov") +string(".csv")).c_str() );
+    stringstream ssv;
+    ssv << eps;
+    stringstream ssn;
+    ssn << iter;
+    myfileLya.open( (su+string("Lyapunov_diff=") +ssv.str()+string("_try=") +ssn.str()+string(".csv")).c_str() );
 
     double diss = 0.;
     for (int i1 = 0; i1 < p.N1; i1++)
@@ -519,8 +513,22 @@ int main(int argc, char **argv)
     // myfileLya << lambda1 << endl;
     myfileLya << sqrt(diss) << endl;
 
+    double D=1.E-4;
+
     for (int i = 0; i < runtime; i++)
     {
+        if(i % 10000000000 ==0  && i > 0000) {
+
+            string s1 = importstring;
+            // string s1 = "denp=" + strep1.str() + "c0=" + strep4.str() + "_c1=" + strep2.str() + "_surf=" + strep3.str();
+            stringstream ss;
+            ss << setw(number_of_digits) << setfill('0') << i / every;
+            string s2 = "_i=" + ss.str();
+            string su = s1.substr(0, s1.size() - 4);
+            cout << su + s2 << endl;
+            a.print_some_results(string("a") + su + s2, ps2);
+            b.print_some_results(string("b") + su + s2, ps2);
+        }
 
         if (i % every == 0 && i > 0000 )
         {
@@ -540,6 +548,13 @@ int main(int argc, char **argv)
             double lambda1 = (1. / (every * simparams[2])) * log(sqrt(dis1) / eps);
             // myfileLya << lambda1 << endl;
             myfileLya << sqrt(dis1) << endl;
+            if(sqrt(dis1) > D) {
+                // pausel();
+                for(int i = 0 ; i < b.myp.get_total() ; i++) {
+                b.fields[0][i] = a.fields[0][i] + (b.fields[0][i] - a.fields[0][i])*(eps/ sqrt(dis1) );
+                b.fields[1][i] = a.fields[1][i] + (b.fields[1][i] - a.fields[1][i]) * (eps / sqrt(dis1) );
+                }
+            }
             
             //  matrix<double> orig1(p.N1,p.N2);
             // matrix<double> orig2(p.N1, p.N2);

@@ -470,7 +470,8 @@ struct CHC : public CH<T>
     }
 
     void setup_matrices();
-    
+
+    double getk(int k1, int k2, int k3, int N1, int N2, int N3, int &rel);
     double getk(int k1, int k2, int N1, int N2, int &rel);
     double getk(int k1, int N1, int &rel);
 
@@ -519,6 +520,31 @@ struct CHC : public CH<T>
         return dmat;
     }
 
+    matrix<double> create_D_mat_split(double k1, double k2, double k3)
+    {
+        int field_no = (this->myp).number_of_fields;
+        matrix<double> dmat(field_no, field_no);
+
+        for (int i = 0; i < field_no; i++)
+        {
+            dmat(i, i) += -diffusion[i] * temp1 * (SQR(k1) + SQR(k2)+SQR (k3));
+        }
+
+        for (int i = 0; i < field_no; i++)
+        {
+            for (int j = 0; j < field_no; j++)
+            {
+                dmat(i, j) += -diffusion[i] * temp1 * (SQR(k1) + SQR(k2) + SQR(k3)) * epsilon_couplings(i, j);
+            }
+        }
+        for (int i = 0; i < field_no; i++)
+        {
+            if (phase_separators[i])
+                dmat(i, i) += -diffusion[i] * cons3s[i] * temp1 * (SQR(k1) + SQR(k2)+SQR(k3)) - diffusion[i] * SQR(epsilon[i]) * SQR(temp1) * SQR(SQR(k1) + SQR(k2)+SQR(k3));
+        }
+        return dmat;
+    }
+
     void calculate_non_linear_weight(T **);
 
     void calculate_non_linear_weightSQR(T **);
@@ -527,6 +553,8 @@ struct CHC : public CH<T>
     void calculate_initial_weightSQR();
 
     void Update();
+
+    void UpdateTD(matrix<double> &fieldtoset, int i);
 
     template <class Q>
     void UpdateNoise(Q &func,GenNoise<T> &,vector1< double>&);
@@ -557,7 +585,6 @@ struct CHD : public CH<double>
     double x0; // minima of the density for comp1
     double y0; //minima of the density for comp2
 
-    double a1,b1,c1,d1,e1,f1;
 
     double ml1;
     double ml2;
@@ -606,7 +633,7 @@ struct CHD : public CH<double>
     CHD(const CH_builder &p);
     void setup_matrices();
 
-    void set_interaction_and_diffusion(double x12, double x13, double x23, matrix<double> D1, double, double, double, double, double, double);
+    void set_interaction_and_diffusion(double x12, double x13, double x23, matrix<double> D1);
 
     matrix<double> create_D_mat_split(double k1, double k2) {
         int field_no = myp.number_of_fields;

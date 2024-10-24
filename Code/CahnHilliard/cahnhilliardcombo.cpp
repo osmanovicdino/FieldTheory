@@ -80,7 +80,32 @@ void CHC<T>::setup_matrices() {
             }
         }
     }
+        else if ((this->myp).dimension == 3)
+        {
+            int iter = 0;
+            for (int k1 = 0; k1 <= this->myp.N1 / 2; k1++)
+            {
+                for (int k2 = k1; k2 <= this->myp.N2 / 2; k2++)
+                {
+                    for(int k3 = k2 ; k2 <= this->myp.N3/2 ; k3++) {    
+                        cout << iter << endl;
+                        matrix<double> temp = create_D_mat_split(k1, k2, k3);
 
+                        baremat[iter] = temp;
+
+                        matrix<double> to_invert = identitymatrix - (1 - alpha) * temp - alpha * dt * temp;
+                        to_invert.inverse();
+
+                        inverses[iter] = to_invert;
+
+                        iter++;
+                    }
+                }
+            }
+        }
+        else{
+
+        }
     }
     else if constexpr (std::is_same_v<T, double>)
     {
@@ -132,6 +157,28 @@ void CHC<T>::setup_matrices() {
                     iter++;
                 }
             }
+        }
+        else if ((this->myp).dimension == 3)
+        {
+            baremat.resize(this->myp.N1 * this->myp.N2 * this->myp.N3);
+            inverses.resize(this->myp.N1 * this->myp.N2 * this->myp.N3);
+            int iter = 0;
+            for (int k1 = 0; k1 < this->myp.N1; k1++)
+                for (int k2 = 0; k2 < this->myp.N2; k2++)
+                    for (int k3 = 0; k3 < this->myp.N3; k3++)
+                    {
+                        cout << iter << endl;
+                        matrix<double> temp = create_D_mat_split(k1, k2, k3);
+
+                        baremat[iter] = temp;
+
+                        matrix<double> to_invert = identitymatrix - (1 - alpha) * temp - alpha * dt * temp;
+                        to_invert.inverse();
+
+                        inverses[iter] = to_invert;
+
+                        iter++;
+                    }
         }
         else {
 
@@ -351,6 +398,119 @@ void CHC<T>::calculate_non_linear_weight(T **input)
 //     }
 // }
 
+inline void sort_triplet(int t1, int t2, int t3, int &i1, int &i2, int &i3)
+{
+    if (t1 <= t2)
+    {
+        if (t2 <= t3)
+        {
+            i1 = t1;
+            i2 = t2;
+            i3 = t3;
+        }
+        else
+        {
+            if (t1 <= t3)
+            {
+                i1 = t1;
+                i2 = t3;
+                i3 = t2;
+            }
+            else
+            {
+                i1 = t3;
+                i2 = t1;
+                i3 = t2;
+            }
+        }
+    }
+    else
+    {
+        if (t1 <= t3)
+        {
+            i1 = t2;
+            i2 = t1;
+            i3 = t3;
+        }
+        else
+        {
+            if (t2 <= t3)
+            {
+                i1 = t2;
+                i2 = t3;
+                i3 = t1;
+            }
+            else
+            {
+                i1 = t3;
+                i2 = t2;
+                i3 = t1;
+            }
+        }
+    }
+}
+
+unsigned long long
+comb(unsigned long long n, unsigned long long k)
+{
+    if (k > n)
+    {
+        return 0;
+    }
+    unsigned long long r = 1;
+    for (unsigned long long d = 1; d <= k; ++d)
+    {
+        r *= n--;
+        r /= d;
+    }
+    return r;
+}
+
+template <>
+double CHC<complex<double>>::getk(int i, int j, int k, int N1, int N2, int N3, int &rel)
+{
+
+    // if constexpr (std::is_same_v<T, complex<double>>)
+    // {
+    int k1, k2, k3;
+    if (i <= N1 / 2)
+    {
+        k1 = i;
+    }
+    else
+    {
+        k1 = (i - N1);
+    }
+    if (j <= N2 / 2)
+    {
+        k2 = j;
+    }
+    else
+    {
+        k2 = (j - N2);
+    }
+    if(k <= N3/2) {
+        k3 = k;
+    }
+    else{
+        k3 = k - N3;
+    }
+
+    double tempor = SQR(k1) + SQR(k2) + SQR(k3);
+
+    int k1a = abs(k1);
+    int k2a = abs(k2);
+    int k3a = abs(k3);
+    int i1,i2,i3;
+    sort_triplet(k1a,k2a,k3a,i1,i2,i3);
+
+    int m = N1/2;
+    rel = (CUB(i1) + 6 * i3 - 3 * i2 * (-1 + i2 - 2 * m) - 3 * SQR(i1) * (1 + m) + i1 * (2 + 3 * m * (2 + m)))/6;
+        // rel = k2a - (k1a * (1 + k1a - 2 * (1 + N1 / 2))) / 2.;
+
+    return tempor;
+}
+
 template<>
 double CHC<complex<double> >::getk(int i, int j, int N1, int N2, int &rel)
 {
@@ -385,6 +545,42 @@ double CHC<complex<double> >::getk(int i, int j, int N1, int N2, int &rel)
         }
         rel = k2a - (k1a * (1 + k1a - 2 * (1 + N1 / 2))) / 2.;
 
+        return tempor;
+    }
+
+    template <>
+    double CHC<complex<double> >::getk(int i, int N1, int &rel)
+    {
+
+        // if constexpr (std::is_same_v<T, complex<double>>)
+        // {
+        int k1;
+        if (i <= N1 / 2)
+        {
+            k1 = i;
+        }
+        else
+        {
+            k1 = (i - N1);
+        }
+
+        double tempor = SQR(k1);
+        rel = k1;
+        return tempor;
+    }
+
+    template <>
+    double CHC<double>::getk(int i, int j, int k, int N1, int N2, int N3, int &rel)
+    {
+
+        // if constexpr (std::is_same_v<T, complex<double>>)
+        // {
+        int k1 = i;
+        int k2 = j;
+        int k3 = k;
+
+        double tempor = SQR(k1) + SQR(k2) + SQR(k3);
+        rel = k1 * N2*N3 + N3*k2+ k3;
         return tempor;
     }
 
@@ -475,6 +671,28 @@ void CHC<T>::calculate_initial_weight(int cut_offf) {
         }
     }
     }
+    else if ((this->myp).dimension == 3)
+    {
+        for (int fn = 0; fn < nof; fn++)
+        {
+            for (int i = 0; i < this->myp.N1; i++)
+            {
+                for (int j = 0; j < this->myp.N2; j++)
+                {
+                    for (int k = 0; k < this->myp.N3; k++)
+                    {
+                        int rel;
+                        double tempor = getk(i, j, k, this->myp.N1, this->myp.N2, this->myp.N3, rel);
+                        if (tempor > cut_off)
+                        {
+                            // cout << tempor << endl;
+                            this->transformed1.calculated_reactions[fn][i * (this->myp.N2 * this->myp.N3) + j * this->myp.N3 + k] = 0.; // cut off the high frequency modes
+                        }
+                    }
+                }
+            }
+        }
+    }
     else{
 
     }
@@ -549,36 +767,6 @@ void CHC<T>::calculate_initial_weight(int cut_offf) {
     if((this->myp).dimension==1) {
         for (int i = 0; i < this->myp.N1; i++)
         {
-
-
-                // double k1, k2;
-                // if (i <= this->myp.N1 / 2)
-                // {
-                //     k1 = i;
-                // }
-                // else
-                // {
-                //     k1 = (i - this->myp.N1);
-                // }
-                // if (j <= this->myp.N2 / 2)
-                // {
-                //     k2 = j;
-                // }
-                // else
-                // {
-                //     k2 = (j - this->myp.N2);
-                // }
-
-                // //take absolute values of k1 and k2
-                // int k1a = abs(k1);
-                // int k2a = abs(k2);
-                // if(k2a < k1a) {
-                //     k1a = k2a;
-                //     k2a = abs(k1);
-                // }
-                // int rel = k2a - (k1a * (1 + k1a - 2 * (1 + this->myp.N1 / 2))) / 2.;
-
-                // double tempor = SQR(k1) + SQR(k2);
                 int rel;
                 double tempor = getk(i, this->myp.N1, rel);
 
@@ -606,34 +794,7 @@ void CHC<T>::calculate_initial_weight(int cut_offf) {
             for (int j = 0; j < this->myp.N2; j++)
             {
 
-                // double k1, k2;
-                // if (i <= this->myp.N1 / 2)
-                // {
-                //     k1 = i;
-                // }
-                // else
-                // {
-                //     k1 = (i - this->myp.N1);
-                // }
-                // if (j <= this->myp.N2 / 2)
-                // {
-                //     k2 = j;
-                // }
-                // else
-                // {
-                //     k2 = (j - this->myp.N2);
-                // }
 
-                // //take absolute values of k1 and k2
-                // int k1a = abs(k1);
-                // int k2a = abs(k2);
-                // if(k2a < k1a) {
-                //     k1a = k2a;
-                //     k2a = abs(k1);
-                // }
-                // int rel = k2a - (k1a * (1 + k1a - 2 * (1 + this->myp.N1 / 2))) / 2.;
-
-                // double tempor = SQR(k1) + SQR(k2);
                 int rel;
                 double tempor = getk(i, j, this->myp.N1, this->myp.N2, rel);
 
@@ -654,6 +815,36 @@ void CHC<T>::calculate_initial_weight(int cut_offf) {
 
                 
                 }
+        }
+    }
+    else if ((this->myp).dimension == 3)
+    {
+        for (int i = 0; i < this->myp.N1; i++)
+        {
+            for (int j = 0; j < this->myp.N2; j++)
+            {
+                for (int ks = 0; ks < this->myp.N3; ks++)
+                {
+
+                    int rel;
+                    double tempor = getk(i, j, ks, this->myp.N1, this->myp.N2, this->myp.N3, rel);
+
+                    vector1<T> v(nof);
+                    for (int k = 0; k < nof; k++)
+                    {
+                        v[k] = this->transformed1.calculated_reactions[k][i * (this->myp.N2 * this->myp.N3) + j * this->myp.N3 + ks];
+                    }
+
+                    v = baremat[rel] * v;
+
+                    for (int k = 0; k < nof; k++)
+                    {
+                        InitWeight.calculated_reactions[k][i * (this->myp.N2 * this->myp.N3) + j * this->myp.N3 + ks] = (v[k] - diffusion[k] * tempor * temp1 * this->transformed2.calculated_reactions[k][i * (this->myp.N2 * this->myp.N3) + j * this->myp.N3 + ks]);
+                        // oldweightFT.calculated_reactions[k][i * myp.N2 + j] = (1- alpha) * (-v[k] - diffusion * tempor * temp1 * transformed2.calculated_reactions[k][i * myp.N2 + j]);
+                    }
+                // upd1[i * myp.N2 + j] = -2*alpha*dt*diffusion*tempor*temp1*transformed2.calculated_reactions[]
+                }
+            }
         }
     }
     else{
@@ -769,8 +960,11 @@ void CHC<T>::Update() {
     //     pausel();
     // GetMaximas(transformed3.calculated_reactions,schem,myp);
     // pausel();
-
     this->transformed1.Calculate_Results(this->fields); // calculate FT of fields
+
+    this->reverse_transform.Calculate_Results(this->transformed1.calculated_reactions);
+
+
 
     calculate_non_linear_weight(this->fields);
 
@@ -913,6 +1107,77 @@ void CHC<T>::Update() {
             }
         }
     }
+    else if ((this->myp).dimension == 3)
+    {
+        for (int i = 0; i < this->myp.N1; i++)
+        {
+            for (int j = 0; j < this->myp.N2; j++)
+            {
+                for (int ks = 0; ks < this->myp.N3; ks++)
+                {
+
+                    int rel;
+                    double tempor = getk(i, j, ks, this->myp.N1, this->myp.N2, this->myp.N3, rel);
+
+                    // vector1<complex<double> > v(nof);
+
+                    double fac = tempor * temp1;
+                    vector1<T> v(nof);
+                    vector1<T> v2(nof);
+                    vector1<T> v3(nof);
+                    int indx = i * (this->myp.N2 * this->myp.N3) + j * this->myp.N3 + ks;
+
+
+     
+
+                    for (int k = 0; k < nof; k++)
+                    {
+                        v2[k] = this->transformed1.calculated_reactions[k][indx]; // oldfieldFT.calculated_reactions[k][i * myp.N2 + j];
+                    }
+
+                    v2 = baremat[rel] * v2;
+
+                    for (int k = 0; k < nof; k++)
+                    {
+                        v[k] = -((1 - alpha) + (alpha)*dt) * diffusion[k] * fac * (this->transformed2.calculated_reactions[k][indx]) + this->transformed1.calculated_reactions[k][indx]                                           // oldfieldFT.calculated_reactions[k][i * myp.N2 + j]
+                               - (1 - alpha) * v2[k] + ((1 - alpha) /* -  0.5*(alpha) * dt */) * diffusion[k] * fac * oldfieldNLW.calculated_reactions[k][indx] - 0.0 * 2 * alpha * dt * InitWeight.calculated_reactions[k][indx] // zeroed because of the initial conditions we set
+                               + dt * this->transformed3.calculated_reactions[k][indx];
+                    }
+
+                    v3 = inverses[rel] * v;
+                    // if (rel == 131839)
+                    // {
+                    //     cout << inverses[rel] << endl;
+                    //     cout << nof << endl;
+                    //     for (int k = 0; k < nof; k++)
+                    //     {
+
+                    //         cout << "before: " << transformed1.calculated_reactions[k][i * myp.N2 + j] << endl;
+                    //         cout << "1: " << -(2 * (1 - alpha) - (alpha)*dt) * fac * (transformed2.calculated_reactions[k][i * myp.N2 + j]) << endl;
+                    //         cout << "2: " << +oldfieldFT.calculated_reactions[k][i * myp.N2 + j] << endl;
+                    //         cout << "3: " << -(1 - alpha) * v2[k] << endl;
+                    //         cout << "4: " << +(2 * (1 - alpha) + (alpha)*dt) * fac * oldfieldNLW.calculated_reactions[k][i * myp.N2 + j] << endl;
+                    //         cout << "5: " << +2 * alpha * dt * InitWeight.calculated_reactions[k][i * myp.N2 + j] << endl;
+                    //         cout << "6: " << +2 * dt * transformed3.calculated_reactions[k][i * myp.N2 + j] << endl;
+                    //        // cout << "7: " << 2 * dt * transformed3.calculated_reactions[k][i * myp.N2 + j] << endl;
+                    //         cout << "after: " << v3[k] << endl;
+                    //         cout << endl;
+                    //         cout << endl;
+                    //     }
+
+                    //     cout << v << endl;
+                    //     cout << v3 << endl;
+                    //     pausel();
+                    // }
+                    for (int k = 0; k < nof; k++)
+                    {
+                        this->rules.calculated_reactions[k][indx] = v3[k];
+                    }
+                }
+            }
+
+        }
+    }
     else{
 
     }
@@ -939,6 +1204,246 @@ void CHC<T>::Update() {
 
     this->set_field(this->reverse_transform.calculated_reactions);
     
+}
+
+template <class T>
+void CHC<T>::UpdateTD(matrix<double> &fieldtoset, int i)
+{
+
+    // string fieldss = "fields";
+    // outfunc(fields[0], fieldss, myp);
+    this->set_field(fieldtoset,i);
+    //we can input the rate as a "phantom" field
+
+    this->chems.Calculate_Results(this->fields); // calculate chemistry
+
+    this->transformed3.Calculate_Results(this->chems.calculated_reactions);
+
+    // string ftschem = "ftchem";
+    // outfunc(transformed3.calculated_reactions[0], ftschem, myp);
+    //     pausel();
+    // GetMaximas(transformed3.calculated_reactions,schem,myp);
+    // pausel();
+
+    this->transformed1.Calculate_Results(this->fields); // calculate FT of fields
+
+    calculate_non_linear_weight(this->fields);
+
+    int totp = this->myp.get_total();
+    int nof = this->myp.number_of_fields;
+
+    if ((this->myp).dimension == 1)
+    {
+        for (int i = 0; i < this->myp.N1; i++)
+        {
+
+            int rel;
+            double tempor = getk(i, this->myp.N1, rel);
+
+            // vector1<complex<double> > v(nof);
+
+            double fac = tempor * temp1;
+            vector1<T> v(nof);
+            vector1<T> v2(nof);
+            vector1<T> v3(nof);
+
+            for (int k = 0; k < nof; k++)
+            {
+                v2[k] = this->transformed1.calculated_reactions[k][i]; // oldfieldFT.calculated_reactions[k][i * myp.N2 + j];
+            }
+
+            v2 = baremat[rel] * v2;
+
+            for (int k = 0; k < nof; k++)
+            {
+                v[k] = -((1 - alpha) + (alpha)*dt) * diffusion[k] * fac * (this->transformed2.calculated_reactions[k][i]) + this->transformed1.calculated_reactions[k][i]                                           // oldfieldFT.calculated_reactions[k][i * myp.N2 + j]
+                       - (1 - alpha) * v2[k] + ((1 - alpha) /* -  0.5*(alpha) * dt */) * diffusion[k] * fac * oldfieldNLW.calculated_reactions[k][i] - 0.0 * 2 * alpha * dt * InitWeight.calculated_reactions[k][i] // zeroed because of the initial conditions we set
+                       + dt * this->transformed3.calculated_reactions[k][i];
+            }
+
+            v3 = inverses[rel] * v;
+            // if (rel == 131839)
+            // {
+            //     cout << inverses[rel] << endl;
+            //     cout << nof << endl;
+            //     for (int k = 0; k < nof; k++)
+            //     {
+
+            //         cout << "before: " << transformed1.calculated_reactions[k][i * myp.N2 + j] << endl;
+            //         cout << "1: " << -(2 * (1 - alpha) - (alpha)*dt) * fac * (transformed2.calculated_reactions[k][i * myp.N2 + j]) << endl;
+            //         cout << "2: " << +oldfieldFT.calculated_reactions[k][i * myp.N2 + j] << endl;
+            //         cout << "3: " << -(1 - alpha) * v2[k] << endl;
+            //         cout << "4: " << +(2 * (1 - alpha) + (alpha)*dt) * fac * oldfieldNLW.calculated_reactions[k][i * myp.N2 + j] << endl;
+            //         cout << "5: " << +2 * alpha * dt * InitWeight.calculated_reactions[k][i * myp.N2 + j] << endl;
+            //         cout << "6: " << +2 * dt * transformed3.calculated_reactions[k][i * myp.N2 + j] << endl;
+            //        // cout << "7: " << 2 * dt * transformed3.calculated_reactions[k][i * myp.N2 + j] << endl;
+            //         cout << "after: " << v3[k] << endl;
+            //         cout << endl;
+            //         cout << endl;
+            //     }
+
+            //     cout << v << endl;
+            //     cout << v3 << endl;
+            //     pausel();
+            // }
+            for (int k = 0; k < nof; k++)
+            {
+                this->rules.calculated_reactions[k][i] = v3[k];
+            }
+        }
+    }
+    else if ((this->myp).dimension == 2)
+    {
+        for (int i = 0; i < this->myp.N1; i++)
+        {
+            for (int j = 0; j < this->myp.N2; j++)
+            {
+
+                int rel;
+                double tempor = getk(i, j, this->myp.N1, this->myp.N2, rel);
+
+                // vector1<complex<double> > v(nof);
+
+                double fac = tempor * temp1;
+                vector1<T> v(nof);
+                vector1<T> v2(nof);
+                vector1<T> v3(nof);
+
+                for (int k = 0; k < nof; k++)
+                {
+                    v2[k] = this->transformed1.calculated_reactions[k][i * this->myp.N2 + j]; // oldfieldFT.calculated_reactions[k][i * myp.N2 + j];
+                }
+
+                v2 = baremat[rel] * v2;
+
+                for (int k = 0; k < nof; k++)
+                {
+                    v[k] = -((1 - alpha) + (alpha)*dt) * diffusion[k] * fac * (this->transformed2.calculated_reactions[k][i * this->myp.N2 + j]) + this->transformed1.calculated_reactions[k][i * this->myp.N2 + j]                                           // oldfieldFT.calculated_reactions[k][i * myp.N2 + j]
+                           - (1 - alpha) * v2[k] + ((1 - alpha) /* -  0.5*(alpha) * dt */) * diffusion[k] * fac * oldfieldNLW.calculated_reactions[k][i * this->myp.N2 + j] - 0.0 * 2 * alpha * dt * InitWeight.calculated_reactions[k][i * this->myp.N2 + j] // zeroed because of the initial conditions we set
+                           + dt * this->transformed3.calculated_reactions[k][i * this->myp.N2 + j];
+                }
+
+                v3 = inverses[rel] * v;
+                // if (rel == 131839)
+                // {
+                //     cout << inverses[rel] << endl;
+                //     cout << nof << endl;
+                //     for (int k = 0; k < nof; k++)
+                //     {
+
+                //         cout << "before: " << transformed1.calculated_reactions[k][i * myp.N2 + j] << endl;
+                //         cout << "1: " << -(2 * (1 - alpha) - (alpha)*dt) * fac * (transformed2.calculated_reactions[k][i * myp.N2 + j]) << endl;
+                //         cout << "2: " << +oldfieldFT.calculated_reactions[k][i * myp.N2 + j] << endl;
+                //         cout << "3: " << -(1 - alpha) * v2[k] << endl;
+                //         cout << "4: " << +(2 * (1 - alpha) + (alpha)*dt) * fac * oldfieldNLW.calculated_reactions[k][i * myp.N2 + j] << endl;
+                //         cout << "5: " << +2 * alpha * dt * InitWeight.calculated_reactions[k][i * myp.N2 + j] << endl;
+                //         cout << "6: " << +2 * dt * transformed3.calculated_reactions[k][i * myp.N2 + j] << endl;
+                //        // cout << "7: " << 2 * dt * transformed3.calculated_reactions[k][i * myp.N2 + j] << endl;
+                //         cout << "after: " << v3[k] << endl;
+                //         cout << endl;
+                //         cout << endl;
+                //     }
+
+                //     cout << v << endl;
+                //     cout << v3 << endl;
+                //     pausel();
+                // }
+                for (int k = 0; k < nof; k++)
+                {
+                    this->rules.calculated_reactions[k][i * this->myp.N2 + j] = v3[k];
+                }
+            }
+        }
+    }
+    else if ((this->myp).dimension == 3)
+    {
+        for (int i = 0; i < this->myp.N1; i++)
+        {
+            for (int j = 0; j < this->myp.N2; j++)
+            {
+                for (int ks = 0; ks < this->myp.N3; ks++)
+                {
+
+                    int rel;
+                    double tempor = getk(i, j, ks, this->myp.N1, this->myp.N2, this->myp.N3, rel);
+
+                    // vector1<complex<double> > v(nof);
+
+                    double fac = tempor * temp1;
+                    vector1<T> v(nof);
+                    vector1<T> v2(nof);
+                    vector1<T> v3(nof);
+                    int indx = i * (this->myp.N2 + this->myp.N1) + j * this->myp.N2 + ks;
+
+                    for (int k = 0; k < nof; k++)
+                    {
+                        v2[k] = this->transformed1.calculated_reactions[k][indx]; // oldfieldFT.calculated_reactions[k][i * myp.N2 + j];
+                    }
+
+                    v2 = baremat[rel] * v2;
+
+                    for (int k = 0; k < nof; k++)
+                    {
+                        v[k] = -((1 - alpha) + (alpha)*dt) * diffusion[k] * fac * (this->transformed2.calculated_reactions[k][indx]) + this->transformed1.calculated_reactions[k][indx]                                           // oldfieldFT.calculated_reactions[k][i * myp.N2 + j]
+                               - (1 - alpha) * v2[k] + ((1 - alpha) /* -  0.5*(alpha) * dt */) * diffusion[k] * fac * oldfieldNLW.calculated_reactions[k][indx] - 0.0 * 2 * alpha * dt * InitWeight.calculated_reactions[k][indx] // zeroed because of the initial conditions we set
+                               + dt * this->transformed3.calculated_reactions[k][indx];
+                    }
+
+                    v3 = inverses[rel] * v;
+                    // if (rel == 131839)
+                    // {
+                    //     cout << inverses[rel] << endl;
+                    //     cout << nof << endl;
+                    //     for (int k = 0; k < nof; k++)
+                    //     {
+
+                    //         cout << "before: " << transformed1.calculated_reactions[k][i * myp.N2 + j] << endl;
+                    //         cout << "1: " << -(2 * (1 - alpha) - (alpha)*dt) * fac * (transformed2.calculated_reactions[k][i * myp.N2 + j]) << endl;
+                    //         cout << "2: " << +oldfieldFT.calculated_reactions[k][i * myp.N2 + j] << endl;
+                    //         cout << "3: " << -(1 - alpha) * v2[k] << endl;
+                    //         cout << "4: " << +(2 * (1 - alpha) + (alpha)*dt) * fac * oldfieldNLW.calculated_reactions[k][i * myp.N2 + j] << endl;
+                    //         cout << "5: " << +2 * alpha * dt * InitWeight.calculated_reactions[k][i * myp.N2 + j] << endl;
+                    //         cout << "6: " << +2 * dt * transformed3.calculated_reactions[k][i * myp.N2 + j] << endl;
+                    //        // cout << "7: " << 2 * dt * transformed3.calculated_reactions[k][i * myp.N2 + j] << endl;
+                    //         cout << "after: " << v3[k] << endl;
+                    //         cout << endl;
+                    //         cout << endl;
+                    //     }
+
+                    //     cout << v << endl;
+                    //     cout << v3 << endl;
+                    //     pausel();
+                    // }
+                    for (int k = 0; k < nof; k++)
+                    {
+                        this->rules.calculated_reactions[k][indx] = v3[k];
+                    }
+                }
+            }
+        }
+    }
+    else
+    {
+    }
+
+    oldfieldFT.Calculate_Results(this->transformed1.calculated_reactions);
+
+    oldfieldNLW.Calculate_Results(this->transformed2.calculated_reactions);
+
+    this->reverse_transform.Calculate_Results(this->rules.calculated_reactions);
+
+    GetMaximas(this->fields, this->myp);
+
+    this->reverse_transform.GetMaximas();
+
+    // this->reverse_transform.GetMaximasIndex();
+
+    this->reverse_transform.GetMinimas();
+
+    // this->reverse_transform.GetMinimasIndex();
+    cout << endl;
+
+    this->set_field(this->reverse_transform.calculated_reactions);
 }
 
 // template<class Q, class T>

@@ -33,7 +33,7 @@ void CHD::setup_matrices()
 
 }
 
-void CHD::set_interaction_and_diffusion(double x12, double x13, double x23, matrix<double> D1, double a11, double b11, double c11, double d11, double e11, double f11) {
+void CHD::set_interaction_and_diffusion(double x12, double x13, double x23, matrix<double> D1) {
 
     diffusion_matrix = D1;
 
@@ -41,12 +41,6 @@ void CHD::set_interaction_and_diffusion(double x12, double x13, double x23, matr
     chi_13 = x13;
     chi_23 = x23;
 
-    a1 = a11;
-    b1 = b11;
-    c1 = c11;
-    d1 = d11;
-    e1 = e11;
-    f1 = f11;
 
     /*
     string scr = "/home/dino/Documents/Chemistry/TwoFluid/scripts/fm.wls";
@@ -80,10 +74,6 @@ void CHD::set_interaction_and_diffusion(double x12, double x13, double x23, matr
     // x0 = 1./3.;
     // y0 = 1./3.;
 
-    cout << x0 << " " << y0 << endl;
-    double diffusion1 = diffusion_matrix(0, 0);
-    double diffusion2 = diffusion_matrix(1, 1);
-
     // ml1 = diffusion1*(2 * (1 / (2. * x0) - 1 / (2. * (-1 + x0 + y0)) - chi_13));
     // ml2 = diffusion1*(-(1 / (-1 + x0 + y0)) + chi_12 - chi_13 - chi_23);
     // ml3 = (diffusion2/diffusion1)*ml2;
@@ -94,17 +84,70 @@ void CHD::set_interaction_and_diffusion(double x12, double x13, double x23, matr
     // ml3 = diffusion2*d1;
     // ml4 = diffusion2*c1;
 
-    ml1 = diffusion1 * b1;
-    ml2 = diffusion1 * (-b1*-2 * a1 * SQR(SQR(c1)) * SQR(d1) - 2 * a1 * SQR(c1) * SQR(SQR(d1)));
-    ml3 = diffusion2 * (-b1* -2 * a1 * SQR(SQR(c1)) * SQR(d1) - 2 * a1 * SQR(c1) * SQR(SQR(d1)));
-    ml4 = diffusion2 * b1;
 
-    double interfacewidth12 = 0.00;
+    /*
+    string scr = "/home/dino/Documents/Chemistry/TwoFluid/scripts/fm.wls";
+    stringstream p1,p2,p3;
 
-    sl2 = interfacewidth12 * diffusion1 * 0.5 * (chi_12 - chi_13 - chi_23);
-    sl1 = -diffusion1*chi_13;
-    sl4 = -diffusion2*chi_23;
-    sl3 = interfacewidth12 * diffusion2 * 0.5 * (chi_12 - chi_13 - chi_23);
+    p1 << chi_12;
+    p2 << chi_13;
+    p3 << chi_23;
+
+    string param1 = p1.str();
+    string param2 = p2.str();
+    string param3 = p3.str();
+
+    string gap = " ";
+
+    string total_command = scr + gap + param1 + gap + param2 + gap + param3;
+
+
+    cout << total_command << endl;
+
+    system(total_command.c_str());
+
+    double T;
+    bool err1;
+    matrix<double> res = importcsv("/home/dino/Documents/Chemistry/TwoFluid/scripts/output.csv",T,err1);
+
+    x0 = res(0,0);
+    y0 = res(1,0);
+    */
+
+    x0 = 1. / 3.;
+    y0 = 1. / 3.;
+
+    double diffusion1 = diffusion_matrix(0, 0);
+    double diffusion2 = diffusion_matrix(1, 1);
+
+    ml1 = diffusion1 * (2 * (1 / (2. * x0) - 1 / (2. * (-1 + x0 + y0)) - chi_13));
+    ml2 = diffusion1 * (-(1 / (-1 + x0 + y0)) + chi_12 - chi_13 - chi_23);
+    ml3 = (diffusion2 / diffusion1) * ml2;
+    ml4 = diffusion2 * (2 * (1 / (2. * y0) - 1 / (2. * (-1 + x0 + y0)) - chi_23));
+
+    // ml1 = diffusion1 * (  (1 / (2. * x0) - 1 / (2. * (-1 + x0 + y0)) - chi_13));
+    // ml2 = diffusion1 * (-(1 / (-1 + x0 + y0)) + chi_12 - chi_13 - chi_23);
+    // ml3 = (diffusion2 / diffusion1) * ml2;
+    // ml4 = diffusion2 * (  (1 / (2. * y0) - 1 / (2. * (-1 + x0 + y0)) - chi_23));
+
+    double interface_width = 0.03;
+
+    sl2 = interface_width * diffusion1 * 0.5 * (chi_12 - chi_13 - chi_23);
+    sl1 = -diffusion1 * chi_13;
+    sl4 = -diffusion2 * chi_23;
+    sl3 = interface_width * diffusion2 * 0.5 * (chi_12 - chi_13 - chi_23);
+
+    // ml1 = diffusion1 * b1;
+    // ml2 = diffusion1 * (-b1*-2 * a1 * SQR(SQR(c1)) * SQR(d1) - 2 * a1 * SQR(c1) * SQR(SQR(d1)));
+    // ml3 = diffusion2 * (-b1* -2 * a1 * SQR(SQR(c1)) * SQR(d1) - 2 * a1 * SQR(c1) * SQR(SQR(d1)));
+    // ml4 = diffusion2 * b1;
+
+    // double interfacewidth12 = 0.00;
+
+    // sl2 = interfacewidth12 * diffusion1 * 0.5 * (chi_12 - chi_13 - chi_23);
+    // sl1 = -diffusion1*chi_13;
+    // sl4 = -diffusion2*chi_23;
+    // sl3 = interfacewidth12 * diffusion2 * 0.5 * (chi_12 - chi_13 - chi_23);
 
     // cout << ml1 << "," << ml2 << endl;
     // cout << ml3 << "," << ml4 << endl;
@@ -126,20 +169,20 @@ void CHD::calculate_non_linear_weight(double **input)
 
     for (int j = 0; j < totp; j++)
     {
-    //     weigs.calculated_reactions[0][j] = 3. * (-0.16666666666666666 * 1 / SQR(x0) + 1 / (6. * SQR(-1 + x0 + y0))) * SQR(input[0][j]) +
-    //                                        4. * (1 / (12. * CUB(x0)) - 1 / (12. * CUB(-1 + x0 + y0))) * CUB(input[0][j]) +
-    //                                        (input[0][j] / SQR(-1 + x0 + y0) - SQR(input[0][j]) / CUB(-1 + x0 + y0)) * input[1][j] +
-    //                                        (1 / (2. * SQR(-1 + x0 + y0)) - input[0][j] / CUB(-1 + x0 + y0)) * SQR(input[1][j]) - CUB(input[1][j]) / (3. * CUB(-1 + x0 + y0));
-    //     weigs.calculated_reactions[1][j] = SQR(input[0][j]) / (2. * SQR(-1 + x0 + y0)) - CUB(input[0][j]) / (3. * CUB(-1 + x0 + y0)) +
-    //                                        2. * (input[0][j] / (2. * SQR(-1 + x0 + y0)) - SQR(input[0][j]) / (2. * CUB(-1 + x0 + y0))) * input[1][j] +
-    //                                        3. * (-0.16666666666666666 * 1 / SQR(y0) + 1 / (6. * SQR(-1 + x0 + y0)) - input[0][j] / (3. * CUB(-1 + x0 + y0))) * SQR(input[1][j]) +
-    //                                        4. * (1 / (12. * CUB(y0)) - 1 / (12. * CUB(-1 + x0 + y0))) * CUB(input[1][j]);
-    //
+        weigs.calculated_reactions[0][j] = 3. * (-0.16666666666666666 * 1 / SQR(x0) + 1 / (6. * SQR(-1 + x0 + y0))) * SQR(input[0][j]) +
+                                           4. * (1 / (12. * CUB(x0)) - 1 / (12. * CUB(-1 + x0 + y0))) * CUB(input[0][j]) +
+                                           (input[0][j] / SQR(-1 + x0 + y0) - SQR(input[0][j]) / CUB(-1 + x0 + y0)) * input[1][j] +
+                                           (1 / (2. * SQR(-1 + x0 + y0)) - input[0][j] / CUB(-1 + x0 + y0)) * SQR(input[1][j]) - CUB(input[1][j]) / (3. * CUB(-1 + x0 + y0));
+        weigs.calculated_reactions[1][j] = SQR(input[0][j]) / (2. * SQR(-1 + x0 + y0)) - CUB(input[0][j]) / (3. * CUB(-1 + x0 + y0)) +
+                                           2. * (input[0][j] / (2. * SQR(-1 + x0 + y0)) - SQR(input[0][j]) / (2. * CUB(-1 + x0 + y0))) * input[1][j] +
+                                           3. * (-0.16666666666666666 * 1 / SQR(y0) + 1 / (6. * SQR(-1 + x0 + y0)) - input[0][j] / (3. * CUB(-1 + x0 + y0))) * SQR(input[1][j]) +
+                                           4. * (1 / (12. * CUB(y0)) - 1 / (12. * CUB(-1 + x0 + y0))) * CUB(input[1][j]);
+    
 
         // weigs.calculated_reactions[0][j] = e1*CUB(input[0][j]);
         // weigs.calculated_reactions[1][j] = f1*CUB(input[1][j]);
-    weigs.calculated_reactions[0][j] = (2 * a1 * SQR(SQR(c1)) + 8 * a1 * SQR(c1) * SQR(d1) + 2 * a1 * SQR(SQR(d1))) * input[0][j] * SQR(input[1][j]) + (-6 * a1 * SQR(c1) - 6 * a1 * SQR(d1)) * SQR(input[0][j]) * CUB(input[1][j]) + 4 * a1 *(CUB(input[0][j]) * SQR(SQR(input[1][j])));
-    weigs.calculated_reactions[1][j] = (2 * a1 * SQR(SQR(c1)) + 8 * a1 * SQR(c1) * SQR(d1) + 2 * a1 * SQR(SQR(d1))) * input[1][j] * SQR(input[0][j]) + (-6 * a1 * SQR(c1) - 6 * a1 * SQR(d1)) * SQR(input[1][j]) * CUB(input[0][j]) + 4 * a1 * (CUB(input[1][j]) * SQR(SQR(input[0][j])));
+    // weigs.calculated_reactions[0][j] = (2 * a1 * SQR(SQR(c1)) + 8 * a1 * SQR(c1) * SQR(d1) + 2 * a1 * SQR(SQR(d1))) * input[0][j] * SQR(input[1][j]) + (-6 * a1 * SQR(c1) - 6 * a1 * SQR(d1)) * SQR(input[0][j]) * CUB(input[1][j]) + 4 * a1 *(CUB(input[0][j]) * SQR(SQR(input[1][j])));
+    // weigs.calculated_reactions[1][j] = (2 * a1 * SQR(SQR(c1)) + 8 * a1 * SQR(c1) * SQR(d1) + 2 * a1 * SQR(SQR(d1))) * input[1][j] * SQR(input[0][j]) + (-6 * a1 * SQR(c1) - 6 * a1 * SQR(d1)) * SQR(input[1][j]) * CUB(input[0][j]) + 4 * a1 * (CUB(input[1][j]) * SQR(SQR(input[0][j])));
 
     // weigs.calculated_reactions[0][j] = e1*(input[0][j])*SQR(input[1][j]);
     // weigs.calculated_reactions[1][j] = f1*SQR(input[0][j]) * (input[1][j]);

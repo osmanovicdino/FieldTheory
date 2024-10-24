@@ -43,60 +43,245 @@ inline omp_int_t omp_get_num_threads() { return 1; }
 #include "CahnHilliard/cahnhilliard.h"
 
 #include "fftw3.h"
+#include "ParticleReactionDiffusion/cellarray.h"
 
 
 int main(int argc, char **argv)
 {
 
     srand(time(NULL));
-    string importstring;
-    CH_builder p;
-    p.dimension = 1;
-    p.number_of_fields = 4;
-    p.N1 = 256;
 
-    Field_Wrapper<double,double> a(p);
-    Field_Wrapper<double, double> a2(p);
 
-    double T;
-    bool err1, err2, err3, err4;
-    double *f1 = new double[p.N1];
-    double *f2 = new double[p.N1];
-    double *f3 = new double[p.N1];
-    double *f4 = new double[p.N1];
 
-    for (int i = 0; i < p.N1; i++)
-    {
-        f1[i] = rand() / (double)(RAND_MAX);
-        f2[i] = rand() / (double)(RAND_MAX);
-        f3[i] = rand() / (double)(RAND_MAX);
-        f4[i] = rand() / (double)(RAND_MAX);
+
+    int Nt = 1;
+    int Nr = 2;
+
+    cell c(Nt,Nr);
+
+    Subdiffusion sd1;
+
+    sd1.alpha=0.5;
+    sd1.tau=1;
+    sd1.p = 100.;
+    sd1.normal = false;
+
+    c.set_subdiffusion(sd1, 0);
+    // c.set_subdiffusion(sd1, 1);
+    // c.set_subdiffusion(sd1, 2);
+
+    // chemical_reaction cr1,cr2;
+
+    // cr1.orderin = 2;
+    // cr2.orderout = 1;
+    // cr1.i1 = 0;
+    // cr1.i2 = 1;
+    // cr1.o1 = 2;
+    // cr1.rate = 1.0;
+
+    // cr2.orderin = 1;
+    // cr2.orderout = 2;
+    // cr2.i1 = 2;
+    // cr2.o1 = 0;
+    // cr2.o2 = 1;
+    // cr2.rate = 1.0;
+
+    // c.set_chemical_reaction(cr1, 0);
+    // c.set_chemical_reaction(cr2, 1);
+
+    // vector1<int> nu(3);
+    // nu[0] = 10;
+    // nu[1] = 10;
+    // nu[2] = 10;
+    // c.initialize(nu);
+
+    int Nx;
+    double eps1;
+    int neq1;
+    double eps2;
+    int nav;
+    if(argc == 6) {
+        Nx = atof(argv[1]);
+        eps1 = atof(argv[2]);
+        neq1 = atof(argv[3]);
+        eps2 = atof(argv[4]);
+        nav = atof(argv[5]);
+    }
+    string str1 = "density";
+    stringstream ss1,ss2,ss3,ss4,ss5;
+    ss1 << Nx;
+    ss2 << eps1;
+    ss3 << neq1;
+    ss4 << eps2;
+    ss5 << nav;
+
+    string s1 = "_N=" + ss1.str();
+    string s2 = "_eps1=" + ss2.str();
+    string s3 = "_neq=" + ss3.str();
+    string s4 = "_eps2=" + ss4.str();
+    string s5 = "_nav=" + ss5.str();
+
+    str1 += s1;
+    str1 += s2;
+    str1 += s3;
+    str1 += s4;
+    str1 += s5;
+    cell_array full(Nx,1,c);
+
+    attractive_self_interaction attpot;
+    attpot.eps=eps1;
+    attpot.Neq = neq1;
+
+    linear_surface_interaction surfpot;
+    surfpot.eps = eps2;
+
+    full.set_si_interaction(attpot,0);
+    full.set_cnni_interaction(surfpot, 0, 0);
+
+    for(int i  = 0 ; i < Nx ; i++) {
+        for(int j = 0 ; j < Nx ; j++) {
+            vector1<int> nu(1);
+
+            //int r1 = -5 + rand() % 11;
+
+            nu[0] = nav;
+
+            full.reactors(i,j).initialize(nu);
+            // full.reactors(i,j).generate_diffusion_time();
+            // full.reactors(i,j).generate_time(0.0);
+        }
     }
 
-    CH<double> b(p);
-
-    b.set_field(f1, 0);
-    b.set_field(f2, 1);
-    b.set_field(f3, 2);
-    b.set_field(f4, 3);
-
-    for (int i = 0; i < p.number_of_fields; i++)
+    
+    full.initialize_next_diffusion_events(); //construct the sorted list
+    cout << full.next_diffusion_events[0].a << endl;
+    
+    //full.iterate();
+    // full.find_next_reaction_event();
+    // full.find_next_diffusion_event();
+    int nmax = nav*Nx*Nx*10000;
+    int iter=0;
+    int sch = (nmax/1000);
+    vector1<int> counter(3);
+    ofstream file1;
+    file1.open("times.csv");
+    for (;;)
     {
-        CosineWeightForward1D fw;
-        a.add_method(fw, i);
-        CosineWeightBackward1D fw2;
-        a2.add_method(fw2, i);
+        full.do_a_diffusion_event(counter);
+        iter++;
+        if(iter > 0&& iter % sch == 0) {
+            cout << full.current_time << endl;
+            matrix<int> A(Nx,Nx);
+
+            for (int i = 0; i < Nx; i++)
+            {
+                for (int j = 0; j < Nx; j++)
+                {
+                    A(i, j) = full.reactors(i, j).typenumber[0];
+                    // B(i, j) = full.reactors(i, j).typenumber[1];
+                    // C(i, j) = full.reactors(i, j).typenumber[2];
+                }
+            }
+            stringstream ss;
+            ss << setw(4);
+            ss << std::setfill('0');
+            ss << iter/sch;
+            string p = str1+"_i="+ss.str(); 
+            outfunc(A, p);
+            file1 << full.current_time << endl;
+
+            full.reset_all_times();
+        }
+        if (iter > nmax)
+            break;
     }
+    file1.close();
 
-    cout << b.fields[0][0] << endl;
-    a.Calculate_Results(b.fields);
+    // matrix<int> A(100, 100);
+    // matrix<int> B(100, 100);
+    // matrix<int> C(100, 100);
 
-    cout << a.calculated_reactions[0][0] << endl;
-    a2.Calculate_Results(a.calculated_reactions);
+    // for (int i = 0; i < 100; i++)
+    // {
+    //     for (int j = 0; j < 100; j++)
+    //     {
+    //         A(i, j) = full.reactors(i, j).typenumber[0];
+    //         // B(i, j) = full.reactors(i, j).typenumber[1];
+    //         // C(i, j) = full.reactors(i, j).typenumber[2];
+    //     }
+    // }
+    // outfunc(A, "A");
+    // outfunc(B, "B");
+    // outfunc(C, "C");
 
-    cout << a2.calculated_reactions[0][0] << endl;
+    /*
+    int iter=0;
+    for(;;) {
+     full.iterate();
+     iter++;
+     cout << iter << endl;
+     if(iter>10000) break;
+    }
+    
+    */
 
-    pausel();
+    // c.generate_time(0.0);
+    // c.generate_diffusion_time();
+    // for(int j = 0 ; j < 1000 ; j++) {
+    // for(int i = 0 ; i < Nt ; i++)
+    // cout << c.diffusion_times[i].size() << ",";
+    // cout << endl;
+    // c.do_reaction(0.0);
+    // }
+
+    // string importstring;
+    // CH_builder p;
+    // p.dimension = 1;
+    // p.number_of_fields = 4;
+    // p.N1 = 256;
+
+    // Field_Wrapper<double,double> a(p);
+    // Field_Wrapper<double, double> a2(p);
+
+    // double T;
+    // bool err1, err2, err3, err4;
+    // double *f1 = new double[p.N1];
+    // double *f2 = new double[p.N1];
+    // double *f3 = new double[p.N1];
+    // double *f4 = new double[p.N1];
+
+    // for (int i = 0; i < p.N1; i++)
+    // {
+    //     f1[i] = rand() / (double)(RAND_MAX);
+    //     f2[i] = rand() / (double)(RAND_MAX);
+    //     f3[i] = rand() / (double)(RAND_MAX);
+    //     f4[i] = rand() / (double)(RAND_MAX);
+    // }
+
+    // CH<double> b(p);
+
+    // b.set_field(f1, 0);
+    // b.set_field(f2, 1);
+    // b.set_field(f3, 2);
+    // b.set_field(f4, 3);
+
+    // for (int i = 0; i < p.number_of_fields; i++)
+    // {
+    //     CosineWeightForward1D fw;
+    //     a.add_method(fw, i);
+    //     CosineWeightBackward1D fw2;
+    //     a2.add_method(fw2, i);
+    // }
+
+    // cout << b.fields[0][0] << endl;
+    // a.Calculate_Results(b.fields);
+
+    // cout << a.calculated_reactions[0][0] << endl;
+    // a2.Calculate_Results(a.calculated_reactions);
+
+    // cout << a2.calculated_reactions[0][0] << endl;
+
+    // pausel();
     // vector<int> OLD;
     // for(int i = 0  ; i < 10 ; i++)
     // OLD.push_back(i);

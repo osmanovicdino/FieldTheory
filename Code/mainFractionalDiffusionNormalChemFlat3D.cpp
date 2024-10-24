@@ -137,8 +137,10 @@ int main(int argc, char **argv)
     CH_builder p;
     int nof = n;
     p.number_of_fields = nof;
-    p.N1 = 256;
-    p.N2 = 256;
+    p.dimension = 3;
+    p.N1 = 64;
+    p.N2 = 64;
+    p.N3 = 64;
 
     CHC<double> a(p);
 
@@ -250,18 +252,20 @@ int main(int argc, char **argv)
 
     a.setup_matrices();
 
-    vector<matrix<double>> v;
+    // vector<matrix<double>> v;
 
-    for (int j = 0; j < nof; j++)
-    {
-        matrix<double> field1(p.N1, p.N2);
-        v.push_back(field1);
-    }
+    // for (int j = 0; j < nof; j++)
+    // {
+    //     matrix<double> field1(p.N1, p.N2);
+    //     v.push_back(field1);
+    // }
 
     double gt=0.6;
-
+    int iter = 0;
     for (int lk = 0; lk < nof; lk++)
     {
+        double *proc = new double [p.N1*p.N2*p.N3];
+        int iter = 0;
         double x1 = init[lk];
         for (int i = 0; i < p.N1; i++)
         {
@@ -269,11 +273,17 @@ int main(int argc, char **argv)
 
             for (int j = 0; j < p.N2; j++)
             {
-                double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
+                for(int k  = 0 ; k < p.N3 ; k++) {
+                    double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
 
-                v[lk](i, j) = x1*(1 + gt * r1);
+                    proc[iter] = x1*(1 + gt * r1);
+                    iter++;
+                }
             }
         }
+
+        a.set_field(proc, lk);
+        delete proc;
     }
     /* 
 
@@ -381,14 +391,14 @@ int main(int argc, char **argv)
     // string importstring2="/home/dino/External/Waves/chemistry19/field1res_i=3078_real.csv";
     // matrix<double> mat4 = importcsv(importstring2, T, err1);
 
-    for (int lk = 0; lk < nof; lk++)
-    {
-        a.set_field(v[lk], lk);
-    }
+    // for (int lk = 0; lk < nof; lk++)
+    // {
+    //     a.set_field(v[lk], lk);
+    // }
     // a.set_field(mat3, 0);
     // a.set_field(mat4, 1);
 
-    a.calculate_initial_weight(SQR(256));
+    a.calculate_initial_weight(CUB(32));
 
 
     cout << "calc" << endl;
@@ -398,7 +408,7 @@ int main(int argc, char **argv)
 
     // auto start = std::chrono::high_resolution_clock::now();
     int runtime = 100000;
-    int every = 1;
+    int every = 100;
 
     int tf = ceil((double)runtime / (double)every);
     int number_of_digits = 0;
@@ -414,7 +424,7 @@ int main(int argc, char **argv)
     for (int i = 0; i < runtime; i++)
     {
 
-        if (i % every == 0 && i > 95000)
+        if (i % every == 0 && i > 0)
         {
             // stringstream strep1;
             // stringstream strep2;

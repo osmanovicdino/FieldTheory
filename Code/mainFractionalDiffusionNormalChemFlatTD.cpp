@@ -241,8 +241,6 @@ int main(int argc, char **argv)
     a.set_chems(my_chemsitry);
 
 
-    
-
 
 
     
@@ -271,7 +269,7 @@ int main(int argc, char **argv)
             {
                 double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
 
-                v[lk](i, j) = x1*(1 + gt * r1);
+                v[lk](i, j) = x1 + x1* gt * r1;
             }
         }
     }
@@ -388,6 +386,10 @@ int main(int argc, char **argv)
     // a.set_field(mat3, 0);
     // a.set_field(mat4, 1);
 
+    a.chems.Calculate_Results(a.fields);
+    cout << "chems calculated" << endl;
+    pausel();
+
     a.calculate_initial_weight(SQR(256));
 
 
@@ -397,8 +399,8 @@ int main(int argc, char **argv)
     cout << "all fields set" << endl;
 
     // auto start = std::chrono::high_resolution_clock::now();
-    int runtime = 100000;
-    int every = 1;
+    int runtime = 20000000;
+    int every = 1000;
 
     int tf = ceil((double)runtime / (double)every);
     int number_of_digits = 0;
@@ -411,10 +413,14 @@ int main(int argc, char **argv)
     
     
     // // auto start = std::chrono::high_resolution_clock::now();
+
+    double period = 5000.;
     for (int i = 0; i < runtime; i++)
     {
 
-        if (i % every == 0 && i > 95000)
+        matrix<double> oscil(p.N1,p.N2,1.+sin((double)i*pi/period));
+
+        if (i % every == 0 && i > 0)
         {
             // stringstream strep1;
             // stringstream strep2;
@@ -436,7 +442,7 @@ int main(int argc, char **argv)
         }
         cout << i << endl;
         cout << "begin" << endl;
-        a.Update();
+        a.UpdateTD(oscil,3);
         bool chck = true;
         a.check_field(chck);
         if (!chck)

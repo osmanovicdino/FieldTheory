@@ -74,12 +74,15 @@ int main(int argc, char **argv)
     CH_builder p;
     int nof = 2;
     p.number_of_fields = nof;
-    p.N1 = 1024;
-    p.N2 = 1024;
+    p.N1 = 512;
+    p.N2 = 512;
 
     CHD a(p);
+    matrix<double> Dx(2,2);
+    Dx(0,0)=1.;
+    Dx(1, 1) = 1.;
 
-    a.set_interaction_and_diffusion(x12,x13,x23,1.0,1.0);
+    a.set_interaction_and_diffusion(x12,x13,x23,Dx);
     
     a.set_dt(0.005);
 
@@ -91,11 +94,11 @@ int main(int argc, char **argv)
     a.setup_matrices();
 
     typedef complex<double> myc;
-    vector<matrix<myc>> v;
+    vector<matrix<double>> v;
 
     for (int j = 0; j < nof; j++)
     {
-        matrix<myc> field1(p.N1, p.N2);
+        matrix<double> field1(p.N1, p.N2);
         v.push_back(field1);
     }
     vector1<double> init(2);
@@ -117,6 +120,8 @@ int main(int argc, char **argv)
         }
     }
 
+
+
     vector1<double> tots(nof);
 
     for (int lk = 0; lk < nof; lk++)
@@ -126,7 +131,7 @@ int main(int argc, char **argv)
             for (int j = 0; j < p.N2; j++)
             {
                 
-                tots[lk] += v[lk](i,j).real();
+                tots[lk] += v[lk](i,j);
             }
         }
     }
@@ -151,6 +156,7 @@ int main(int argc, char **argv)
         }
     }
 
+
     //we can cut off the high frequency modes
 
     
@@ -160,12 +166,22 @@ int main(int argc, char **argv)
         a.set_field(v[lk], lk);
     }
 
-    a.setupInitial(cutoff);
+
+    vector1<int> cutoff2(2,cutoff);
+
+    a.setupInitial(cutoff2);
 
     int runtime = 50001;
-    int every = 100;
+    int every = 10000;
 
     string importstring = "twofields";
+    stringstream ss1,ss2,ss3,ss4,ss5;
+    ss1 << x12;
+    ss2 << x23;
+    ss3 << x13;
+    ss4 << den1;
+    ss5 << den2;
+    importstring = importstring + string("x12=") + ss1.str() + string("_x13=") + ss2.str() + string("_x23=") + ss3.str() + string("_den1=")+ss4.str() + string("_den2=") + ss5.str();
     int tf = ceil((double)runtime / (double)every);
     int number_of_digits = 0;
     do
@@ -194,7 +210,7 @@ int main(int argc, char **argv)
             stringstream ss;
             ss << setw(number_of_digits) << setfill('0') << i / every;
             string s2 = "_i=" + ss.str();
-            string su = s1.substr(0, s1.size() - 4);
+            string su = s1;//.substr(0, s1.size() - 4);
             cout << su + s2 << endl;
             a.print_all_results(su + s2);
         }

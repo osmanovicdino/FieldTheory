@@ -35,6 +35,7 @@ void outfunc(double *a, string s, const CH_builder &p)
     }
     }
     else{
+    
     int nr = p.N1;
     int nc = p.N2;
     int nd = p.N3;
@@ -43,8 +44,9 @@ void outfunc(double *a, string s, const CH_builder &p)
     {
         for (int j = 0; j < nc; ++j)
         {
-            for (int k = 0; k < nd; ++j)
+            for (int k = 0; k < nd; ++k)
             {
+                
                 k == nd - 1 ? myfileg << a[i * nc * nd + j * nd + k] << endl : myfileg << a[i * nc * nd + j * nd + k] << ",";
             }
         }

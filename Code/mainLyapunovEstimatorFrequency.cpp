@@ -50,12 +50,25 @@ int main(int argc, char **argv)
 {
     srand(time(NULL));
     string importstring;
-
-    if (argc == 2)
+    string importstring1;
+    string importstring2;
+    double val;
+    int iter;
+    int freq1,freq2;
+    if (argc == 8)
     {
         stringstream ss;
         ss << argv[1];
         importstring = ss.str();
+        stringstream ss2,ss3;
+        ss2 << argv[2];
+        ss3 << argv[3];
+        val = atof(argv[4]);
+        iter = atof(argv[5]);
+        freq1 = atof(argv[6]);
+        freq2 = atof(argv[7]);
+        importstring1 = ss2.str();
+        importstring2 = ss3.str();
     }
     else
     {
@@ -141,11 +154,13 @@ int main(int argc, char **argv)
     p.N2 = 256;
 
     CHC<double> a(p);
+    CHC<double> b(p);
 
     for(int i = 0 ; i < nof ; i++) {
         for(int j = i+1  ; j < nof ; j++) {
             //cout << i << " " << j << endl;
              a.set_interaction(epsa(i,j), i, j);
+             b.set_interaction(epsa(i, j), i, j);
         }
     }
 
@@ -153,6 +168,7 @@ int main(int argc, char **argv)
 
 
     a.set_phase_separators(ps);
+    b.set_phase_separators(ps);
 
     // double nuc = 2.77778;
     for(int i = 0 ; i < n ; i++) {
@@ -161,9 +177,14 @@ int main(int argc, char **argv)
         a.set_diffusion(phasesepsparams(i,0), i);
         a.set_epsilon(phasesepsparams(i,1), i);
         a.set_c0_c1(phasesepsparams(i,2), phasesepsparams(i,3), i, phasesepsparams(i,4));
+
+        b.set_diffusion(phasesepsparams(i, 0), i);
+        b.set_epsilon(phasesepsparams(i, 1), i);
+        b.set_c0_c1(phasesepsparams(i, 2), phasesepsparams(i, 3), i, phasesepsparams(i, 4));
         }
         else{
         a.set_diffusion(phasesepsparams(i, 0), i);
+        b.set_diffusion(phasesepsparams(i, 0), i);
         }
     }
 
@@ -179,10 +200,12 @@ int main(int argc, char **argv)
     double L = simparams[0];
     double temp1 = SQR(2. * pii / L);
     a.set_temp1(temp1);
-
     a.set_alpha(simparams[1]);
     a.set_dt(simparams[2]);
 
+    b.set_temp1(temp1);
+    b.set_alpha(simparams[1]);
+    b.set_dt(simparams[2]);
 
     double rate_multiplier = simparams[3];
 
@@ -239,42 +262,26 @@ int main(int argc, char **argv)
     }
     // pausel();
     a.set_chems(my_chemsitry);
-
-
-    
-
-
-
-    
-
+    b.set_chems(my_chemsitry);
 
     a.setup_matrices();
+    b.setup_matrices();
 
-    vector<matrix<double>> v;
+    // vector<matrix<double>> v;
 
-    for (int j = 0; j < nof; j++)
-    {
-        matrix<double> field1(p.N1, p.N2);
-        v.push_back(field1);
-    }
+    // for (int j = 0; j < nof; j++)
+    // {
+    //     matrix<double> field1(p.N1, p.N2);//1.E-012double)RAND_MAX) - 1.);
 
-    double gt=0.6;
+    //         for (int j = 0; j < p.N2; j++)
+    //         {
+    //            //double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
 
-    for (int lk = 0; lk < nof; lk++)
-    {
-        double x1 = init[lk];
-        for (int i = 0; i < p.N1; i++)
-        {
-            //double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
-
-            for (int j = 0; j < p.N2; j++)
-            {
-                double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
-
-                v[lk](i, j) = x1*(1 + gt * r1);
-            }
-        }
-    }
+    //             v[0](i, j) = mati1(i,j);
+    //             v[1](i, j) = mati2(i,j);
+    //         }
+    //     }
+    
     /* 
 
     {
@@ -376,21 +383,135 @@ int main(int argc, char **argv)
     // }
 
     // string importstring1 = "/home/dino/External/Waves/chemistry19/field0res_i=3078_real.csv";
-    // matrix<double> mat3 = importcsv(importstring1, T, err1);
+    matrix<double> mat3 = importcsv(importstring1, T, err1);
 
     // string importstring2="/home/dino/External/Waves/chemistry19/field1res_i=3078_real.csv";
-    // matrix<double> mat4 = importcsv(importstring2, T, err1);
+    matrix<double> mat4 = importcsv(importstring2, T, err1);
 
-    for (int lk = 0; lk < nof; lk++)
+    // for (int lk = 0; lk < nof; lk++)
+    // {
+    //     a.set_field(v[lk], lk);
+    // }
+    a.set_field(mat3, 0);
+    a.set_field(mat4, 1);
+
+    matrix<double> perturb1(256,256);
+    matrix<double> perturb2(256,256);
+
+    for (int i = 0; i < p.N1; i++)
     {
-        a.set_field(v[lk], lk);
+        
+
+        for (int j = 0; j < p.N2; j++)
+        {
+            // double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
+            double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
+            double r2 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
+            perturb1(i, j) = r1;
+            perturb2(i, j) = r2;
+        }
     }
-    // a.set_field(mat3, 0);
-    // a.set_field(mat4, 1);
 
-    a.calculate_initial_weight(SQR(256));
+    b.set_field(perturb1,0);
+    b.set_field(perturb2,1);
+    b.transformed1.Calculate_Results(b.fields);
 
 
+    int cut_off1 = freq1;
+    int cut_off2 = freq2;
+
+    for (int fn = 0; fn < nof; fn++)
+    {
+        for (int i = 0; i < b.myp.N1; i++)
+        {
+            for (int j = 0; j < b.myp.N2; j++)
+            {
+                int rel;
+                double tempor = b.getk(i, j, b.myp.N1, b.myp.N2, rel);
+                if (tempor < cut_off1 || tempor > cut_off2)
+                {
+                    // cout << tempor << endl;
+                    b.transformed1.calculated_reactions[fn][i * b.myp.N2 + j] = 0.; // cut off the high frequency modes
+                }
+            }
+        }
+    }
+
+    
+    b.reverse_transform.Calculate_Results(b.transformed1.calculated_reactions);
+
+    for(int i = 0  ; i < b.myp.N1 ; i++) {
+        for (int j = 0; j < b.myp.N2; j++) {
+            perturb1(i, j) = b.reverse_transform.calculated_reactions[0][i * 256 + j];
+            perturb2(i, j) = b.reverse_transform.calculated_reactions[1][i * 256 + j];
+        }
+    }
+
+    cout << "fourier done" << endl;
+    outfunc(perturb1, "temp1");
+    outfunc(perturb2, "temp2");
+    pausel();
+
+    double rescale = 0.0;
+
+    for (int i = 0; i < p.N1; i++)
+    {
+
+        for (int j = 0; j < p.N2; j++)
+        {
+            // double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
+            rescale += perturb1(i, j) * perturb1(i, j);
+            rescale += perturb2(i, j) * perturb2(i, j);
+        }
+    }
+
+    cout << rescale << endl;
+
+    perturb1 /= sqrt(rescale);
+    perturb2 /= sqrt(rescale);
+
+    
+
+    double eps = val;
+    
+    cout << eps << endl;
+
+    matrix<double> perturbn1(perturb1);
+
+    matrix<double> perturbn2(perturb2);
+
+    perturbn1 *= eps;
+    perturbn2 *= eps;
+    perturbn1 += mat3;
+    perturbn2 += mat4;
+
+    b.set_field(perturbn1, 0);
+    b.set_field(perturbn2, 1);
+
+    double dis2 = 0;
+    double dis3 = 0;
+    for (int i1 = 0; i1 < p.N1; i1++)
+    {
+        for (int j1 = 0; j1 < p.N2; j1++)
+        {
+            dis2 += SQR(a.fields[0][i1 * p.N1 + j1] - b.fields[0][i1 * p.N1 + j1]);
+            dis2 += SQR(a.fields[1][i1 * p.N1 + j1] - b.fields[1][i1 * p.N1 + j1]);
+            dis3 += SQR(perturb1(i1, j1));
+            dis3 += SQR(perturb2(i1, j1));
+        }
+    }
+    cout << fixed;
+    cout << std::scientific << dis2 << endl;
+    cout << "original distance " << sqrt(dis2) << endl;
+    cout << dis3 << endl;
+
+    // pausel();
+
+
+    a.calculate_initial_weight(SQR(512));
+    b.calculate_initial_weight(SQR(512));
+
+  
     cout << "calc" << endl;
     
 
@@ -407,92 +528,121 @@ int main(int argc, char **argv)
         ++number_of_digits;
         tf /= 10;
     } while (tf);
-    vector1<bool> ps2(nof, true);
-    
-    
-    // // auto start = std::chrono::high_resolution_clock::now();
+    vector1<bool> ps2(nof,true);
+    // auto start = std::chrono::high_resolution_clock::now();
+    ofstream myfileLya;
+    string s1 = importstring;
+    string su = s1.substr(0, s1.size() - 4);
+    stringstream ssv;
+    ssv << eps;
+    stringstream ssn;
+    ssn << iter;
+    stringstream ssx1,ssx2;
+    ssx1 << cut_off1;
+    ssx2 << cut_off2;
+    string sh = string("cutoff1=")+ssx1.str()+string("_cutoff2=")+ssx2.str();
+    myfileLya.open( (su+string("Lyapunov_diff=") +ssv.str()+string("_try=") +ssn.str()+sh+string(".csv")).c_str() );
+
+    double diss = 0.;
+    for (int i1 = 0; i1 < p.N1; i1++)
+    {
+        for (int j1 = 0; j1 < p.N2; j1++)
+        {
+            diss += SQR(a.fields[0][i1 * p.N1 + j1] - b.fields[0][i1 * p.N1 + j1]);
+            diss += SQR(a.fields[1][i1 * p.N1 + j1] - b.fields[1][i1 * p.N1 + j1]);
+        }
+    }
+
+    // double lambda1 = (1. / (every * simparams[2])) * log(sqrt(dis1) / eps);
+    // myfileLya << lambda1 << endl;
+    myfileLya << sqrt(diss) << endl;
+
     for (int i = 0; i < runtime; i++)
     {
+        if(i % 10000000 ==0  && i > 0000) {
 
-        if (i % every == 0 && i > 95000)
+            string s1 = importstring;
+            // string s1 = "denp=" + strep1.str() + "c0=" + strep4.str() + "_c1=" + strep2.str() + "_surf=" + strep3.str();
+            stringstream ss;
+            ss << setw(number_of_digits) << setfill('0') << i / 1000;
+            string s2 = "_i=" + ss.str();
+            string su = s1.substr(0, s1.size() - 4);
+            cout << su + s2 << endl;
+            a.print_some_results(string("a") + su + s2, ps2);
+            b.print_some_results(string("b") + su + s2, ps2);
+        }
+
+        if (i % every == 0 && i > 0000 )
         {
             // stringstream strep1;
             // stringstream strep2;
             // stringstream strep3;
             // stringstream strep4;
+            double dis1 = 0.;
+            for(int i1 = 0 ; i1 < p.N1 ; i1++) {
+                for(int j1 = 0 ; j1 < p.N2 ; j1++) {
+                    dis1 += SQR(a.fields[0][i1*p.N1+j1]-b.fields[0][i1*p.N1+j1]);
+                    dis1 += SQR(a.fields[1][i1 * p.N1 + j1] - b.fields[1][i1 * p.N1 + j1]);
+                }
+            }
+            cout << sqrt(dis1) << endl;
+            cout << eps << endl;
+            double lambda1 = (1. / (every * simparams[2])) * log(sqrt(dis1) / eps);
+            // myfileLya << lambda1 << endl;
+            myfileLya << sqrt(dis1) << endl;
+            
+            //  matrix<double> orig1(p.N1,p.N2);
+            // matrix<double> orig2(p.N1, p.N2);
+            // for (int i1 = 0; i1 < p.N1; i1++)
+            // {
+            //     for (int j1 = 0; j1 < p.N2; j1++)
+            //     {
+            //         orig1(i1,j1) = a.fields[0][i1 * p.N1 + j1];
+            //         orig2(i1, j1) = a.fields[1][i1 * p.N1 + j1];
+            //     }
+            // }
+            
+            // b.set_field(orig1 + eps * perturb1, 0);
+            // b.set_field(orig2 + eps * perturb2, 1);
+
+            // diss = 0.;
+            // for (int i1 = 0; i1 < p.N1; i1++)
+            // {
+            //     for (int j1 = 0; j1 < p.N2; j1++)
+            //     {
+            //         diss += SQR(a.fields[0][i1 * p.N1 + j1] - b.fields[0][i1 * p.N1 + j1]);
+            //         diss += SQR(a.fields[1][i1 * p.N1 + j1] - b.fields[1][i1 * p.N1 + j1]);
+            //     }
+            // }
+
+            // // double lambda1 = (1. / (every * simparams[2])) * log(sqrt(dis1) / eps);
+            // // myfileLya << lambda1 << endl;
+            // cout << sqrt(diss) << endl;
+            // pausel();
 
             // strep1 << dens;
             // strep4 << c0;
             // strep2 << c1;
             // strep3 <<  surf;
-            string s1 = importstring;
+            
             // string s1 = "denp=" + strep1.str() + "c0=" + strep4.str() + "_c1=" + strep2.str() + "_surf=" + strep3.str();
-            stringstream ss;
-            ss << setw(number_of_digits) << setfill('0') << i / every;
-            string s2 = "_i=" + ss.str();
-            string su = s1.substr(0, s1.size() - 4);
-            cout << su + s2 << endl;
-            a.print_some_results(su + s2,ps2);
+            // stringstream ss;
+            // ss << setw(number_of_digits) << setfill('0') << i / every;
+            // string s2 = "_i=" + ss.str();
+            
+            // cout << su + s2 << endl;
+            // string bs = "b";
+            // a.print_some_results(su + s2,ps2);
+            // b.print_some_results(bs + su + s2, ps2);
+            
         }
         cout << i << endl;
         cout << "begin" << endl;
         a.Update();
+        b.Update();
         bool chck = true;
         a.check_field(chck);
         if (!chck)
             break;
     }
-
-    
-    // ofstream myfile;
-    // ofstream myfile2;
-    // string fil1 = string("field0") + importstring;
-    // string fil2 = string("field1") + importstring;
-    // myfile.open(fil1.c_str());
-    // myfile2.open(fil2.c_str());
-    // for (int i = 0; i < runtime; i++)
-    // {
-
-    //     if (i % every == 0 && i > 00000)
-    //     {
-
-    //         for(int j = 0 ; j < p.N1-1 ; j++) {
-    //             // cout << a.fields[0][j * p.N1] << endl;
-    //             myfile << a.fields[0][j*p.N1] <<",";
-    //         }
-    //         myfile << a.fields[0][p.N1*p.N1-1] << endl;
-
-    //         for (int j = 0; j < p.N1 - 1; j++) {
-    //             myfile2 << a.fields[1][j * p.N1] << ",";
-    //         }
-    //         myfile2 << a.fields[1][p.N1 * p.N1 - 1] << endl;
-
-    //         // pausel();
-    //         // stringstream strep1;
-    //         // stringstream strep2;
-    //         // stringstream strep3;
-    //         // stringstream strep4;
-
-    //         // strep1 << dens;
-    //         // strep4 << c0;
-    //         // strep2 << c1;
-    //         // strep3 <<  surf;
-    //         // string s1 = importstring;
-    //         // // // string s1 = "denp=" + strep1.str() + "c0=" + strep4.str() + "_c1=" + strep2.str() + "_surf=" + strep3.str();
-    //         // stringstream ss;
-    //         // ss << setw(number_of_digits) << setfill('0') << i / every;
-    //         // string s2 = "_i=" + ss.str();
-    //         // string su = s1.substr(0, s1.size() - 4);
-    //         // cout << su + s2 << endl;
-    //         // a.print_some_results(su + s2,ps2);
-    //     }
-    //     cout << i << endl;
-    //     cout << "begin" << endl;
-    //     a.Update();
-    //     bool chck = true;
-    //     a.check_field(chck);
-    //     if (!chck)
-    //         break;
-    // }
-    
 }

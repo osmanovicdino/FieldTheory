@@ -907,6 +907,60 @@ public:
     void print() { cout << "FourierWeightBackwards" << endl; }
 };
 
+class CosineWeightForward3D : public Weight<double, double>
+{
+private:
+public:
+    void operator()(double **a, double **fields, int j, const CH_builder &p)
+    {
+        fftw_plan p2;
+
+        p2 = fftw_plan_r2r_3d(p.N1, p.N2, p.N3, fields[j], a[j], FFTW_REDFT10, FFTW_REDFT10, FFTW_REDFT10,1);
+
+        fftw_execute(p2);
+        double corr = 1. / (8.*p.N1*p.N2*p.N3);
+        int end = p.get_total();
+        for (int i = 0; i < end; i++)
+        {
+            a[j][i] *= corr;
+        }
+
+        fftw_destroy_plan(p2);
+    }
+    CosineWeightForward3D *clone() const
+    {
+        return new CosineWeightForward3D(*this);
+    }
+    void print() { cout << "CosineWeightForwards3D" << endl; }
+};
+
+class CosineWeightBackward3D : public Weight<double, double>
+{
+private:
+public:
+    void operator()(double **a, double **fields, int j, const CH_builder &p)
+    {
+        fftw_plan p2;
+
+        p2 = fftw_plan_r2r_3d(p.N1, p.N2, p.N3,fields[j], a[j], FFTW_REDFT01, FFTW_REDFT01, FFTW_REDFT01, 1);
+
+        fftw_execute(p2);
+        // int end = p.get_total();
+        // double corr = 1. / (p.N1);
+        // for (int i = 0; i < end; i++)
+        // {
+        //     a[j][i] *= corr;
+        // }
+
+        fftw_destroy_plan(p2);
+    }
+    CosineWeightBackward3D *clone() const
+    {
+        return new CosineWeightBackward3D(*this);
+    }
+    void print() { cout << "CosineWeightBackwards3D" << endl; }
+};
+
 class CosineWeightBackwardGradient : public Weight<double, double>
 {
 

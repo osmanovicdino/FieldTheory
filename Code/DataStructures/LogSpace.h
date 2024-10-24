@@ -109,6 +109,7 @@ public:
     inline LogSpace &operator-=(const LogSpace &a)
     {
         *this += (-a);
+        return *this;
     }
 
 
@@ -195,6 +196,7 @@ public:
     friend LogSpace pow(LogSpace &a, LogSpace &b) {
         LogSpace res;
         res.num = a.num*exp(b.num);
+        return res;
     }
 
     friend ostream& operator<<(ostream &s, const LogSpace &a){

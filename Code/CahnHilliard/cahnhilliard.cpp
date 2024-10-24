@@ -79,11 +79,11 @@ CH<T>::CH(const CH_builder &p) : myp(p), chems(Field_Wrapper<T, T>(p)),
         {
             if constexpr (std::is_same_v<T, double>)
             {
-                CosineWeightForward fw;
+                CosineWeightForward3D fw;
                 transformed1.add_method(fw, i);
                 transformed2.add_method(fw, i);
                 transformed3.add_method(fw, i);
-                CosineWeightBackward fw2;
+                CosineWeightBackward3D fw2;
                 reverse_transform.add_method(fw2, i);
             }
             else if constexpr (std::is_same_v<T, complex<double>>) {
@@ -164,10 +164,10 @@ void CH<T>::set_field(T **orig) { // only set the field to real values
             {
                 for (int j = 0; j < myp.N2; j++)
                 {
-                    for (int lk = 0; lk < myp.N3; lk++)
+                    for (int ks = 0; ks < myp.N3; ks++)
                     {
-                        //fields[k][i * myp.N2 * myp.N3 + j * myp.N3 + lk] = {orig[k][i * myp.N2 * myp.N3 + j * myp.N3 + lk].real(), 0.};
-                        fields[k][i * myp.N2 + j] = T(orig[k][i * myp.N2 + j]);
+                            //fields[k][i * myp.N2 * myp.N3 + j * myp.N3 + lk] = {orig[k][i * myp.N2 * myp.N3 + j * myp.N3 + lk].real(), 0.};
+                            fields[k][i * myp.N2 * myp.N3 + j * myp.N3 + ks] = T(orig[k][i * myp.N2 * myp.N3 + j * myp.N3 + ks]);
                     }
                 }
             }
@@ -442,6 +442,7 @@ void CH<T>::print_some_results(string s1,vector1<bool> &ps)
 {
     for (int i = 0; i < myp.number_of_fields; i++)
     {
+        
         if(ps[i]) {
         stringstream ss;
         ss << i;
