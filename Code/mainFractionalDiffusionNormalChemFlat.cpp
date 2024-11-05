@@ -398,7 +398,7 @@ int main(int argc, char **argv)
 
     // auto start = std::chrono::high_resolution_clock::now();
     int runtime = 100000;
-    int every = 1;
+    int every = 100;
 
     int tf = ceil((double)runtime / (double)every);
     int number_of_digits = 0;
@@ -414,7 +414,7 @@ int main(int argc, char **argv)
     for (int i = 0; i < runtime; i++)
     {
 
-        if (i % every == 100 && i > 000)
+        if (i % every == 0 && i > 000)
         {
             // stringstream strep1;
             // stringstream strep2;
