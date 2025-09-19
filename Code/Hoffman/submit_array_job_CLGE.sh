@@ -38,8 +38,8 @@ fi
 dirwemake="chemistry${SGE_TASK_ID}"
 ftdir="CLGE1"
 mkdir /u/scratch/d/dinoo/${ftdir}/${dirwemake}
-cp ~/FieldTheory/Code/mainCLGE.cpp /u/scratch/d/dinoo/${ftdir}/${dirwemake}
-g++ ~/FieldTheory/Code/mainCLGE.cpp -lm -lfftw3 -L/usr/local/lib/lfftw3.a -std=c++17 -o /u/scratch/d/dinoo/${ftdir}/${dirwemake}/angron
+cp ~/FieldTheory/Code/mainCGGE.cpp /u/scratch/d/dinoo/${ftdir}/${dirwemake}
+g++ ~/FieldTheory/Code/mainCGLE.cpp -lm -lfftw3 -L/usr/local/lib/lfftw3.a -std=c++17 -o /u/scratch/d/dinoo/${ftdir}/${dirwemake}/angron
 cd /u/scratch/d/dinoo/${ftdir}/${dirwemake}
 ./angron $c1 $c3 > log
 # echo job info on joblog:
