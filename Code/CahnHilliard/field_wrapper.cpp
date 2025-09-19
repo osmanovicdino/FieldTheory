@@ -155,9 +155,10 @@ void Field_Wrapper<T, Q>::add_method(Weight<T, Q> &a, int j)
 template <class T, class Q>
 void Field_Wrapper<T, Q>::Calculate_Results(Q **fields)
 {
-
+    
     for (int i = 0; i < params.number_of_fields; i++)
         {
+
         
         chems[i]->operator()(calculated_reactions, fields, i, params);
         }

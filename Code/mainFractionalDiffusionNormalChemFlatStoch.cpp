@@ -137,8 +137,8 @@ int main(int argc, char **argv)
     CH_builder p;
     int nof = n;
     p.number_of_fields = nof;
-    p.N1 = 1024;
-    p.N2 = 1024;
+    p.N1 = 256;
+    p.N2 = 256;
 
     CHC<double> a(p);
 
@@ -397,8 +397,8 @@ int main(int argc, char **argv)
     cout << "all fields set" << endl;
 
     // auto start = std::chrono::high_resolution_clock::now();
-    int runtime = 100000;
-    int every = 100;
+    int runtime = 1000000;
+    int every = 1000;
 
     int tf = ceil((double)runtime / (double)every);
     int number_of_digits = 0;
@@ -408,7 +408,25 @@ int main(int argc, char **argv)
         tf /= 10;
     } while (tf);
     vector1<bool> ps2(nof, true);
-    
+
+
+    double dt =simparams[2];
+
+    vector1<double> pas(nof);
+    vector1<double> qas(nof);
+
+    vector1<bool> modp(nof,false);
+    vector1<bool> modq(nof,false);
+
+    modp[0] = true;
+    modp[5] = true;
+
+    modq[0] = true;
+    modq[5] = true;
+
+    vector1<double> timep(nof,100.);
+    vector1<double> timeq(nof,100.);
+
     
     // // auto start = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < runtime; i++)
@@ -437,6 +455,20 @@ int main(int argc, char **argv)
         cout << i << endl;
         cout << "begin" << endl;
         a.Update();
+
+        
+
+        for(int ik = 0  ; ik < nof ; ik++) {
+            double rr1 = -1 + 2 * (double)rand()/(double)RAND_MAX;
+            double rr2 = -1 + 2 * (double)rand()/ (double)RAND_MAX;
+
+            if(modp[ik]) pas[ik] += dt* ( -pas[ik] / timep[ik] + rr1);
+            if(modq[ik]) qas[ik] += dt *( -qas[ik] / timeq[ik] + rr2);
+
+            for(int jk  =0  ; jk < p.N1*p.N2 ; jk++) {
+                a.fields[ik][jk] += dt*(pas[ik] - qas[ik] * a.fields[ik][jk]);
+          }
+        }
         bool chck = true;
         a.check_field(chck);
         if (!chck)

@@ -1,0 +1,468 @@
+#include <stdlib.h>
+#include <iostream>
+#include <fstream>
+#include <stdio.h>
+#include <stdarg.h>
+#include <vector>
+#include <algorithm>
+#include <stdexcept>
+#include <limits>
+#include <cmath>
+#include <complex>
+#include <sstream>
+#include <string>
+#include <iomanip>
+#include <sys/ioctl.h>
+#include <fcntl.h>
+#include <time.h>
+#include <sys/time.h>
+#include <sys/stat.h>
+#include <random>
+//#include <mutex>
+#include <execinfo.h>
+#include <signal.h>
+#include <unistd.h>
+#include <chrono>
+#include <type_traits>
+//#include <stdafx>
+//#include <thrust/host_vector.h>
+//#include <thrust/device_vector.h>
+#if defined(_OPENMP)
+#include <omp.h>
+#else
+typedef int omp_int_t;
+inline omp_int_t omp_get_thread_num() { return 0; }
+inline omp_int_t omp_get_max_threads() { return 1; }
+inline omp_int_t omp_get_num_threads() { return 1; }
+#endif
+
+#include "DataStructures/basic.h"
+#include "DataStructures/vector1.h"
+#include "DataStructures/matrix2.h"
+#include "DataStructures/matrix2.cpp"
+#include "CahnHilliard/cahnhilliard.h"
+
+#include "fftw3.h"
+
+using namespace std;
+
+int main(int argc, char **argv)
+{
+    srand(time(NULL));
+    string importstring;
+
+    int dir_no;
+    if (argc == 2)
+    {
+        dir_no = atof(argv[1]);
+    }
+    else
+    {
+        error("no");
+    }
+
+    // double T;
+    // bool err1;
+    // matrix<double> mat1 = importcsv(importstring, T, err1);
+
+
+    int N1 = 512;
+    int N2 = 512;
+    complex<double> *upd1;
+    complex<double> *upd2;
+    // double c1,c2,c3,c4;
+    // double sigma;
+    // double L;
+    // double deltat;
+
+    string strbase = "./";
+
+    for(int ih = dir_no  ; ih < dir_no+1 ; ih++) {
+
+    string dirs="dir";
+    stringstream ssg;
+    ssg << setw(2) << setfill('0') << ih;
+
+    dirs += ssg.str();
+
+    string dir_to_make = strbase + dirs;
+
+    int status = mkdir(dir_to_make.c_str(),0777);
+
+    double r1 = (double)rand() / (double)RAND_MAX;
+    double r2 = (double)rand() / (double)RAND_MAX;
+    double r3 = (double)rand() / (double)RAND_MAX;
+    double r4 = (double)rand() / (double)RAND_MAX;
+    double r5 = (double)rand() / (double)RAND_MAX;
+
+    // double c1 = 1 * (2 * r1 - 1);
+    // double c2 = 1 * (2 * r2 - 1);
+    // double c3 = 1 * (2 * r3 - 1);
+    // double c4 = 1 * (2 * r4 - 1);
+    // double sigma  = r5;
+    // double c1 = 0.8829490258;
+    // double c2 = -0.543766673;
+    // double c3 = -0.1703678305;
+    // double c4 = 0.8733192491;
+    // double sigma = 0.7543335486;
+    double c1 = -0.3983332465;
+    double c2= 0.6154280899; 
+    double c3 = 0.752748235; 
+    double c4 = 0.4247961386;
+    double sigma =  0.2474094686;
+    double L = 50.;
+    //double deltat = 0.0005;
+
+    string params = "/param";
+    string ghj = dir_to_make + params;
+
+    vector1<double> pa(5);
+    pa[0] = c1;
+    pa[1] = c2;
+    pa[2] = c3;
+    pa[3] = c4;
+    pa[4] = sigma;
+
+    outfunc(pa,ghj);
+
+
+    CH_builder myp;
+    myp.number_of_fields=3;
+    myp.dimension=2;
+    myp.N1 = N1;
+    myp.N2 = N2;
+    myp.N3 = 0;
+
+
+    CH_builder myp2;
+    myp2.number_of_fields = 1;
+    myp2.dimension = 2;
+    myp2.N1 = N1;
+    myp2.N2 = N2;
+    myp2.N3 = 0;
+
+    Field_Wrapper<complex<double>, complex<double>> store(myp);
+    Field_Wrapper<complex<double>,complex<double> > transformed1(myp);
+
+    // Field_Wrapper<complex<double>, complex<double>> transformed2(myp);
+
+    // Field_Wrapper<complex<double>, complex<double>> transformed3(myp);
+    Field_Wrapper<complex<double>, complex<double>> store2(myp2);
+    Field_Wrapper<complex<double>, complex<double>> reverse_transform(myp2);
+
+    // complex<double>* initial_field;
+
+    // initial_field = (complex<double> *)fftw_malloc(N1 * N2 * sizeof(complex<double>));
+    // matrix<complex<double> > initial_field(N1,N2);
+    // for(int i = 0  ; i < N1 ; i++) {
+    //     for(int j  = 0 ; j < N2 ; j++) {
+    //         double a=5*(2.*(double)rand()/(double)RAND_MAX-1);
+    //         double b = 5*(2. * (double)rand() / (double)RAND_MAX - 1);
+    //         initial_field(i,j) = complex<double>(a,b);
+    //     }
+    // }
+
+
+    double r0 = 20.;
+    double theta0 = pii/4;
+    double A0=1;
+    double rc=10.;
+
+    matrix<complex<double>> initial_field(N1, N2);
+
+    for (int i = 0; i < N1; i++)
+    {
+        for (int j = 0; j < N2; j++)
+        {
+            initial_field(i, j) = {1./sqrt(sigma),0};
+        }
+    }
+
+    /*
+    for (int i = 0; i < N1; i++)
+    {
+        for (int j = 0; j < N2; j++)
+        {
+            double x = (i - 0.25 * N1);
+            double y = (j - 0.25 * N2);
+            double r =  sqrt(SQR(x)+SQR(y));
+            double theta = atan2(y,x);
+            if(r<r0)
+                initial_field(i, j) = { A0 * tanh(r / rc) * cos(theta),
+                                        A0 * tanh(r / rc) * sin(theta)};
+            else {
+                    initial_field(i, j) = { A0 * cos(theta0),
+                                            A0 * sin(theta0) };
+            }
+                                        // double a = 5 * (2. * (double)rand() / (double)RAND_MAX - 1);
+                                        // double b = 5 * (2. * (double)rand() / (double)RAND_MAX - 1);
+                                        // initial_field(i, j) = complex<double>(a, b);
+        }
+    }
+    */
+
+
+    for (int i = 0; i < N1; i++)
+    {
+        for (int j = 0; j < N2; j++)
+        {
+            // double x = (i - 0.75 * N1);
+            // double y = (j - 0.75 * N2);
+            // double r = sqrt(SQR(x) + SQR(y));
+            // double theta = -atan2(y, x);
+            // if (r < r0)
+            //     initial_field(i, j) = {A0 * tanh(r / rc) * cos(theta),
+            //                            A0 * tanh(r / rc) * sin(theta)};
+            
+            double a = 0.1 * (2. * (double)rand() / (double)RAND_MAX - 1);
+            double b = 0.1 * (2. * (double)rand() / (double)RAND_MAX - 1);
+            initial_field(i, j) += complex<double>(a, b);
+        }
+    }
+    
+
+    FourierWeightForward2D fw;
+    transformed1.add_method(fw, 0);
+    transformed1.add_method(fw, 1);
+    transformed1.add_method(fw, 2);
+    FourierWeightBackward2D fw2;
+    reverse_transform.add_method(fw2, 0);
+
+    int iter= 0;
+    int every =  100;
+    int number_of_digits=5;
+
+    using clock = std::chrono::high_resolution_clock;
+    using duration_t = clock::duration; // native tick type
+
+    duration_t total1{0};
+    duration_t total2{0};
+    duration_t total3{0};
+    duration_t total4{0};
+
+    matrix<complex<double>> initial_field3(N1, N2);
+    matrix<complex<double>> initial_field5(N1, N2);
+    matrix<complex<double>> res(N1, N2);
+
+    upd1 = (complex<double> *)fftw_malloc(N1 * N2 * sizeof(complex<double>));
+    upd2 = (complex<double> *)fftw_malloc(N1 * N2 * sizeof(complex<double>));
+
+    double deltatbase= 0.0005;
+    double deltat =  deltatbase;
+
+    for(;;) {
+        if (iter % every == 0)
+        {
+            matrix<double> if_real(N1, N2);
+            matrix<double> if_imag(N1, N2);
+
+            for (int i = 0; i < N1; i++)
+            {
+                for (int j = 0; j < N2; j++)
+                {
+                    if_real(i, j) = sqrt(SQR(initial_field(i, j).real()) + SQR(initial_field(i, j).imag()));
+                    if_imag(i, j) = atan2(initial_field(i,j).imag(),initial_field(i,j).real());
+                }
+            }
+
+            double max1;
+            double max2;
+            if_real.maxima(max1);
+            if_imag.maxima(max2);
+            cout << iter << endl;
+
+            cout << max1 << " " << max2 << endl;
+
+            stringstream ss;
+            ss << setw(number_of_digits) << setfill('0') << iter / every;
+
+            outfunc(if_real, dir_to_make + "/resr" + ss.str());
+            outfunc(if_imag, dir_to_make + "/resi" + ss.str());
+        }
+        double max = 0.;
+        for (int i = 0; i < N1; i++)
+        {
+            for (int j = 0; j < N2; j++)
+            {
+                double x = SQR(initial_field(i, j).real()) + SQR(initial_field(i, j).imag());
+                max = MAX(max,x);
+            }
+        }
+
+        if(max>2./sigma) {
+            deltat = 2*deltatbase/(sigma*abs(max-sigma*SQR(max)));
+        }
+        else{
+            deltat = deltatbase;
+        }
+
+        cout << max << " " << 1/sqrt(sigma) << " " << deltat << endl;
+
+        complex<double> fac1(1., c1);
+
+        complex<double> fac2(1., c2);
+
+        complex<double> fac3(1., c3);
+
+        complex<double> fac4(sigma, sigma * c4);
+
+        complex<double> fac5(0., (c4 - c3) / sigma);
+
+        for (int i1 = 0; i1 < N1; i1++)
+        {
+            for (int j = 0; j < N2; j++)
+            {
+                double k1, k2;
+                if (i1 <= N1 / 2)
+                {
+                    k1 = i1;
+                }
+                else
+                {
+                    k1 = (i1 - N1);
+                }
+                if (j <= N2 / 2)
+                {
+                    k2 = j;
+                }
+                else
+                {
+                    k2 = (j - N2);
+                }
+
+                upd1[i1 * N2 + j] = (1. / (1. + fac1 * deltat * (2 * pii / L) * (2 * pii / L) * (2 * pii / L) * (2 * pii / L) * SQR(SQR(k1) + SQR(k2))));
+                upd2[i1 * N2 + j] = deltat * fac3 + fac2 * deltat * (2 * pii / L) * (2 * pii / L) * (SQR(k1) + SQR(k2));
+
+                // double tempor = SQR(k1) + SQR(k2);
+
+                // upd2[i * params.N2 + j] = 1. / (1. + dt * Di * temp1 * tempor);
+            }
+        }
+
+    // auto start1=clock::now();
+
+    for(int i = 0  ; i < N1 ; i++) {
+        for(int j  = 0 ; j < N2 ; j++) {
+            double aif = abs(initial_field(i,j));
+            initial_field3(i,j) = SQR(aif)*initial_field(i,j);
+            initial_field5(i,j) = SQR(SQR(aif))*initial_field(i,j);
+        }
+    }
+
+    store.set_field(initial_field, 0);
+    store.set_field(initial_field3,1);
+    store.set_field(initial_field5,2);
+
+    // total1 += clock::now() - start1;
+
+    // auto start2=clock::now();
+
+    transformed1.Calculate_Results(store.calculated_reactions);
+    // total2 += clock::now() - start2;
+
+    // auto start3 = clock::now();
+
+    //#pragma omp simd
+    for (int i1 = 0; i1 < N1; i1++)
+    {
+        for (int j = 0; j < N2; j++)
+        {
+            int indx =i1 * N2 + j;
+            res(i1, j) = upd1[indx] * ((1.+deltat*fac5)*transformed1.calculated_reactions[0][indx] + (upd2[indx]) * transformed1.calculated_reactions[1][indx] - deltat * fac4 * transformed1.calculated_reactions[2][indx]);
+        
+
+            // cout << i1 << " " << j << endl;
+            // cout << upd1[indx] << endl;
+            // cout << transformed1.calculated_reactions[0][indx] << endl;
+            // cout << (upd2[indx]) * transformed1.calculated_reactions[1][indx] << endl;
+            // cout << deltat * fac4 * transformed1.calculated_reactions[2][indx] << endl;
+            // cout << res(i1,j) << endl;
+            // pausel();
+        }
+    }
+
+    //
+    store2.set_field(res, 0);
+    // total3 += clock::now() - start3;
+    
+
+    // auto start4 = clock::now();
+    reverse_transform.Calculate_Results(store2.calculated_reactions);
+
+
+    for(int i = 0  ; i < N1 ; i++) {
+        for(int j  = 0 ; j < N2 ; j++) {
+            initial_field(i,j)=reverse_transform.calculated_reactions[0][i*N2+j];
+        }
+    }
+    // total4 += clock::now() - start4;
+
+    iter++;
+
+    if(iter>1000000) break;
+   // pausel();
+    //transformed1.Calculate_Results()
+       }
+    //    std::cout << "total = " << total1.count() / 10E6 << " µs\n";
+    //    std::cout << "total = " << total2.count() / 10E6 << " µs\n";
+    //    std::cout << "total = " << total3.count() / 10E6 << " µs\n";
+    //    std::cout << "total = " << total4.count() / 10E6 << " µs\n";
+    }
+    // auto total_us1 = std::chrono::duration_cast<std::chrono::microseconds>(total1);
+    // auto total_us2 = std::chrono::duration_cast<std::chrono::microseconds>(total2);
+    // auto total_us3 = std::chrono::duration_cast<std::chrono::microseconds>(total3);
+    // auto total_us4 = std::chrono::duration_cast<std::chrono::microseconds>(total4);
+
+
+    // ofstream myfile;
+    // ofstream myfile2;
+    // string fil1 = string("field0") + importstring;
+    // string fil2 = string("field1") + importstring;
+    // myfile.open(fil1.c_str());
+    // myfile2.open(fil2.c_str());
+    // for (int i = 0; i < runtime; i++)
+    // {
+
+    //     if (i % every == 0 && i > 00000)
+    //     {
+
+    //         for(int j = 0 ; j < p.N1-1 ; j++) {
+    //             // cout << a.fields[0][j * p.N1] << endl;
+    //             myfile << a.fields[0][j*p.N1] <<",";
+    //         }
+    //         myfile << a.fields[0][p.N1*p.N1-1] << endl;
+
+    //         for (int j = 0; j < p.N1 - 1; j++) {
+    //             myfile2 << a.fields[1][j * p.N1] << ",";
+    //         }
+    //         myfile2 << a.fields[1][p.N1 * p.N1 - 1] << endl;
+
+    //         // pausel();
+    //         // stringstream strep1;
+    //         // stringstream strep2;
+    //         // stringstream strep3;
+    //         // stringstream strep4;
+
+    //         // strep1 << dens;
+    //         // strep4 << c0;
+    //         // strep2 << c1;
+    //         // strep3 <<  surf;
+    //         // string s1 = importstring;
+    //         // // // string s1 = "denp=" + strep1.str() + "c0=" + strep4.str() + "_c1=" + strep2.str() + "_surf=" + strep3.str();
+    //         // stringstream ss;
+    //         // ss << setw(number_of_digits) << setfill('0') << i / every;
+    //         // string s2 = "_i=" + ss.str();
+    //         // string su = s1.substr(0, s1.size() - 4);
+    //         // cout << su + s2 << endl;
+    //         // a.print_some_results(su + s2,ps2);
+    //     }
+    //     cout << i << endl;
+    //     cout << "begin" << endl;
+    //     a.Update();
+    //     bool chck = true;
+    //     a.check_field(chck);
+    //     if (!chck)
+    //         break;
+    // }
+    
+}
