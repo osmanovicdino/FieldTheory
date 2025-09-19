@@ -18,9 +18,8 @@ echo " "
 # load the job environment:
 . /u/local/Modules/default/init/modules.sh
 ## Edit the line below as needed:
-module load gcc/10.2.0
+module load gcc/11.3.0
 module load fftw/3.3.9
-
 ## substitute the command to run your code
 ## in the two lines below:
 ##echo '/usr/bin/time -v hostname'
@@ -29,7 +28,7 @@ filename=~/FieldTheory/Code/Hoffman/paramsCLGE.dat
 if [ -e ${filename}   ]; then
    # use the unix command sed -n ${line_number}p to read by line
    c1=`sed -n ${SGE_TASK_ID}p ${filename} | awk '{print $1}'`
-   c3=`sed -n ${SGE_TASK_ID}p ${filename} | awk '{print $1}'`
+   c3=`sed -n ${SGE_TASK_ID}p ${filename} | awk '{print $2}'`
    echo "read file correctly" 
 else
    wt=res1.csv
