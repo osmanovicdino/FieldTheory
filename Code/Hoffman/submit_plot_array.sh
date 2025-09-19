@@ -21,7 +21,7 @@ echo " "
 # module load gcc/10.2.0
 # module load fftw/3.3.9
 module load python/3.9.6
-module load ffmpeg
+module load ffmpeg/5.0.1
 
 ## substitute the command to run your code
 ## in the two lines below:
@@ -34,8 +34,8 @@ export OMP_NUM_THREADS=1
 num=`ls field*.csv | wc -l`
 if test $num -ge 1;
 then
-    for file in field*.csv; do python3 ~/FieldTheory/Code/Plotting/PlotDirectory.py "$file"; done
-    ffmpeg -pattern_type glob -i 'field0*.png' -s 1920x1080 -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2" test.mp4
+    for file in res*.csv; do python3 ~/FieldTheory/Code/Plotting/PlotDirectory.py "$file"; done
+    ffmpeg -pattern_type glob -i 'res*.png' -s 1920x1080 -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2" test.mp4
     # for file in field1*.csv; do python3 ~/FieldTheory/Code/Plotting/PlotDirectory.py "$file"; done
     # ffmpeg -pattern_type glob -i 'field1*.png' -s 1920x1080 -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2" test2.mp4
 fi
