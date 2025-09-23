@@ -50,7 +50,7 @@ int main(int argc, char **argv)
 {
     srand(time(NULL));
     string importstring;
-    double c1,c3,c4;
+    double c1,c3;
     // int dir_no;
     if (argc == 3)
     {
@@ -133,70 +133,37 @@ int main(int argc, char **argv)
     // outfunc(pa,params);
 
     upd1 = (complex<double> *)fftw_malloc(N1 * N2 * sizeof(complex<double>));
-    upd2 = (complex<double> *)fftw_malloc(N1 * N2 * sizeof(complex<double>));
-
-    c4 = 1.;
 
     complex<double> fac1(1., c1);
 
     complex<double> fac2(1., c3);
 
-    complex<double> fac3(1., c4);
-
-
-    double r;
-    
-    double gamma5,delta5;
-
-    double gamma6,delta6;
-
-    double gamma7,delta7;
-
-
-    r = 1.;
-    gamma5=1.;
-    delta5=-1.;
-
-    gamma6=1.;
-    delta6= -1.5;
-
-    gamma7=-0.5;
-    delta7=1.;
-
-    complex<double> fac4(r, 0.);
-
-    complex<double> fac5(gamma5,delta5);
-
-    complex<double> fac6(gamma6, delta6);
-
-    complex<double> fac7(gamma7, delta7);
 
     for (int i1 = 0; i1 < N1; i1++)
     {
         for (int j = 0; j < N2; j++)
         {
-            double k1, k2;
-            if (i1 <= N1 / 2)
-            {
-                k1 = i1;
-            }
-            else
-            {
-                k1 = (i1 - N1);
-            }
-            if (j <= N2 / 2)
-            {
-                k2 = j;
-            }
-            else
-            {
-                k2 = (j - N2);
-            }
+            double k1 = i1;
+            double k2 = j;
+            // if (i1 <= N1 / 2)
+            // {
+            //     k1 = i1;
+            // }
+            // else
+            // {
+            //     k1 = (i1 - N1);
+            // }
+            // if (j <= N2 / 2)
+            // {
+            //     k2 = j;
+            // }
+            // else
+            // {
+            //     k2 = (j - N2);
+            // }
 
             upd1[i1 * N2 + j] = (1. / (1. + fac1*deltat * (2 * pii / L) * (2 * pii / L)*(SQR(k1)+SQR(k2))));
-
-            upd2[i1 * N2 + j] = (1. / (1. + fac5*deltat * (2 * pii / L) * (2 * pii / L) * (SQR(k1) + SQR(k2))));
-
+            
             // double tempor = SQR(k1) + SQR(k2);
 
             // upd2[i * params.N2 + j] = 1. / (1. + dt * Di * temp1 * tempor);
@@ -204,7 +171,7 @@ int main(int argc, char **argv)
     }
 
     CH_builder myp;
-    myp.number_of_fields=6;
+    myp.number_of_fields=4;
     myp.dimension=2;
     myp.N1 = N1;
     myp.N2 = N2;
@@ -218,14 +185,14 @@ int main(int argc, char **argv)
     myp2.N2 = N2;
     myp2.N3 = 0;
 
-    Field_Wrapper<complex<double>, complex<double>> store(myp);
-    Field_Wrapper<complex<double>,complex<double> > transformed1(myp);
+    Field_Wrapper<double,double> store(myp);
+    Field_Wrapper<double,double > transformed1(myp);
 
     // Field_Wrapper<complex<double>, complex<double>> transformed2(myp);
 
     // Field_Wrapper<complex<double>, complex<double>> transformed3(myp);
-    Field_Wrapper<complex<double>, complex<double>> store2(myp2);
-    Field_Wrapper<complex<double>, complex<double>> reverse_transform(myp2);
+    Field_Wrapper<double,double> store2(myp2);
+    Field_Wrapper<double,double> reverse_transform(myp2);
 
     // complex<double>* initial_field;
 
@@ -246,14 +213,12 @@ int main(int argc, char **argv)
     double rc=10.;
 
     matrix<complex<double>> initial_field(N1, N2);
-    matrix<complex<double>> initial_field2(N1, N2);
 
     for (int i = 0; i < N1; i++)
     {
         for (int j = 0; j < N2; j++)
         {
-            initial_field(i, j) = {0., 0};
-            initial_field2(i, j) = {0., 0};
+            initial_field(i, j) = {0.,0};
         }
     }
 
@@ -296,21 +261,15 @@ int main(int argc, char **argv)
             double a =  (2. * (double)rand() / (double)RAND_MAX - 1);
             double b =  (2. * (double)rand() / (double)RAND_MAX - 1);
             initial_field(i, j) += complex<double>(a, b);
-            double c = (2. * (double)rand() / (double)RAND_MAX - 1);
-            double d = (2. * (double)rand() / (double)RAND_MAX - 1);
-            initial_field2(i, j) += complex<double>(c, d);
         }
     }
     
-
-    FourierWeightForward2D fw;
+    CosineWeightForward fw;
     transformed1.add_method(fw, 0);
     transformed1.add_method(fw, 1);
     transformed1.add_method(fw, 2);
     transformed1.add_method(fw, 3);
-    transformed1.add_method(fw, 4);
-    transformed1.add_method(fw, 5);
-    FourierWeightBackward2D fw2;
+    CosineWeightBackward fw2;
     reverse_transform.add_method(fw2, 0);
     reverse_transform.add_method(fw2, 1);
 
@@ -327,20 +286,14 @@ int main(int argc, char **argv)
     duration_t total4{0};
 
     matrix<complex<double>> initial_field3(N1, N2);
-    matrix<complex<double>> initial_field4(N1, N2);
-    matrix<complex<double>> initial_field5(N1, N2);
-    matrix<complex<double>> initial_field6(N1, N2);
     matrix<complex<double>> res(N1, N2);
-    matrix<complex<double>> res2(N1, N2);
 
     for(;;) {
         cout << iter << endl;
-        if (iter % every == 0 && iter > 50000 )
+        if (iter % every == 0 && iter > 0000 )
         {
             matrix<double> if_real(N1, N2);
             matrix<double> if_imag(N1, N2);
-            matrix<double> if_real2(N1, N2);
-            matrix<double> if_imag2(N1, N2);
 
             for (int i = 0; i < N1; i++)
             {
@@ -348,48 +301,37 @@ int main(int argc, char **argv)
                 {
                     if_real(i, j) = sqrt(SQR(initial_field(i, j).real()) + SQR(initial_field(i, j).imag()));
                     if_imag(i, j) = atan2(initial_field(i,j).imag(),initial_field(i,j).real());
-
-                    if_real2(i, j) = sqrt(SQR(initial_field2(i, j).real()) + SQR(initial_field2(i, j).imag()));
-                    if_imag2(i, j) = atan2(initial_field2(i, j).imag(), initial_field2(i, j).real());
                 }
             }
 
-            // double max1;
-            // double max2;
-            // if_real.maxima(max1);
-            // if_imag.maxima(max2);
-            // cout << iter << endl;
+            double max1;
+            double max2;
+            if_real.maxima(max1);
+            if_imag.maxima(max2);
+            cout << iter << endl;
 
-            // cout << max1 << " " << max2 << endl;
+            cout << max1 << " " << max2 << endl;
 
             stringstream ii;
             ii << setw(number_of_digits) << setfill('0') << iter / every;
             string inx = "_i=";
-            outfunc(if_real,"res1r" + ps + inx + ii.str());
-            outfunc(if_imag, "res1i" + ps + inx + ii.str());
-            outfunc(if_real2, "res2r" + ps + inx + ii.str());
-            outfunc(if_imag2, "res2i" + ps + inx + ii.str());
+            outfunc(if_real,"resr" + ps + inx + ii.str());
+            outfunc(if_imag,"resi" + ps + inx + ii.str());
         }
     
     // auto start1=clock::now();
 
     for(int i = 0  ; i < N1 ; i++) {
         for(int j  = 0 ; j < N2 ; j++) {
-            double aif = abs(initial_field(i, j));
-            double aif2 = abs(initial_field2(i, j));
-            initial_field3(i, j) = SQR(aif) * initial_field(i, j);
-            initial_field4(i, j) = SQR(aif2) * initial_field(i, j);
-            initial_field5(i, j) = SQR(aif2) * initial_field2(i, j);
-            initial_field6(i, j) = SQR(aif) * initial_field2(i, j);
+            double aif = abs(initial_field(i,j));
+            initial_field3(i,j) = SQR(aif)*initial_field(i,j);
         }
     }
 
-    store.set_field(initial_field, 0);
-    store.set_field(initial_field3, 1);
-    store.set_field(initial_field4, 2);
-    store.set_field(initial_field2, 3);
-    store.set_field(initial_field5, 4);
-    store.set_field(initial_field6, 5);
+    store.set_field(realmatrix(initial_field), 0);
+    store.set_field(imaginarymatrix(initial_field), 1);
+    store.set_field(realmatrix(initial_field3),2);
+    store.set_field(imaginarymatrix(initial_field3), 3);
 
     // total1 += clock::now() - start1;
 
@@ -406,9 +348,7 @@ int main(int argc, char **argv)
         for (int j = 0; j < N2; j++)
         {
             int indx =i1 * N2 + j;
-            res(i1, j) = upd1[indx] * (1. + deltat) * transformed1.calculated_reactions[0][indx] - (upd1[indx]) * deltat * fac2 * transformed1.calculated_reactions[1][indx] - (upd1[indx]) * deltat * fac3 * transformed1.calculated_reactions[2][indx];
-
-            res2(i1, j) = upd2[indx] * (fac4 + deltat) * transformed1.calculated_reactions[3][indx] - (upd2[indx]) * deltat * fac6 * transformed1.calculated_reactions[4][indx] - (upd2[indx]) * deltat * fac7 * transformed1.calculated_reactions[5][indx];
+            res(i1, j) = upd1[indx] * (1. + deltat) * (complex<double>(transformed1.calculated_reactions[0][indx], transformed1.calculated_reactions[1][indx])) - (upd1[indx]) * deltat * fac2 * (complex<double>(transformed1.calculated_reactions[2][indx], transformed1.calculated_reactions[3][indx]));
 
             // cout << i1 << " " << j << endl;
             // cout << upd1[indx] << endl;
@@ -421,8 +361,8 @@ int main(int argc, char **argv)
     }
 
     //
-    store2.set_field(res, 0);
-    store2.set_field(res2, 1);
+    store2.set_field(realmatrix(res), 0);
+    store2.set_field(imaginarymatrix(res), 1);
     // total3 += clock::now() - start3;
     
 
@@ -432,8 +372,7 @@ int main(int argc, char **argv)
 
     for(int i = 0  ; i < N1 ; i++) {
         for(int j  = 0 ; j < N2 ; j++) {
-            initial_field(i, j) = reverse_transform.calculated_reactions[0][i * N2 + j];
-            initial_field2(i, j) = reverse_transform.calculated_reactions[1][i * N2 + j];
+            initial_field(i,j)=complex<double>(reverse_transform.calculated_reactions[0][i*N2+j],reverse_transform.calculated_reactions[1][i*N2+j]);
         }
     }
     // total4 += clock::now() - start4;

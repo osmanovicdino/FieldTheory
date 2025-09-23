@@ -1730,3 +1730,48 @@ int FFT2D(matrix<COMPLEX> &c, int nx, int ny, int dir)
 
     return (true);
 }
+
+matrix<double> realmatrix(matrix<complex<double> > &a) {
+    matrix<double> res(a.nrows,a.ncols);
+    int n = a.nrows;
+    int m = a.ncols;
+    for(int i = 0  ; i < n; i++) {
+        for(int j = 0  ; j < m ; j++) {
+            res[i*m+j] = a[i*m+j].real();
+        }
+    }
+    return res;
+}
+
+matrix<double> imaginarymatrix(matrix<complex<double>> &a)
+{
+    matrix<double> res(a.nrows, a.ncols);
+    int n  = a.nrows;
+    int m = a.ncols;
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < m; j++)
+        {
+            res[i * m + j] = a[i * m + j].imag();
+        }
+    }
+    return res;
+}
+
+matrix<complex<double> > combinematrix(matrix<double> &re, matrix<double> &im) {
+    if(re.nrows != im.nrows) error("real and imaginary matrices not the same size");
+    if (re.ncols != im.ncols) error("real and imaginary matrices not the same size");
+
+    matrix<complex<double> > res(re.nrows, im.ncols);
+    int n = re.nrows;
+    int m = re.ncols;
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < m; j++)
+        {
+            complex<double> fac1(re[i * m + j], im[i * m + j]);
+            res[i * m + j] = fac1;
+        }
+    }
+    return res;
+}

@@ -295,6 +295,10 @@ public:
         friend void ft2D(matrix<Y> &m, matrix<Y> &reout, matrix<Y> &imout);
 
         friend int FFT2D(matrix<COMPLEX> &c, int nx, int ny, int dir);
+
+        friend matrix<double> realmatrix(matrix<complex<double> > &a);
+        friend matrix<double> imaginarymatrix(matrix<complex<double> > &a);
+        friend matrix<complex<double> > combinematrix(matrix<double> &re, matrix<double> &im);
 };
 
 
