@@ -54,17 +54,15 @@ int main(int argc, char **argv)
     string importstring2;
 
 
-    if (argc == 4)
+    if (argc == 3)
     {
         stringstream ss;
         ss << argv[1];
         importstring = ss.str();
         stringstream ss2,ss3;
         ss2 << argv[2];
-        ss3 << argv[3];
         
         importstring1 = ss2.str();
-        importstring2 = ss3.str();
     }
     else
     {
@@ -146,8 +144,8 @@ int main(int argc, char **argv)
     CH_builder p;
     int nof = n;
     p.number_of_fields = nof;
-    p.N1 = 512;
-    p.N2 = 512;
+    p.N1 = 1024;
+    p.N2 = 1024;
 
     CHC<double> a(p);
 
@@ -269,20 +267,42 @@ int main(int argc, char **argv)
 
     // string importstring1 = "/home/dino/Documents/Chemistry/SubDiffusionMath/Simulations_Ne/Sweep_2PS_2D_L=40_Long/field0res_chem=6_i=09999.csv";
     // string importstring2 = "/home/dino/Documents/Chemistry/SubDiffusionMath/Simulations_Ne/Sweep_2PS_2D_L=40_Long/field1res_chem=6_i=09999.csv";
-    matrix<double> mati1 = importcsv(importstring1, T, err1);
-    matrix<double> mati2 = importcsv(importstring2, T, err1);
+    
+    // matrix<double> mati2 = importcsv(importstring2, T, err1);
+    vector<string> filenames;
+    std::ifstream file(importstring1);
+    if (!file.is_open())
+    {
+        std::cerr << "Error opening file\n";
+        return 1;
+    }
 
-
-        for (int i = 0; i < p.N1; i++)
+    std::string filename;
+    while (std::getline(file, filename))
+    {
+        // trim if needed (e.g., remove carriage returns)
+        if (!filename.empty())
         {
-            double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
+            std::cout << "Read filename: " << filename << '\n';
+            filenames.push_back(filename);
+        }
+    }
 
-            for (int j = 0; j < p.N2; j++)
+        for(int k = 0 ; k < nof ; k++) {
+
+            string importstring2 = filenames[k];
+
+            matrix<double> mati1 = importcsv(importstring2, T, err1);
+            for (int i = 0; i < p.N1; i++)
             {
+                //double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
+
+                for (int j = 0; j < p.N2; j++)
+                {
                //double r1 = (2. * ((double)rand() / (double)RAND_MAX) - 1.);
 
-                v[0](i, j) = mati1(i,j);
-                v[1](i, j) = mati2(i,j);
+                v[k](i, j) = mati1(i,j);
+                }
             }
         }
     
@@ -423,7 +443,7 @@ int main(int argc, char **argv)
     for (int i = 0; i < runtime; i++)
     {
 
-        if (i % every == 0 && i >0)
+        if (i % every == 0)
         {
             // stringstream strep1;
             // stringstream strep2;

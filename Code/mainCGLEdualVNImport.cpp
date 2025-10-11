@@ -51,37 +51,16 @@ int main(int argc, char **argv)
     srand(time(NULL));
     string importstring;
     double c1,c3,c4;
-
-    double s1;
-    double r;
-
-    double gamma5, delta5;
-
-    double gamma6, delta6;
-
-    double gamma7, delta7;
-
-    
     // int dir_no;
     if (argc == 3)
     {
         c1 = atof(argv[1]);
         c3 = atof(argv[2]);
-        s1 = atof(argv[3]);
-        c4 = atof(argv[4]);
-        gamma5 = atof(argv[5]);
-        r = atof(argv[6]);
-        gamma6 = atof(argv[7]);
-        gamma7 = atof(argv[8]);
-        delta7 = atof(argv[9]);
     }
     else
     {
         error("no");
     }
-
-    delta5 = 0.;
-    delta6 = 0.;
 
     string ps = "";
     stringstream ss;
@@ -156,7 +135,7 @@ int main(int argc, char **argv)
     upd1 = (complex<double> *)fftw_malloc(N1 * N2 * sizeof(complex<double>));
     upd2 = (complex<double> *)fftw_malloc(N1 * N2 * sizeof(complex<double>));
 
-    //c4 = 1;
+    c4 = 1;
 
     // -fac3*(|B|^2)*A
     // -fac7*(|A|^2)*B
@@ -165,21 +144,27 @@ int main(int argc, char **argv)
 
     complex<double> fac2(1., c3);
 
-    complex<double> fac3(s1, c4);
+    complex<double> fac3(-1., c4);
 
 
+    double r;
+    
+    double gamma5,delta5;
+
+    double gamma6,delta6;
+
+    double gamma7,delta7;
 
 
+    r = 1;
+    gamma5=1.;
+    delta5=0.;
 
-    // r = 2;
-    // gamma5=1.;
-    // delta5=0;
+    gamma6=1.;
+    delta6= -0.588235;
 
-    // gamma6=1.;
-    // delta6= 0;
-
-    // gamma7=-1.;
-    // delta7=-1.;
+    gamma7=-1.;
+    delta7=1.;
 
     complex<double> fac4(r, 0.);
 
@@ -265,18 +250,15 @@ int main(int argc, char **argv)
     double A0=1;
     double rc=10.;
 
-    matrix<complex<double>> initial_field(N1, N2);
-    matrix<complex<double>> initial_field2(N1, N2);
+    // matrix<complex<double>> initial_field(N1, N2);
+    // matrix<complex<double>> initial_field2(N1, N2);
 
-    for (int i = 0; i < N1; i++)
-    {
-        for (int j = 0; j < N2; j++)
-        {
-            initial_field(i, j) = {0., 0};
-            initial_field2(i, j) = {0., 0};
-        }
-    }
-
+    bool err1,err2,err3,err4;
+    double T;
+    matrix<double> r1r = importcsv("f1r.csv", T, err1);
+    matrix<double> r1i = importcsv("f1i.csv", T, err2);
+    matrix<double> r2r = importcsv("f2r.csv", T, err3);
+    matrix<double> r2i = importcsv("f2i.csv", T, err4);
     /*
     for (int i = 0; i < N1; i++)
     {
@@ -299,29 +281,8 @@ int main(int argc, char **argv)
         }
     }
     */
-
-
-    for (int i = 0; i < N1; i++)
-    {
-        for (int j = 0; j < N2; j++)
-        {
-            // double x = (i - 0.75 * N1);
-            // double y = (j - 0.75 * N2);
-            // double r = sqrt(SQR(x) + SQR(y));
-            // double theta = -atan2(y, x);
-            // if (r < r0)
-            //     initial_field(i, j) = {A0 * tanh(r / rc) * cos(theta),
-            //                            A0 * tanh(r / rc) * sin(theta)};
-            
-            double a =  (2. * (double)rand() / (double)RAND_MAX - 1);
-            double b =  (2. * (double)rand() / (double)RAND_MAX - 1);
-            initial_field(i, j) += complex<double>(a, b);
-            double c = (2. * (double)rand() / (double)RAND_MAX - 1);
-            double d = (2. * (double)rand() / (double)RAND_MAX - 1);
-            initial_field2(i, j) += complex<double>(c, d);
-        }
-    }
-    
+    matrix<complex<double>> initial_field = combinematrix(r1r, r1i);
+    matrix<complex<double>> initial_field2 = combinematrix(r2r, r2i);
 
     CosineWeightForward fw;
     transformed1.add_method(fw, 0);
@@ -363,7 +324,7 @@ int main(int argc, char **argv)
 
     for(;;) {
         cout << iter << endl;
-        if (iter % every == 0 && iter > 00000 )
+        if (iter % every == 0 && iter > 000000 )
         {
             matrix<double> if_real(N1, N2);
             matrix<double> if_imag(N1, N2);
@@ -475,7 +436,7 @@ int main(int argc, char **argv)
 
     iter++;
 
-    if(iter>200000) break;
+    if(iter>1000000) break;
    // pausel();
     //transformed1.Calculate_Results()
        
