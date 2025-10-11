@@ -86,16 +86,17 @@ int main(int argc, char **argv)
     string ps = "";
     stringstream ss;
     ss << c1;
-    string s1  =ss.str();
+    string sss1  =ss.str();
 
     stringstream ss2;
     ss2 << c3;
-    string s2 = ss2.str();
+    string sss2 = ss2.str();
 
     ps += "c1=";
-    ps += s1;
+    ps += sss1;
     ps += "_c3=";
-    ps += s2;
+    ps += sss2;
+
 
 
 
