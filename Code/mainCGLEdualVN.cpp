@@ -63,7 +63,7 @@ int main(int argc, char **argv)
 
     
     // int dir_no;
-    if (argc == 3)
+    if (argc == 10)
     {
         c1 = atof(argv[1]);
         c3 = atof(argv[2]);
