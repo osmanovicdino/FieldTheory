@@ -190,6 +190,15 @@ int main(int argc, char **argv)
 
     complex<double> fac7(gamma7, delta7);
 
+    cout << fac1 << endl;
+    cout << fac2 << endl;
+    cout << fac3 << endl;
+    cout << fac4 << endl;
+    cout << fac5 << endl;
+    cout << fac6 << endl;
+    cout << fac7 << endl;
+    pausel();
+
     for (int i1 = 0; i1 < N1; i1++)
     {
         for (int j = 0; j < N2; j++)
@@ -364,7 +373,7 @@ int main(int argc, char **argv)
 
     for(;;) {
         cout << iter << endl;
-        if (iter % every == 0 && iter > 00000 )
+        if (iter % every == 0 && iter >= 00000 )
         {
             matrix<double> if_real(N1, N2);
             matrix<double> if_imag(N1, N2);
@@ -442,7 +451,7 @@ int main(int argc, char **argv)
             int indx =i1 * N2 + j;
             res(i1, j) = upd1[indx] * (1. + deltat) * (complex<double>(transformed1.calculated_reactions[0][indx], transformed1.calculated_reactions[1][indx])) - (upd1[indx]) * deltat * fac2 * (complex<double>(transformed1.calculated_reactions[2][indx], transformed1.calculated_reactions[3][indx])) - (upd1[indx]) * deltat * fac3 * (complex<double>(transformed1.calculated_reactions[4][indx], transformed1.calculated_reactions[5][indx]));
 
-            res2(i1, j) = upd2[indx] * (fac4 + deltat) * (complex<double>(transformed1.calculated_reactions[6][indx], transformed1.calculated_reactions[7][indx])) - (upd2[indx]) * deltat * fac6 * (complex<double>(transformed1.calculated_reactions[8][indx], transformed1.calculated_reactions[9][indx])) - (upd2[indx]) * deltat * fac7 * (complex<double>(transformed1.calculated_reactions[10][indx], transformed1.calculated_reactions[11][indx]));
+            res2(i1, j) = upd2[indx] * (1. + fac4*deltat) * (complex<double>(transformed1.calculated_reactions[6][indx], transformed1.calculated_reactions[7][indx])) - (upd2[indx]) * deltat * fac6 * (complex<double>(transformed1.calculated_reactions[8][indx], transformed1.calculated_reactions[9][indx])) - (upd2[indx]) * deltat * fac7 * (complex<double>(transformed1.calculated_reactions[10][indx], transformed1.calculated_reactions[11][indx]));
 
             // cout << i1 << " " << j << endl;
             // cout << upd1[indx] << endl;
