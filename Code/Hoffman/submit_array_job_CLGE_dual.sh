@@ -8,7 +8,7 @@
 #$ -l h_rt=6:00:00,h_data=2G
 ## Modify the parallel environment
 ## and the number of cores as needed:
-#$ -t 1-540:1
+#$ -t 301-540:1
 
 # echo job info on joblog:
 echo "Job $JOB_ID started on:   " `hostname -s`
